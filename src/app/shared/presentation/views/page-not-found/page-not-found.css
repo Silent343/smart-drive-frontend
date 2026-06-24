@@ -1,0 +1,35 @@
+.go-home-btn {
+  background-color: #0B1B3D !important; /* El azul marino de la paleta */
+  color: #FFFFFF !important; /* Texto blanco para alto contraste */
+  font-family: 'Roboto', sans-serif;
+  font-weight: 500;
+  font-size: 14px;
+  letter-spacing: 0.5px;
+  padding: 12px 28px !important; /* Más espaciado para que sea fácil de cliquear */
+  border-radius: 30px !important; /* Bordes redondeados consistentes con la app */
+  display: inline-flex;
+  align-items: center;
+  gap: 8px; /* Espacio entre el icono y el texto */
+  box-shadow: 0 4px 12px rgba(11, 27, 61, 0.2) !important; /* Sombra sutil con el color de la marca */
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  margin-top: 10px;
+}
+
+.go-home-btn:hover {
+  background-color: #152954 !important; /* Un azul ligeramente más claro para el feedback */
+  box-shadow: 0 6px 16px rgba(11, 27, 61, 0.35) !important; /* La sombra se expande un poco */
+  transform: translateY(-1px); /* Efecto sutil de elevación */
+}
+
+.go-home-btn:active {
+  transform: translateY(1px); /* Feedback táctil al presionar */
+  box-shadow: 0 2px 8px rgba(11, 27, 61, 0.2) !important;
+}
+
+.go-home-btn mat-icon {
+  font-size: 18px;
+  width: 18px;
+  height: 18px;
+  line-height: 18px;
+  color: #D4AF37; /* Detalle en dorado champagne para un toque premium */
+}

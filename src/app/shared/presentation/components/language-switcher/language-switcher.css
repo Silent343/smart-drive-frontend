@@ -1,0 +1,37 @@
+mat-button-toggle-group {
+  border: none !important;
+  background-color: #f1f3f5;
+  border-radius: 30px !important; /* Bordes completamente redondeados estilo píldora */
+  padding: 4px;
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.06);
+}
+
+.language-toggle.mat-button-toggle {
+  background-color: transparent;
+  color: #495057;
+  font-family: 'Roboto', sans-serif;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  border: none !important;
+  border-radius: 25px !important; /* Redondeado interno */
+  min-width: 48px;
+  height: 32px;
+  line-height: 32px;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.language-toggle .mat-button-toggle-label-content {
+  line-height: 32px !important;
+  padding: 0 12px !important;
+}
+
+.language-toggle.mat-button-toggle-checked {
+  background-color: #ffffff !important; /* Fondo blanco brillante para resaltar */
+  color: #0B1B3D !important; /* El azul marino corporativo para el texto activo */
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1), 0 1px 2px rgba(0, 0, 0, 0.06); /* Efecto elevado */
+}
+
+.language-toggle:not(.mat-button-toggle-checked):hover {
+  color: #0B1B3D;
+  background-color: rgba(0, 0, 0, 0.04);
+}

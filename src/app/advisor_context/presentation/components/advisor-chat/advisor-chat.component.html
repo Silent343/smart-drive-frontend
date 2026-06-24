@@ -1,0 +1,80 @@
+<!--
+  Loan advisor chat panel.
+  Header · scrollable message list · composer.
+  All user-facing strings are i18n via translate pipe (advisor.* keys).
+-->
+<section class="advisor">
+
+  <header class="advisor__head">
+    <div class="advisor__title">
+      <span class="advisor__badge">{{ 'advisor.badge' | translate }}</span>
+      <span>{{ 'advisor.title' | translate }}</span>
+    </div>
+    @if (store.messages().length > 0) {
+      <button class="advisor__clear" type="button" (click)="onClear()">
+        {{ 'advisor.clear' | translate }}
+      </button>
+    }
+  </header>
+
+  <div class="advisor__thread">
+    @if (store.messages().length === 0) {
+      <div class="advisor__welcome">
+        <p class="advisor__welcome-text">
+          {{ 'advisor.welcome' | translate }}
+        </p>
+        <div class="advisor__suggestions">
+          @for (key of suggestionKeys; track key) {
+            <button
+              class="advisor__chip"
+              type="button"
+              [disabled]="store.busy()"
+              (click)="onSuggestion(key)">
+              {{ key | translate }}
+            </button>
+          }
+        </div>
+      </div>
+    }
+
+    @for (message of store.messages(); track message.id) {
+      <div
+        class="advisor__msg"
+        [class.advisor__msg--user]="message.role === 'user'"
+        [class.advisor__msg--ai]="message.role === 'assistant'">
+
+        @if (message.pending) {
+          <div class="advisor__typing" [attr.aria-label]="'advisor.typing' | translate">
+            <span class="advisor__dot"></span>
+            <span class="advisor__dot"></span>
+            <span class="advisor__dot"></span>
+          </div>
+        } @else {
+          <p class="advisor__msg-text">{{ message.content }}</p>
+        }
+      </div>
+    }
+  </div>
+
+  @if (store.error()) {
+    <p class="advisor__error">{{ store.error() }}</p>
+  }
+
+  <div class="advisor__composer">
+    <textarea
+      class="advisor__input"
+      rows="1"
+      [placeholder]="'advisor.placeholder' | translate"
+      [ngModel]="draft()"
+      (ngModelChange)="draft.set($event)"
+      (keydown)="onKeydown($event)"
+      [disabled]="store.busy()"></textarea>
+    <button
+      class="advisor__send"
+      type="button"
+      [disabled]="store.busy() || !draft().trim()"
+      (click)="onSend()">
+      {{ 'advisor.send' | translate }}
+    </button>
+  </div>
+</section>

@@ -1,0 +1,125 @@
+<div class="cfd">
+  <div class="cfd__head">
+    <div class="cfd__head-icon">
+      <mat-icon>{{ isEditMode ? 'edit' : 'person_add' }}</mat-icon>
+    </div>
+    <div>
+      <h2 mat-dialog-title class="cfd__title">
+        {{ (isEditMode ? 'clients.form.editTitle' : 'clients.form.registerTitle') | translate }}
+      </h2>
+      <p class="cfd__subtitle">{{ 'clients.form.subtitle' | translate }}</p>
+    </div>
+  </div>
+
+  <form [formGroup]="clientForm" (ngSubmit)="onSubmit()">
+    <mat-dialog-content class="form-content">
+
+      <!-- Nombre -->
+      <div class="input-group input-group--full">
+        <label>{{ 'clients.table.name' | translate }} <span class="req">*</span></label>
+        <div class="field-wrap">
+          <mat-icon class="field-ic">badge</mat-icon>
+          <input formControlName="name" type="text" class="custom-input has-ic"
+                 placeholder="{{ 'clients.form.namePh' | translate }}" />
+        </div>
+        @if (clientForm.get('name'); as c) {
+          @if (c.invalid && c.touched) {
+            <span class="field-err">{{ 'clients.form.errors.nameRequired' | translate }}</span>
+          }
+        }
+      </div>
+
+      <!-- DNI + Ingresos -->
+      <div class="cfd__row">
+        <div class="input-group">
+          <label>{{ 'clients.table.dni' | translate }} <span class="req">*</span></label>
+          <div class="field-wrap">
+            <mat-icon class="field-ic">fingerprint</mat-icon>
+            <input formControlName="dni" type="text" class="custom-input has-ic"
+                   maxlength="12" (input)="allowOnlyNumbers($event, 'dni')" placeholder="71234567" />
+          </div>
+          @if (clientForm.get('dni'); as c) {
+            @if (c.invalid && c.touched) {
+              <span class="field-err">{{ 'clients.form.errors.dni' | translate }}</span>
+            }
+          }
+        </div>
+
+        <div class="input-group">
+          <label>{{ 'clients.table.income' | translate }} <span class="req">*</span></label>
+          <div class="field-wrap">
+            <span class="field-prefix">S/</span>
+            <input formControlName="income" type="number" min="0" step="50"
+                   class="custom-input has-prefix" placeholder="3500" />
+          </div>
+          @if (clientForm.get('income'); as c) {
+            @if (c.invalid && c.touched) {
+              <span class="field-err">{{ 'clients.form.errors.income' | translate }}</span>
+            }
+          }
+        </div>
+      </div>
+
+      <!-- Ocupación -->
+      <div class="input-group input-group--full">
+        <label>{{ 'clients.table.occupation' | translate }} <span class="req">*</span></label>
+        <div class="field-wrap">
+          <mat-icon class="field-ic">work</mat-icon>
+          <input formControlName="occupation" type="text" class="custom-input has-ic"
+                 placeholder="{{ 'clients.form.occupationPh' | translate }}" />
+        </div>
+        @if (clientForm.get('occupation'); as c) {
+          @if (c.invalid && c.touched) {
+            <span class="field-err">{{ 'clients.form.errors.occupation' | translate }}</span>
+          }
+        }
+      </div>
+
+      <!-- Teléfono -->
+      <div class="input-group input-group--full">
+        <label>{{ 'clients.table.phone' | translate }} <span class="req">*</span></label>
+        <div class="phone-composite">
+          <mat-select formControlName="phoneCountryCode"
+                      class="custom-input country-select-premium"
+                      disableOptionCentering
+                      panelClass="phone-country-panel">
+            <mat-select-trigger>
+              <div class="selected-value">
+                <img [src]="'https://flagcdn.com/w20/' + getSelectedIso() + '.png'" width="20" alt="flag" />
+                <span>{{ clientForm.get('phoneCountryCode')?.value }}</span>
+              </div>
+            </mat-select-trigger>
+
+            @for (country of countryCodes; track country.code) {
+              <mat-option [value]="country.code">
+                <div class="option-container">
+                  <img [src]="'https://flagcdn.com/w40/' + country.iso + '.png'" width="25" alt="flag" />
+                  <span class="country-name">{{ country.name }}</span>
+                </div>
+              </mat-option>
+            }
+          </mat-select>
+
+          <input formControlName="phoneNumber" type="text" class="custom-input phone-input"
+                 maxlength="15" (input)="allowOnlyNumbers($event, 'phoneNumber')" placeholder="987654321" />
+        </div>
+        @if (clientForm.get('phoneNumber'); as c) {
+          @if (c.invalid && c.touched) {
+            <span class="field-err">{{ 'clients.form.errors.phone' | translate }}</span>
+          }
+        }
+      </div>
+
+    </mat-dialog-content>
+
+    <mat-dialog-actions align="end" class="form-actions">
+      <button mat-button type="button" class="cancel-btn" [mat-dialog-close]="null">
+        {{ 'clients.form.cancel' | translate }}
+      </button>
+      <button mat-flat-button type="submit" class="save-btn" [disabled]="clientForm.invalid">
+        <mat-icon>check</mat-icon>
+        {{ 'clients.form.save' | translate }}
+      </button>
+    </mat-dialog-actions>
+  </form>
+</div>

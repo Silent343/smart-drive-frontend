@@ -1,0 +1,16 @@
+<div class="flow-header">
+  <div class="flow-header__banner">
+    <span class="flow-header__title">{{ 'sdp.components.flowHeader.title' | translate }}</span>
+  </div>
+  <nav class="flow-header__nav" [attr.aria-label]="'sdp.components.flowHeader.ariaNav' | translate">
+    <button
+      *ngFor="let step of steps"
+      class="flow-header__nav-btn"
+      [class.flow-header__nav-btn--active]="isActive(step)"
+      [routerLink]="step.route"
+      [attr.aria-current]="isActive(step) ? 'step' : null"
+    >
+      {{ step.label | translate }}
+    </button>
+  </nav>
+</div>

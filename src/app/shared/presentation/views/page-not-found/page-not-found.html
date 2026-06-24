@@ -1,0 +1,10 @@
+<div class="container-with-spacing">
+  <h1>{{ 'page-not-found.title' | translate }}</h1>
+  <div [innerHTML]="'page-not-found.content' | translate: { invalid_path: invalidPath }"></div>
+</div>
+<button
+  mat-flat-button
+  class="go-home-btn"
+  (click)="navigateToHome()">
+  <mat-icon>home</mat-icon> {{ 'page-not-found.go-home' | translate }}
+</button>

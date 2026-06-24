@@ -1,0 +1,370 @@
+{
+  "option": {
+    "home": "Inicio",
+    "client": "Cliente",
+    "vehicle": "Vehiculos",
+    "simulation": "Simulacion",
+    "out": "Salir",
+    "profile": "Perfil"
+  },
+  "about": {
+    "title": "Acerca de nosotros",
+    "content": "MineGuard es una plataforma de seguridad para operaciones mineras."
+  },
+  "home": {
+    "welcome": "¡Bienvenido a Velo Finanzas!",
+    "financialSummary": "Resumen financiero",
+    "activitySummary": "Resumen Actividad",
+    "registeredClients": "Clientes registrados:",
+    "availableVehicles": "Vehículos disponibles:",
+    "job": "Profesión:",
+    "soldVehicles": "Vehículos Vendidos:",
+    "title": "Panel de Control",
+    "subtitle": "Resumen general de tu negocio",
+    "stats": {
+      "clients": "Total Clientes",
+      "available": "Autos Disponibles",
+      "sold": "Autos Vendidos"
+    },
+    "email": "Correo:"
+  },
+  "page-not-found": {
+    "title": "Página no encontrada",
+    "content": "La ruta <strong>{{ invalid_path }}</strong> es inválida.",
+    "go-home": "Ir a Inicio"
+  },
+  "footer": {
+    "rights": "Todos los derechos reservados.",
+    "powered-by": "Desarrollado con",
+    "and": "y"
+  },
+  "toolbar": {
+    "subtitle": "Soluciones de capital inteligentes para el mercado automotriz"
+  },
+  "layout": {
+    "section": {
+      "operations": "OPERACIONES"
+    },
+    "sensors": "Sensores ({{ active }} / {{ total }})",
+    "user": {
+      "placeholder": {
+        "name": "Juan Perez",
+        "role": "Super User · Samy"
+      },
+      "adminLabel": "Administrador"
+    }
+  },
+  "auth": {
+    "signIn": "Iniciar Sesión",
+    "signUp": "Registrarse",
+    "logout": "Cerrar sesión"
+  },
+  "iam": {
+    "common": {
+      "continue": "Continuar",
+      "back": "Volver"
+    },
+    "setup2fa": {
+      "step1": {
+        "title": "Activa la autenticación de dos factores",
+        "subtitle": "Necesitarás una app de autenticación instalada en tu teléfono."
+      },
+      "step2": {
+        "title": "Escanea el código QR",
+        "subtitle": "Abre tu app, toca \"Agregar cuenta\" y escanea este código.",
+        "info": "Si no puedes escanear el QR, puedes ingresar la clave manual en tu app.",
+        "qrAlt": "Código QR para configurar 2FA",
+        "manualKeyLabel": "Clave de configuración manual",
+        "copyKeyAria": "Copiar clave",
+        "btnScanned": "Ya escaneé el código"
+      },
+      "step3": {
+        "title": "Confirma el código generado",
+        "subtitle": "Ingresa el código de 6 dígitos de tu app para activar 2FA.",
+        "btnActivate": "Activar autenticación"
+      },
+      "step4": {
+        "title": "Autenticación de dos factores activada",
+        "subtitle": "Tu cuenta está protegida. Guarda estos códigos de respaldo en un lugar seguro.",
+        "recoveryCodesLabel": "Códigos de recuperación",
+        "btnCopy": "Copiar códigos"
+      }
+    },
+    "totp": {
+      "backToLogin": "Volver al inicio de sesión",
+      "title": "Verificación en dos pasos",
+      "subtitle": "Ingresa el código de 6 dígitos generado por tu app de autenticación.",
+      "timerText": "El código expira en",
+      "btnVerify": "Verificar código",
+      "notReceived": "¿No recibiste el código?",
+      "btnRequestNew": "Solicitar nuevo código",
+      "successTitle": "Identidad verificada",
+      "successSubtitle": "Autenticación completada. Redirigiendo al panel..."
+    }
+  },
+  "clients": {
+    "title": "Clientes registrados",
+    "subtitle": "Gestione el registro de los clientes interesados",
+    "register": "Registrar",
+    "table": {
+      "name": "Nombre",
+      "dni": "DNI",
+      "income": "Ingresos",
+      "occupation": "Ocupación",
+      "phone": "Teléfono",
+      "noData": "No se encontraron clientes registrados en el sistema.",
+      "actions": "Acciones",
+      "vehicle": "Vehículo",
+      "unassigned": "No asignado"
+    },
+    "actions": {
+      "edit": "Editar",
+      "delete": "Eliminar"
+    },
+    "form": {
+      "registerTitle": "Registrar Nuevo Cliente",
+      "editTitle": "Editar Cliente",
+      "save": "Guardar",
+      "vehicle": "Vehículo",
+      "subtitle": "Completa los datos del cliente interesado",
+      "cancel": "Cancelar",
+      "namePh": "Ej: Juan Pérez",
+      "occupationPh": "Ej: Ingeniero de Software",
+      "errors": {
+        "nameRequired": "El nombre es obligatorio",
+        "dni": "DNI inválido (8 a 12 dígitos)",
+        "income": "Ingresa un monto válido",
+        "occupation": "La ocupación es obligatoria",
+        "phone": "Teléfono inválido (9 a 15 dígitos)"
+      }
+    },
+    "dialog": {
+      "deleteTitle": "Eliminar Cliente",
+      "deleteConfirm": "¿Estás seguro de que deseas eliminar a {{ name }}?"
+    }
+  },
+  "vehicles": {
+    "title": "Catálogo de Vehículos",
+    "subtitle": "Seleccione el auto de su preferencia",
+    "register": "Registrar",
+    "filter": {
+      "model": "Filtrar por modelo",
+      "all": "Todos los modelos"
+    },
+    "catalog": {
+      "year": "Año",
+      "price": "Precio",
+      "viewDetails": "Ver detalles",
+      "noData": "No se encontraron vehículos disponibles en el catálogo."
+    },
+    "details": {
+      "techSpecs": "Ficha Técnica",
+      "code": "Código",
+      "brand": "Marca",
+      "model": "Modelo",
+      "transmission": "Transmisión",
+      "status": "Estado",
+      "company": "Compañía",
+      "ruc": "RUC"
+    },
+    "actions": {
+      "edit": "Editar",
+      "delete": "Eliminar"
+    },
+    "form": {
+      "registerTitle": "Registrar Nuevo Vehículo",
+      "editTitle": "Editar Vehículo",
+      "code": "Código (Ej: VH-001)",
+      "brand": "Marca",
+      "model": "Modelo",
+      "year": "Año",
+      "price": "Precio",
+      "transmission": "Transmisión",
+      "status": "Estado",
+      "company": "Empresa",
+      "taxId": "RUC de la empresa",
+      "imageUrl": "URL de la imagen",
+      "save": "Guardar",
+      "cancel": "Cancelar"
+    },
+    "dialog": {
+      "deleteTitle": "Eliminar Vehículo",
+      "deleteConfirm": "¿Estás seguro de que deseas eliminar el vehículo {{ model }}?"
+    }
+  },
+  "sdp": {
+    "common": {
+      "back": "Volver",
+      "continue": "Continuar",
+      "search": "Buscar...",
+      "currency": "Moneda",
+      "rateType": "Tipo de tasa",
+      "equivalentTea": "TEA equivalente",
+      "term": "Plazo",
+      "initialFee": "Cuota inicial",
+      "graceMonths": "Meses de gracia",
+      "graceType": "Tipo de gracia",
+      "financedCapital": "Capital financiado",
+      "newRecord": "Nuevo Registro"
+    },
+    "simulation": {
+      "contextTitle": "Contexto de la simulación",
+      "contextSubtitle": "Método francés vencido ordinario · 30 días/mes",
+      "vehiclePrice": "Precio del vehículo",
+      "termMonths": "Plazo (meses)",
+      "startDate": "Fecha de inicio",
+      "viewSchedule": "Ver cronograma"
+    },
+    "schedule": {
+      "viewReport": "Ver reporte"
+    },
+    "report": {
+      "clientData": "Datos del cliente",
+      "clientId": "ID Cliente",
+      "vehicleData": "Datos del vehículo",
+      "vehicleId": "ID Vehículo",
+      "price": "Precio",
+      "simulatedParams": "Parámetros simulados",
+      "enteredRate": "Tasa ingresada",
+      "termMonths": "meses",
+      "financialSummary": "Resumen financiero — norma transparencia SBS",
+      "totalInterest": "Total intereses",
+      "totalInsurance": "Total seguros",
+      "totalPostage": "Portes totales",
+      "ctc": "CTC",
+      "tcea": "TCEA",
+      "npvDebtor": "VAN (deudor)",
+      "irrMonthly": "TIR mensual",
+      "exportPdf": "Exportar PDF",
+      "exportExcel": "Exportar Excel"
+    },
+    "configuration": {
+      "clientVehicleData": "Datos del cliente y vehículo",
+      "clientDni": "DNI del cliente",
+      "vehicleCode": "Código del vehículo",
+      "client": "Cliente",
+      "vehicle": "Vehículo",
+      "mainConfig": "Configuración principal",
+      "rateTypeEffective": "Efectiva",
+      "rateTypeNominal": "Nominal",
+      "capitalization": "Capitalización",
+      "advancedConfig": "Configuración avanzada",
+      "monthlyCarInsurance": "Seguro vehicular mensual (%)",
+      "postageFee": "Portes / gastos de envío",
+      "adminFee": "Comisión de administración (%)",
+      "taxIgvItf": "Impuesto IGV/ITF (%)",
+      "sbsDisclaimer": "Estos valores aplican a la norma de transparencia del sistema financiero peruano (SBS).",
+      "vehicleNotFound": "Vehículo no encontrado"
+    },
+    "components": {
+      "scheduleTable": {
+        "partialGraceLegend": "Gracia parcial",
+        "totalGraceLegend": "Gracia total",
+        "month": "Mes",
+        "installment": "Cuota",
+        "interest": "Interés",
+        "amortization": "Amortización",
+        "insurance": "Seguro",
+        "postage": "Portes",
+        "totalBalance": "Saldo total",
+        "partial": "Parcial",
+        "total": "Total",
+        "emptyMessage": "Completa la simulación para generar el cronograma",
+        "initialBalance": "Saldo Inicial"
+      },
+      "metricSummary": {
+        "title": "Resumen"
+      },
+      "flowHeader": {
+        "title": "Flujo recomendado — crédito vehicular",
+        "ariaNav": "Pasos del flujo"
+      },
+      "financialIndicators": {
+        "title": "Indicadores financieros"
+      },
+      "gracePeriodInfo": {
+        "partialMessage": "Durante {{months}} mes(es) el cliente sólo paga intereses; el capital se amortiza desde el mes {{nextMonth}}.",
+        "totalMessage": "Durante {{months}} mes(es) no se paga ni capital ni interés; los intereses se capitalizan al saldo."
+      }
+    },
+    "flow": {
+      "steps": {
+        "configuration": "Configuración",
+        "simulation": "Simulación",
+        "schedule": "Cronograma",
+        "report": "Reporte"
+      }
+    }
+  },
+  "notifications": {
+    "title": "Notificaciones",
+    "clear": "Limpiar todo",
+    "empty": "No tienes notificaciones"
+  },
+  "profile": {
+    "title": "Perfil y preferencias",
+    "subtitle": "Administra tu información, foto y notificaciones",
+    "openTitle": "Ver perfil",
+    "account": {
+      "title": "Información de la cuenta",
+      "id": "ID",
+      "name": "Nombre",
+      "email": "Correo",
+      "dni": "DNI"
+    },
+    "photo": {
+      "change": "Cambiar foto",
+      "remove": "Quitar",
+      "hint": "JPG o PNG, máx. 2 MB",
+      "invalidType": "El archivo debe ser una imagen",
+      "tooLarge": "La imagen supera los 2 MB"
+    },
+    "prefs": {
+      "title": "Preferencias",
+      "displayName": "Nombre para mostrar",
+      "displayNamePh": "Cómo quieres que te llamemos",
+      "displayNameHint": "Se mostrará en el menú lateral y el panel",
+      "notifications": "Notificaciones",
+      "notificationsDesc": "Recibe avisos dentro de la aplicación",
+      "save": "Guardar preferencias"
+    },
+    "security": {
+      "title": "Seguridad",
+      "current": "Contraseña actual",
+      "new": "Nueva contraseña",
+      "newHint": "Mínimo 8 caracteres",
+      "confirm": "Confirmar contraseña",
+      "mismatch": "Las contraseñas no coinciden",
+      "update": "Actualizar contraseña"
+    },
+    "toast": {
+      "photoUpdatedTitle": "Foto actualizada",
+      "photoUpdatedMsg": "Tu foto de perfil se actualizó correctamente",
+      "photoRemovedTitle": "Foto eliminada",
+      "photoRemovedMsg": "Se quitó tu foto de perfil",
+      "prefsSavedTitle": "Preferencias guardadas",
+      "prefsSavedMsg": "Tus preferencias se guardaron correctamente",
+      "pwdUpdatedTitle": "Contraseña actualizada",
+      "pwdUpdatedMsg": "Tu contraseña se actualizó correctamente",
+      "pwdErrorTitle": "No se pudo actualizar",
+      "pwdCurrentRequired": "Ingresa tu contraseña actual",
+      "pwdTooShort": "La nueva contraseña debe tener al menos 8 caracteres",
+      "pwdMismatch": "La confirmación no coincide con la nueva contraseña"
+    }
+  },
+  "advisor": {
+    "badge": "IA",
+    "title": "Asesor del crédito",
+    "clear": "Limpiar",
+    "welcome": "Pregunta lo que quieras sobre este crédito. Te respondo usando las cifras reales de tu préstamo.",
+    "placeholder": "Escribe tu pregunta…",
+    "send": "Enviar",
+    "typing": "El asesor está escribiendo…",
+    "suggestions": {
+      "totalCost": "¿Cuánto pagaré en total por el crédito?",
+      "tcea": "¿Qué significa la TCEA de mi préstamo?",
+      "monthlyInstallment": "¿Cuánto es mi cuota mensual y qué incluye?",
+      "initialFee": "¿Qué pasa si aumento la cuota inicial?"
+    }
+  }
+}

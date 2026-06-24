@@ -1,0 +1,19 @@
+<div class="clients-container">
+  <header class="page-header">
+    <div class="header-text">
+      <h1>{{ 'clients.title' | translate }}</h1>
+      <p>{{ 'clients.subtitle' | translate }}</p>
+    </div>
+    <button mat-flat-button class="register-btn" (click)="openRegisterForm()">
+      {{ 'clients.register' | translate }}
+    </button>
+  </header>
+
+  <app-client-table
+    [clients]="clients()"
+    [vehicles]="vehicles()"
+    (edit)="openEditForm($event)"
+    (delete)="openDeleteConfirmation($event)"
+    (unlinkVehicle)="onUnlinkVehicle($event)">
+  </app-client-table>
+</div>

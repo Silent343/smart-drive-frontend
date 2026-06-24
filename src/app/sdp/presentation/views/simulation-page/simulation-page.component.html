@@ -1,0 +1,68 @@
+<div class="sim-page">
+  <app-flow-header activeStep="simulation" />
+
+  <!-- Loan parameters card -->
+  <div class="sdp-card sdp-mb">
+    <p class="sdp-card__title">{{ 'sdp.simulation.contextTitle' | translate }}</p>
+    <p class="sdp-card__sub">{{ 'sdp.simulation.contextSubtitle' | translate }}</p>
+
+    <div class="sdp-g3 sdp-mb">
+      <div class="sdp-field">
+        <label class="sdp-label">{{ 'sdp.simulation.vehiclePrice' | translate }}</label>
+        <input class="sdp-input sdp-input--readonly" [value]="fmt(vehiclePrice)" readonly />
+      </div>
+      <div class="sdp-field">
+        <label class="sdp-label">{{ 'sdp.common.initialFee' | translate }}</label>
+        <input class="sdp-input" type="number" [(ngModel)]="initialFee"
+               placeholder="0.00" min="0" />
+      </div>
+      <div class="sdp-field">
+        <label class="sdp-label">{{ 'sdp.simulation.termMonths' | translate }}</label>
+        <input class="sdp-input" type="number" [(ngModel)]="installments"
+               min="1" max="72" />
+      </div>
+    </div>
+
+    <div class="sdp-g2">
+      <div class="sdp-field">
+        <label class="sdp-label">{{ 'sdp.simulation.startDate' | translate }}</label>
+        <input class="sdp-input" type="date" [(ngModel)]="startDate" />
+      </div>
+      <div class="sdp-field">
+        <label class="sdp-label">{{ 'sdp.common.financedCapital' | translate }}</label>
+        <input class="sdp-input sdp-input--readonly" [value]="fmt(loanAmount)" readonly />
+      </div>
+    </div>
+
+    <button class="sdp-btn-outline" (click)="onSimulate()" style="margin-top: 10px">
+      calc
+    </button>
+  </div>
+
+  <!--
+    Two-column layout
+    Left  : AI advisor chat (sticks to content height)
+    Right : Summary card stacked above Financial Indicators
+  -->
+  <div class="sim-page__body">
+
+    <!-- LEFT — Advisor -->
+    <div class="sim-page__advisor-col">
+      <app-advisor-chat [loanId]="loanId()" />
+    </div>
+
+    <!-- RIGHT — Metrics stacked -->
+    <div class="sim-page__results-col">
+      <app-metric-summary-card [metrics]="metrics" />
+      <app-financial-indicators-card [indicators]="indicators" />
+    </div>
+
+  </div>
+
+  <div class="sdp-btn-row">
+    <button class="sdp-btn-outline" (click)="onBack()">← {{ 'sdp.common.back' | translate }}</button>
+    <button class="sdp-btn-primary" [disabled]="!currentLoan()" (click)="onContinue()">
+      {{ 'sdp.simulation.viewSchedule' | translate }} →
+    </button>
+  </div>
+</div>

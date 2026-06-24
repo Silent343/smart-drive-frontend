@@ -1,0 +1,114 @@
+/* --- GRILLA DE TARJETAS --- */
+.catalog-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 28px;
+}
+
+/* --- TARJETA INDIVIDUAL --- */
+.vehicle-card {
+  background: #ffffff;
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.04);
+  border: 1px solid rgba(11, 27, 61, 0.08);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  display: flex;
+  flex-direction: column;
+}
+
+.vehicle-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 12px 25px rgba(11, 27, 61, 0.1);
+}
+
+/* --- IMAGEN Y ETIQUETA --- */
+.card-image-wrapper {
+  height: 200px;
+  background-color: #e9ecef; /* Color de fondo si no hay imagen */
+  position: relative; /* Clave para poder superponer la etiqueta */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.card-image-wrapper img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.status-badge {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  background-color: #0b1b3d; /* Fondo Azul Marino */
+  color: #d4af37; /* Texto Dorado */
+  padding: 6px 14px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+}
+
+/* --- CONTENIDO DE LA TARJETA --- */
+.card-content {
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1; /* Permite que el botón siempre se vaya al fondo */
+}
+
+.vehicle-title {
+  color: #0b1b3d;
+  font-size: 20px;
+  font-weight: 700;
+  margin: 0 0 16px 0;
+}
+
+.vehicle-info, .vehicle-price {
+  color: #6c757d;
+  font-size: 15px;
+  margin: 0 0 8px 0;
+}
+
+.vehicle-price {
+  margin-bottom: 24px; /* Espacio antes del botón */
+}
+
+.vehicle-info strong, .vehicle-price strong {
+  color: #0b1b3d;
+  font-weight: 600;
+}
+
+/* Botón Ver Detalles */
+.details-btn {
+  margin-top: auto; /* Empuja el botón hacia abajo si hay espacio extra */
+  border: 1px solid rgba(11, 27, 61, 0.3) !important;
+  color: #0b1b3d !important;
+  border-radius: 20px !important;
+  width: 100%;
+  height: 40px !important;
+  font-weight: 600 !important;
+  transition: all 0.2s ease !important;
+}
+
+.details-btn:hover {
+  background-color: rgba(11, 27, 61, 0.04) !important;
+  border-color: #0b1b3d !important;
+}
+
+/* --- ESTADO VACÍO --- */
+.empty-state {
+  grid-column: 1 / -1;
+  text-align: center;
+  padding: 60px 20px;
+  background: #fff;
+  border-radius: 16px;
+  border: 1px dashed #ced4da;
+  color: #8c9199;
+  font-style: italic;
+}

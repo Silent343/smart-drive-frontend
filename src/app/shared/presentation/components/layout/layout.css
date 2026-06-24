@@ -1,0 +1,422 @@
+* {
+  box-sizing: border-box;
+  padding: 0;
+  margin: 0;
+}
+
+*::-webkit-scrollbar {
+  background: transparent;
+  width: 0;
+}
+
+/* ──────────────── SIDENAV ──────────────── */
+mat-sidenav {
+  width: 220px !important;
+  background-color: #1a1a2e !important;
+  border-right: none !important;
+  border-radius: 0 !important;
+  display: flex;
+  flex-direction: column;
+}
+
+.sidenav-header {
+  padding: 20px 16px 8px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  margin-bottom: 8px;
+}
+
+.sidenav-header {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  width: 100%;
+
+  img{
+    border-radius: 10px;
+    width: 70%;
+    margin-bottom: 10px;
+  }
+}
+
+.sidenav-section-label {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  color: rgba(255, 255, 255, 0.35);
+  padding: 8px 20px 4px;
+  text-transform: uppercase;
+}
+
+mat-nav-list {
+  flex: 1;
+}
+
+mat-list-item {
+  height: 48px !important;
+  border-radius: 0 !important;
+  color: rgba(255, 255, 255, 0.65) !important;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+mat-list-item img {
+  margin-right: 10px;
+}
+
+mat-list-item span {
+  font-size: 14px;
+  font-weight: 500;
+}
+
+mat-list-item mat-icon {
+  color: rgba(255, 255, 255, 0.65) !important;
+  font-size: 20px;
+  margin-right: 4px;
+}
+
+mat-list-item:hover {
+  background-color: rgba(255, 255, 255, 0.07) !important;
+}
+
+.active-option {
+  background-color: rgba(255, 255, 255, 0.12) !important;
+  border-left: 3px solid #00c2b2;
+}
+
+.active-option span {
+  color: #ffffff !important;
+  font-weight: 700;
+}
+
+.active-option mat-icon {
+  color: #ffffff !important;
+}
+
+/* Sidenav footer */
+.sidenav-footer {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 16px;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(0, 0, 0, 0.2);
+  position: absolute;
+  width: 100%;
+  bottom: 0;
+  box-sizing: border-box; /* Evita que el padding deforme el ancho absoluto */
+}
+
+.user-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: #00c2b2;
+  color: #fff;
+  font-size: 13px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.user-info {
+  flex: 1; /* Esto empuja al botón de logout hacia la derecha */
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.user-name {
+  font-size: 13px;
+  font-weight: 600;
+  color: #ffffff;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.user-role {
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.45);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* --- NUEVO: Estilos de limpieza para el botón --- */
+.logout-btn {
+  background: transparent !important;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0; /* Evita que el botón se achique en pantallas pequeñas */
+  width: 32px !important;
+  height: 32px !important;
+  padding: 0 !important;
+}
+
+.logout-btn mat-icon {
+  color: rgba(255, 255, 255, 0.5) !important;
+  font-size: 20px; /* Un tamaño un poquito más visible y estándar */
+  width: 20px;
+  height: 20px;
+  transition: color 0.2s ease;
+}
+
+.logout-btn:hover mat-icon {
+  color: #ff6b6b !important; /* Rojo suave al pasar el mouse */
+}
+
+/* ──────────────── TOOLBAR ──────────────── */
+.main-toolbar {
+  background: rgba(255, 255, 255, 0.53) !important;
+  border-bottom: 1px solid #e8e8e8 !important;
+  height: 64px !important;
+  padding: 0 20px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
+}
+
+.menu-btn mat-icon {
+  color: #333 !important;
+}
+
+.toolbar-title h1 {
+  font-size: 18px;
+  font-weight: 700;
+  color: #1a1a2e;
+  line-height: 1.2;
+}
+
+.toolbar-subtitle {
+  font-size: 12px;
+  color: #888;
+  font-weight: 400;
+}
+
+.mat-spacer {
+  flex: 1 1 auto;
+}
+
+.notif-btn mat-icon {
+  color: #444 !important;
+}
+
+/* ──────────────── CONTENT ──────────────── */
+mat-sidenav-content {
+  background: #f7f8fa !important;
+}
+
+.content {
+  min-height: calc(100vh - 64px);
+  padding: 24px;
+  max-width: 1520px;
+  margin: 0 auto;
+  font-size: 16px;
+}
+
+.totp-btn {
+  background: transparent !important;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 32px !important;
+  height: 32px !important;
+  padding: 0 !important;
+}
+
+.totp-btn mat-icon {
+  color: rgba(255, 255, 255, 0.5) !important;
+  font-size: 20px;
+  width: 20px;
+  height: 20px;
+  transition: color 0.2s ease;
+}
+
+.totp-btn:hover mat-icon {
+  color: #6366f1 !important;
+}
+
+/* ============================================================
+   User chip (clickable → profile) + photo avatar
+   ============================================================ */
+.user-chip {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex: 1;
+  min-width: 0;
+  background: transparent;
+  border: none;
+  padding: 4px 6px;
+  margin: -4px -6px;
+  border-radius: 10px;
+  cursor: pointer;
+  text-align: left;
+  transition: background 0.18s ease;
+}
+.user-chip:hover {
+  background: rgba(255, 255, 255, 0.06);
+}
+.user-avatar-img {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  object-fit: cover;
+  flex-shrink: 0;
+  border: 2px solid #d4af37;
+}
+
+/* ============================================================
+   Notifications bell + badge + dropdown panel
+   ============================================================ */
+.notif-wrapper {
+  position: relative;
+  display: inline-flex;
+}
+.notif-badge {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  min-width: 16px;
+  height: 16px;
+  padding: 0 4px;
+  border-radius: 999px;
+  background: #dc2626;
+  color: #fff;
+  font-size: 10px;
+  font-weight: 700;
+  line-height: 16px;
+  text-align: center;
+  box-shadow: 0 0 0 2px #ffffff;
+}
+.notif-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  background: transparent;
+}
+.notif-panel {
+  position: absolute;
+  top: calc(100% + 10px);
+  right: 0;
+  width: 360px;
+  max-width: 90vw;
+  background: #ffffff;
+  border-radius: 16px;
+  box-shadow: 0 18px 50px rgba(11, 27, 61, 0.22);
+  border: 1px solid #eef1f6;
+  z-index: 1001;
+  overflow: hidden;
+  animation: notif-pop 0.2s ease;
+}
+@keyframes notif-pop {
+  from { opacity: 0; transform: translateY(-6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.notif-panel__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 16px;
+  border-bottom: 1px solid #f1f3f5;
+}
+.notif-panel__title {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #0b1b3d;
+}
+.notif-panel__clear {
+  border: none;
+  background: transparent;
+  color: #64748b;
+  font-size: 0.78rem;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: 8px;
+  transition: background 0.15s, color 0.15s;
+}
+.notif-panel__clear:hover { background: #f1f5f9; color: #dc2626; }
+.notif-panel__list {
+  max-height: 380px;
+  overflow-y: auto;
+}
+.notif-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 12px 16px;
+  border-bottom: 1px solid #f6f7f9;
+  transition: background 0.15s;
+}
+.notif-item:hover { background: #fafbfc; }
+.notif-item__icon {
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 9px;
+  flex-shrink: 0;
+  background: #f1f5f9;
+  color: #0b1b3d;
+}
+.notif-item--success .notif-item__icon { background: #dcfce7; color: #16a34a; }
+.notif-item--info    .notif-item__icon { background: #dbeafe; color: #2563eb; }
+.notif-item--warning .notif-item__icon { background: #fef3c7; color: #b45309; }
+.notif-item--error   .notif-item__icon { background: #fee2e2; color: #dc2626; }
+.notif-item__icon mat-icon { font-size: 20px; width: 20px; height: 20px; }
+.notif-item__body { flex: 1; min-width: 0; }
+.notif-item__title {
+  margin: 0 0 2px;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #0b1b3d;
+}
+.notif-item__message {
+  margin: 0;
+  font-size: 0.78rem;
+  line-height: 1.35;
+  color: #475569;
+  white-space: pre-line;
+}
+.notif-item__time {
+  display: block;
+  margin-top: 4px;
+  font-size: 0.7rem;
+  color: #94a3b8;
+}
+.notif-item__remove {
+  border: none;
+  background: transparent;
+  color: #cbd5e1;
+  cursor: pointer;
+  display: grid;
+  place-items: center;
+  padding: 2px;
+  border-radius: 6px;
+  transition: background 0.15s, color 0.15s;
+}
+.notif-item__remove:hover { background: #f1f5f9; color: #64748b; }
+.notif-item__remove mat-icon { font-size: 16px; width: 16px; height: 16px; }
+.notif-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 36px 16px;
+  color: #94a3b8;
+}
+.notif-empty mat-icon { font-size: 34px; width: 34px; height: 34px; }
+.notif-empty p { margin: 0; font-size: 0.82rem; }

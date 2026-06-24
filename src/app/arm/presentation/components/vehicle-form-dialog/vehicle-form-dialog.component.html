@@ -1,0 +1,130 @@
+<h2 mat-dialog-title class="vfd-title">
+  <div class="vfd-title__icon">
+    <mat-icon>directions_car</mat-icon>
+  </div>
+  <div class="vfd-title__text">
+    <span class="vfd-title__main">
+      {{ (isEditMode ? 'vehicles.form.editTitle' : 'vehicles.form.registerTitle') | translate }}
+    </span>
+    <span class="vfd-title__sub">Compra Inteligente · ARM</span>
+  </div>
+</h2>
+
+<form [formGroup]="vehicleForm" (ngSubmit)="onSubmit()">
+  <mat-dialog-content class="vfd-content">
+
+    <!-- Row 1: Código + Año -->
+    <div class="vfd-row vfd-row--2col">
+      <div class="vfd-field">
+        <label class="vfd-label">{{ 'vehicles.form.code' | translate }}</label>
+        <input formControlName="code"
+               type="text"
+               class="vfd-input"
+               placeholder="Ej: VH-001" />
+      </div>
+      <div class="vfd-field">
+        <label class="vfd-label">{{ 'vehicles.form.year' | translate }}</label>
+        <input formControlName="year"
+               type="number"
+               class="vfd-input" />
+      </div>
+    </div>
+
+    <!-- Row 2: Marca + Modelo -->
+    <div class="vfd-row vfd-row--2col">
+      <div class="vfd-field">
+        <label class="vfd-label">{{ 'vehicles.form.brand' | translate }}</label>
+        <input formControlName="brand"
+               type="text"
+               class="vfd-input"
+               placeholder="Ej: Toyota" />
+      </div>
+      <div class="vfd-field">
+        <label class="vfd-label">{{ 'vehicles.form.model' | translate }}</label>
+        <input formControlName="model"
+               type="text"
+               class="vfd-input"
+               placeholder="Ej: Corolla" />
+      </div>
+    </div>
+
+    <!-- Row 3: Precio (full width con prefijo moneda) -->
+    <div class="vfd-row">
+      <div class="vfd-field">
+        <label class="vfd-label">{{ 'vehicles.form.price' | translate }}</label>
+        <div class="vfd-input-prefix">
+          <span class="vfd-input-prefix__symbol">S/</span>
+          <input formControlName="price"
+                 type="number"
+                 class="vfd-input vfd-input--prefixed"
+                 placeholder="0.00" />
+        </div>
+      </div>
+    </div>
+
+    <!-- Row 4: Transmisión + Estado -->
+    <div class="vfd-row vfd-row--2col">
+      <div class="vfd-field">
+        <label class="vfd-label">{{ 'vehicles.form.transmission' | translate }}</label>
+        <select formControlName="transmission" class="vfd-input vfd-select">
+          <option value="Automática">Automática</option>
+          <option value="Manual">Manual</option>
+        </select>
+      </div>
+      <div class="vfd-field">
+        <label class="vfd-label">{{ 'vehicles.form.status' | translate }}</label>
+        <select formControlName="status" class="vfd-input vfd-select">
+          <option value="Disponible">Disponible</option>
+          <option value="Vendido">Vendido</option>
+          <option value="Reservado">Reservado</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Row 5: Empresa -->
+    <div class="vfd-row">
+      <div class="vfd-field">
+        <label class="vfd-label">{{ 'vehicles.form.company' | translate }}</label>
+        <input formControlName="company"
+               type="text"
+               class="vfd-input" />
+      </div>
+    </div>
+
+    <!-- Row 6: URL imagen -->
+    <div class="vfd-row">
+      <div class="vfd-field">
+        <label class="vfd-label">
+          {{ 'vehicles.form.imageUrl' | translate }}
+          <span class="vfd-label__optional">(opcional)</span>
+        </label>
+        <div class="vfd-input-prefix">
+          <span class="vfd-input-prefix__symbol">
+            <mat-icon class="vfd-input-prefix__icon">link</mat-icon>
+          </span>
+          <input formControlName="imageUrl"
+                 type="text"
+                 class="vfd-input vfd-input--prefixed"
+                 placeholder="https://..." />
+        </div>
+      </div>
+    </div>
+
+  </mat-dialog-content>
+
+  <mat-dialog-actions align="end" class="vfd-actions">
+    <button mat-button
+            type="button"
+            class="vfd-btn vfd-btn--cancel"
+            [mat-dialog-close]="null">
+      {{ 'vehicles.form.cancel' | translate }}
+    </button>
+    <button mat-flat-button
+            type="submit"
+            class="vfd-btn vfd-btn--save"
+            [disabled]="vehicleForm.invalid">
+      <mat-icon>save</mat-icon>
+      {{ 'vehicles.form.save' | translate }}
+    </button>
+  </mat-dialog-actions>
+</form>

@@ -1,0 +1,18 @@
+<div class="sch-page">
+  <app-flow-header activeStep="schedule" />
+
+  <div class="sch-page__meta sdp-card sdp-mb">
+    <span class="sch-page__meta-text">{{ metaText }}</span>
+  </div>
+
+  <app-schedule-table
+    [rows]="schedule()"
+    [currency]="currency" />
+
+  <div class="sdp-btn-row">
+    <button class="sdp-btn-outline" (click)="onBack()">← {{ 'sdp.common.back' | translate }}</button>
+    <button class="sdp-btn-primary" [disabled]="schedule().length === 0" (click)="onContinue()">
+      {{ 'sdp.schedule.viewReport' | translate }} →
+    </button>
+  </div>
+</div>

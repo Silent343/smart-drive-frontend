@@ -1,0 +1,150 @@
+<div class="rp-page">
+  <app-flow-header activeStep="report" />
+
+  <div class="rp-page__grid2 sdp-mb">
+    <div class="rp-section">
+      <p class="rp-section__title">{{ 'sdp.report.clientData' | translate }}</p>
+      <div class="rp-section__row">
+        <span class="rp-section__k">{{ 'sdp.report.clientId' | translate }}</span>
+        <span class="rp-section__v">{{ loan?.clientId || '—' }}</span>
+      </div>
+    </div>
+    <div class="rp-section">
+      <p class="rp-section__title">{{ 'sdp.report.vehicleData' | translate }}</p>
+      <div class="rp-section__row">
+        <span class="rp-section__k">{{ 'sdp.report.vehicleId' | translate }}</span>
+        <span class="rp-section__v">{{ loan?.carId || '—' }}</span>
+      </div>
+      <div class="rp-section__row">
+        <span class="rp-section__k">{{ 'sdp.report.price' | translate }}</span>
+        <span class="rp-section__v">{{ fmt(loan?.vehiclePrice) }}</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="rp-section sdp-mb">
+    <p class="rp-section__title">{{ 'sdp.report.simulatedParams' | translate }}</p>
+    <div class="rp-page__grid2">
+      <div>
+        <div class="rp-section__row">
+          <span class="rp-section__k">{{ 'sdp.common.currency' | translate }}</span>
+          <span class="rp-section__v">{{ config?.currency || '—' }}</span>
+        </div>
+        <div class="rp-section__row">
+          <span class="rp-section__k">{{ 'sdp.common.rateType' | translate }}</span>
+          <span class="rp-section__v">{{ config?.interestRateType || '—' }}</span>
+        </div>
+        <div class="rp-section__row">
+          <span class="rp-section__k">{{ 'sdp.report.enteredRate' | translate }}</span>
+          <span class="rp-section__v">{{ config?.annualRate }}%</span>
+        </div>
+        <div class="rp-section__row">
+          <span class="rp-section__k">{{ 'sdp.common.equivalentTea' | translate }}</span>
+          <span class="rp-section__v">{{ config ? (config.effectiveAnnualRate | number:'1.4-4') + '%' : '—' }}</span>
+        </div>
+      </div>
+      <div>
+        <div class="rp-section__row">
+          <span class="rp-section__k">{{ 'sdp.common.term' | translate }}</span>
+          <span class="rp-section__v">{{ loan?.installmentsQty }} {{ 'sdp.report.termMonths' | translate }}</span>
+        </div>
+        <div class="rp-section__row">
+          <span class="rp-section__k">{{ 'sdp.common.initialFee' | translate }}</span>
+          <span class="rp-section__v">{{ fmt(loan?.initialFee) }}</span>
+        </div>
+        <div class="rp-section__row">
+          <span class="rp-section__k">{{ 'sdp.common.graceMonths' | translate }}</span>
+          <span class="rp-section__v">{{ config?.gracePeriodMonths }}</span>
+        </div>
+        <div class="rp-section__row">
+          <span class="rp-section__k">{{ 'sdp.common.graceType' | translate }}</span>
+          <span class="rp-section__v">{{ config?.gracePeriodType || '—' }}</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="rp-section sdp-mb">
+    <p class="rp-section__title">{{ 'sdp.report.financialSummary' | translate }}</p>
+    <div class="rp-page__grid2">
+      <div>
+        <div class="rp-section__row">
+          <span class="rp-section__k">{{ 'sdp.common.financedCapital' | translate }}</span>
+          <span class="rp-section__v">{{ fmt(loan?.loanAmount) }}</span>
+        </div>
+        <div class="rp-section__row">
+          <span class="rp-section__k">{{ 'sdp.report.totalInterest' | translate }}</span>
+          <span class="rp-section__v">{{ fmt(loan?.totalInterest) }}</span>
+        </div>
+        <div class="rp-section__row">
+          <span class="rp-section__k">{{ 'sdp.report.totalInsurance' | translate }}</span>
+          <span class="rp-section__v">{{ fmt(loan?.totalInsurance) }}</span>
+        </div>
+        <div class="rp-section__row">
+          <span class="rp-section__k">{{ 'sdp.report.totalPostage' | translate }}</span>
+          <span class="rp-section__v">{{ fmt(loan?.totalPostage) }}</span>
+        </div>
+      </div>
+      <div>
+        <div class="rp-section__row">
+          <span class="rp-section__k">{{ 'sdp.report.ctc' | translate }}</span>
+          <span class="rp-section__v rp-section__v--gold">{{ fmt(loan?.ctc) }}</span>
+        </div>
+        <div class="rp-section__row">
+          <span class="rp-section__k">{{ 'sdp.report.tcea' | translate }}</span>
+          <span class="rp-section__v rp-section__v--gold">{{ fmtPct(loan?.tcea, 4) }}</span>
+        </div>
+        <div class="rp-section__row">
+          <span class="rp-section__k">{{ 'sdp.report.npvDebtor' | translate }}</span>
+          <span class="rp-section__v">{{ fmt(loan?.npvDebtor) }}</span>
+        </div>
+        <div class="rp-section__row">
+          <span class="rp-section__k">{{ 'sdp.report.irrMonthly' | translate }}</span>
+          <span class="rp-section__v">{{ fmtPct(loan?.irrDebtor, 4) }}</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <app-schedule-table
+    [rows]="schedule"
+    [currency]="currency" />
+
+  <!-- Success message -->
+  <div class="sdp-info-box sdp-mb" *ngIf="confirmSuccess">
+  <span class="sdp-info-box__text" style="color: #2e7d32; font-weight: 600;">
+    ✓ Credit confirmed. The vehicle has been successfully linked to the client.
+    You can start a new flow from Configuration.
+  </span>
+  </div>
+
+  <!-- Error message -->
+  <div class="sdp-info-box sdp-mb" *ngIf="confirmError">
+  <span class="sdp-info-box__text" style="color: #c62828;">
+    ✗ {{ confirmError }}
+  </span>
+  </div>
+
+  <div class="sdp-btn-row" style="justify-content: space-between;">
+    <button class="sdp-btn-outline" (click)="onBack()">
+      ← {{ 'sdp.common.back' | translate }}
+    </button>
+
+    <div style="display: flex; gap: 0.75rem;">
+      <button class="sdp-btn-outline" (click)="onExport()">
+        ↓ {{ 'sdp.report.exportPdf' | translate }}
+      </button>
+
+      <button class="sdp-btn-outline" (click)="onExportExcel()">
+        ↓ {{ 'sdp.report.exportExcel' | translate }}
+      </button>
+
+      <button
+        class="sdp-btn-primary"
+        (click)="onConfirm()"
+        [disabled]="isConfirming || confirmSuccess">
+        {{ isConfirming ? 'Confirming...' : confirmSuccess ? '✓ Confirmed' : 'Confirm credit' }}
+      </button>
+    </div>
+  </div>
+</div>

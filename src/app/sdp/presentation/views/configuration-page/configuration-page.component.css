@@ -1,0 +1,83 @@
+
+/* ============================================================
+   Autocomplete de vehiculo (codigo + imagen)
+   ============================================================ */
+.sdp-field--autocomplete {
+  position: relative;
+}
+.sdp-ac-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 40;
+  background: transparent;
+}
+.sdp-ac-list {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  right: 0;
+  z-index: 41;
+  margin: 0;
+  padding: 6px;
+  list-style: none;
+  max-height: 280px;
+  overflow-y: auto;
+  background: #ffffff;
+  border: 1px solid #e6eaf0;
+  border-radius: 12px;
+  box-shadow: 0 16px 40px rgba(11, 27, 61, 0.18);
+}
+.sdp-ac-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 10px;
+  border-radius: 9px;
+  cursor: pointer;
+  transition: background 0.14s ease;
+}
+.sdp-ac-item:hover {
+  background: #f4f7fb;
+}
+.sdp-ac-thumb {
+  width: 52px;
+  height: 40px;
+  border-radius: 8px;
+  overflow: hidden;
+  flex-shrink: 0;
+  background: #eef2f7;
+  display: grid;
+  place-items: center;
+}
+.sdp-ac-thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.sdp-ac-thumb__ph {
+  font-size: 20px;
+}
+.sdp-ac-text {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+.sdp-ac-code {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #0b1b3d;
+}
+.sdp-ac-name {
+  font-size: 0.76rem;
+  color: #64748b;
+  text-transform: capitalize;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.sdp-ac-empty {
+  padding: 14px 10px;
+  text-align: center;
+  color: #94a3b8;
+  font-size: 0.82rem;
+}

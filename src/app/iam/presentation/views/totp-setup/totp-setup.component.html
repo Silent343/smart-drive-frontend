@@ -1,0 +1,105 @@
+<div class="setup-container">
+
+  <!-- Botón flotante para regresar al dashboard -->
+  <button class="back-home-btn" routerLink="/home" title="Volver al inicio">
+    <mat-icon>arrow_back</mat-icon>
+    <span>Volver al inicio</span>
+  </button>
+
+  <div class="setup-card">
+
+    <div class="step-indicator">
+      <div *ngFor="let s of [1,2,3]; let i = index">
+        <div class="step-dot"
+             [class.active]="currentStep === s"
+             [class.done]="currentStep > s">
+          <mat-icon *ngIf="currentStep > s">check</mat-icon>
+          <span *ngIf="currentStep <= s">{{ s }}</span>
+        </div>
+        <div *ngIf="i < 2" class="step-line" [class.done]="currentStep > s"></div>
+      </div>
+    </div>
+
+    <div *ngIf="currentStep === 1">
+      <h2>{{ 'iam.setup2fa.step1.title' | translate }}</h2>
+      <p class="subtitle">{{ 'iam.setup2fa.step1.subtitle' | translate }}</p>
+      <div class="app-list">
+        <div class="app-row" *ngFor="let app of authApps">
+          <div class="app-badge">{{ app.icon }}</div>
+          <div>
+            <p class="app-name">{{ app.name }}</p>
+            <p class="app-desc">{{ app.desc }}</p>
+          </div>
+        </div>
+      </div>
+      <button mat-flat-button class="btn-primary" (click)="nextStep()">{{ 'iam.common.continue' | translate }}</button>
+    </div>
+
+    <div *ngIf="currentStep === 2">
+      <h2>{{ 'iam.setup2fa.step2.title' | translate }}</h2>
+      <p class="subtitle">{{ 'iam.setup2fa.step2.subtitle' | translate }}</p>
+      <div class="info-banner">
+        <mat-icon class="info-icon">info</mat-icon>
+        <span>{{ 'iam.setup2fa.step2.info' | translate }}</span>
+      </div>
+      <div class="qr-container">
+        <div class="qr-frame">
+          <img [src]="qrCodeSafe()" [alt]="'iam.setup2fa.step2.qrAlt' | translate" />
+        </div>
+        <div class="secret-box">
+          <p class="secret-label">{{ 'iam.setup2fa.step2.manualKeyLabel' | translate }}</p>
+          <div class="secret-key">
+            <span class="secret-value">{{ secretFormatted }}</span>
+            <button mat-icon-button (click)="copySecret()" [attr.aria-label]="'iam.setup2fa.step2.copyKeyAria' | translate">
+              <mat-icon>content_copy</mat-icon>
+            </button>
+          </div>
+        </div>
+      </div>
+      <button mat-flat-button class="btn-primary" (click)="nextStep()">{{ 'iam.setup2fa.step2.btnScanned' | translate }}</button>
+      <button mat-stroked-button class="btn-ghost" (click)="prevStep()">{{ 'iam.common.back' | translate }}</button>
+    </div>
+
+    <div *ngIf="currentStep === 3">
+      <h2>{{ 'iam.setup2fa.step3.title' | translate }}</h2>
+      <p class="subtitle">{{ 'iam.setup2fa.step3.subtitle' | translate }}</p>
+      <div class="digits-wrap" (click)="hiddenInput.focus()">
+        <input #hiddenInput class="hidden-input"
+               type="text" inputmode="numeric"
+               maxlength="6" autocomplete="one-time-code"
+               (input)="onInput($event)" />
+        <div class="digits-row">
+          <div *ngFor="let i of digitIndices" class="digit-box"
+               [class.active]="currentLength === i"
+               [class.filled]="currentLength > i">
+            <span *ngIf="digits[i]">{{ digits[i] }}</span>
+            <span *ngIf="currentLength === i" class="cursor"></span>
+          </div>
+        </div>
+      </div>
+      <p class="error-msg" *ngIf="errorMsg">{{ errorMsg }}</p>
+      <button mat-flat-button class="btn-primary" [disabled]="currentLength < 6" (click)="confirm()">
+        {{ 'iam.setup2fa.step3.btnActivate' | translate }}
+      </button>
+      <button mat-stroked-button class="btn-ghost" (click)="prevStep()">{{ 'iam.common.back' | translate }}</button>
+    </div>
+
+    <div *ngIf="currentStep === 4" class="done-state">
+      <div class="done-circle">
+        <mat-icon>shield</mat-icon>
+      </div>
+      <h2>{{ 'iam.setup2fa.step4.title' | translate }}</h2>
+      <p class="subtitle">{{ 'iam.setup2fa.step4.subtitle' | translate }}</p>
+      <div class="recovery-box">
+        <p class="secret-label">{{ 'iam.setup2fa.step4.recoveryCodesLabel' | translate }}</p>
+        <div class="recovery-grid">
+          <code *ngFor="let code of recoveryCodes">{{ code }}</code>
+        </div>
+      </div>
+      <button mat-stroked-button class="btn-ghost" (click)="copyRecovery()">
+        <mat-icon>content_copy</mat-icon> {{ 'iam.setup2fa.step4.btnCopy' | translate }}
+      </button>
+    </div>
+
+  </div>
+</div>

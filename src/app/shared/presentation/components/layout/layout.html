@@ -1,0 +1,131 @@
+@if (showShell()) {
+  <mat-sidenav-container [ngClass]="{ 'sidenav-open': isSidenavOpen, 'sidenav-closed': !isSidenavOpen }">
+    <mat-sidenav #sidenav opened>
+      <div class="sidenav-header">
+        <img class="logo-smart" src="/assets/sdf.png" alt="Logo.smart" />
+      </div>
+
+      <div class="sidenav-section-label">{{ 'layout.section.operations' | translate }}</div>
+
+      <mat-nav-list>
+        @for (option of visibleOptions(); track option.path) {
+          <mat-list-item
+            (click)="setActiveOption(option.title); sidenav.mode === 'over' && sidenav.toggle()"
+            [routerLink]="option.path"
+            routerLinkActive="active-option"
+            [ngClass]="{ 'active-option': activeOption() === option.title }">
+
+            @if (option.icon.startsWith('http')) {
+              <img [src]="option.icon" alt="icon" width="20px" height="20px" />
+            } @else {
+              <mat-icon matListItemIcon>{{ option.icon }}</mat-icon>
+            }
+
+            <span>{{ option.title | translate }}</span>
+          </mat-list-item>
+        }
+      </mat-nav-list>
+
+      <div class="sidenav-footer">
+        <button class="user-chip" (click)="navigateToProfile()" title="{{ 'profile.openTitle' | translate }}">
+          @if (avatarPhoto(); as photo) {
+            <img class="user-avatar-img" [src]="photo" alt="avatar" />
+          } @else {
+            <div class="user-avatar">{{ displayName().charAt(0) | uppercase }}</div>
+          }
+
+          <div class="user-info">
+            <span class="user-name">{{ displayName() }}</span>
+            <span class="user-role">{{ 'layout.user.adminLabel' | translate }}</span>
+          </div>
+        </button>
+
+        <button mat-icon-button class="totp-btn" title="Activar 2FA (TOTP)"
+                (click)="navigateToTotpSetup()">
+          <mat-icon>security</mat-icon>
+        </button>
+
+        <button mat-icon-button class="logout-btn" title="Cerrar sesión" (click)="performSignOut()">
+          <mat-icon>logout</mat-icon>
+        </button>
+      </div>
+    </mat-sidenav>
+
+    <mat-sidenav-content>
+      <mat-toolbar class="main-toolbar">
+        <button mat-icon-button class="menu-btn" (click)="toggleSidenav()">
+          @if (sidenav.opened) {
+            <mat-icon>close</mat-icon>
+          } @else {
+            <mat-icon>menu</mat-icon>
+          }
+        </button>
+
+        <div class="toolbar-title">
+          <h1>{{ activeOption() | translate }}</h1>
+          <span class="toolbar-subtitle">{{ 'toolbar.subtitle' | translate }}</span>
+        </div>
+
+        <span class="mat-spacer"></span>
+
+        <div class="notif-wrapper">
+          <button mat-icon-button class="notif-btn" (click)="toggleNotifications()"
+                  title="{{ 'notifications.title' | translate }}">
+            <mat-icon>notifications</mat-icon>
+            @if (unreadCount() > 0) {
+              <span class="notif-badge">{{ unreadCount() > 9 ? '9+' : unreadCount() }}</span>
+            }
+          </button>
+
+          @if (notifOpen()) {
+            <div class="notif-backdrop" (click)="closeNotifications()"></div>
+            <div class="notif-panel">
+              <div class="notif-panel__header">
+                <span class="notif-panel__title">{{ 'notifications.title' | translate }}</span>
+                @if (notificationList().length > 0) {
+                  <button class="notif-panel__clear" (click)="clearNotifications()">
+                    {{ 'notifications.clear' | translate }}
+                  </button>
+                }
+              </div>
+
+              <div class="notif-panel__list">
+                @for (n of notificationList(); track n.id) {
+                  <div class="notif-item notif-item--{{ n.type }}">
+                    <div class="notif-item__icon">
+                      <mat-icon>{{ n.icon }}</mat-icon>
+                    </div>
+                    <div class="notif-item__body">
+                      <p class="notif-item__title">{{ n.title }}</p>
+                      <p class="notif-item__message">{{ n.message }}</p>
+                      <span class="notif-item__time">{{ relativeTime(n.createdAt) }}</span>
+                    </div>
+                    <button class="notif-item__remove" (click)="removeNotification(n.id, $event)" aria-label="Eliminar">
+                      <mat-icon>close</mat-icon>
+                    </button>
+                  </div>
+                } @empty {
+                  <div class="notif-empty">
+                    <mat-icon>notifications_off</mat-icon>
+                    <p>{{ 'notifications.empty' | translate }}</p>
+                  </div>
+                }
+              </div>
+            </div>
+          }
+        </div>
+
+        <app-language-switcher></app-language-switcher>
+      </mat-toolbar>
+
+      <div class="content">
+        <router-outlet></router-outlet>
+      </div>
+    </mat-sidenav-content>
+  </mat-sidenav-container>
+
+  <app-toast-host></app-toast-host>
+} @else {
+  <router-outlet></router-outlet>
+  <app-toast-host></app-toast-host>
+}

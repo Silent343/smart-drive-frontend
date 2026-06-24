@@ -1,0 +1,66 @@
+<div class="login-page">
+  <div class="login-card">
+    <div class="header">
+      <img src="/assets/smartFinance.png" alt="SmartDrive Logo" class="logo-img" />
+      <h2>SmartDrive</h2>
+      <p>Access to the financial system</p>
+    </div>
+
+    <form [formGroup]="signInForm" (ngSubmit)="performSignIn()">
+
+      <div class="form-group">
+        <label>Email</label>
+        <div class="input-wrapper">
+          <span class="input-icon">
+            <mat-icon>alternate_email</mat-icon>
+          </span>
+          <input
+            matInput
+            formControlName="email"
+            placeholder="Enter your email"
+            type="email"
+            class="custom-input"
+          />
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>Password</label>
+        <div class="input-wrapper">
+          <span class="input-icon">
+            <mat-icon>lock_outline</mat-icon>
+          </span>
+          <input
+            matInput
+            formControlName="password"
+            [type]="showPassword ? 'text' : 'password'"
+            placeholder="Enter your password"
+            class="custom-input"
+          />
+          <span class="input-icon-right" (click)="togglePassword()">
+            <mat-icon>{{ showPassword ? 'visibility_off' : 'visibility' }}</mat-icon>
+          </span>
+        </div>
+      </div>
+
+      <div class="forgot-row">
+        <a href="#" class="forgot-link">Forgot your password?</a>
+      </div>
+
+      <button
+        mat-flat-button
+        class="submit-btn"
+        type="submit"
+        [disabled]="signInForm.invalid"
+      >
+        SIGN IN
+      </button>
+
+    </form>
+
+    <div class="footer-link">
+      <span>Don't have an account?</span>
+      <a routerLink="/iam/sign-up" class="signup-link">Sign up</a>
+    </div>
+  </div>
+</div>

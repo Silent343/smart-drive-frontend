@@ -1,0 +1,94 @@
+.clients-container {
+  padding: 32px;
+  background-color: #f8f9fa;
+  min-height: 100vh;
+}
+
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 30px;
+}
+
+.header-text h1 {
+  font-size: 28px;
+  font-weight: 700;
+  color: #0b1b3d; /* Navy Blue */
+  margin: 0;
+}
+
+.header-text p {
+  color: #6c757d;
+  margin-top: 5px;
+}
+
+.register-btn {
+  background-color: #d4af37 !important; /* Gold Champagne */
+  color: #0b1b3d !important;
+  font-weight: 600;
+  border-radius: 25px !important;
+  padding: 8px 24px !important;
+}
+
+/* Tabla Estilizada */
+.table-card {
+  background: #ffffff;
+  border-radius: 20px;
+  overflow: hidden;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+}
+
+.custom-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.custom-table thead {
+  background-color: #9ca3af; /* Gris de tu mockup */
+}
+
+.custom-table th {
+  padding: 18px;
+  text-align: left;
+  color: #333;
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.custom-table td {
+  padding: 16px 18px;
+  border-bottom: 1px solid #f1f3f5;
+  color: #495057;
+  font-size: 14px;
+}
+
+.actions-column {
+  text-align: center !important;
+}
+
+.actions-cell {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+}
+
+/* Botones de Acción */
+.edit-btn {
+  background-color: #e9ecef !important;
+  color: #495057 !important;
+  border-radius: 18px !important;
+  font-size: 12px !important;
+}
+
+.delete-btn {
+  background-color: #ffe3e3 !important;
+  color: #ff6b6b !important;
+  border-radius: 18px !important;
+  font-size: 12px !important;
+}
+
+.delete-btn:hover {
+  background-color: #ff6b6b !important;
+  color: #fff !important;
+}

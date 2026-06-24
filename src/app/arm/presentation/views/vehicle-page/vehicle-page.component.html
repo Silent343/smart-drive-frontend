@@ -1,0 +1,40 @@
+<div class="vehicles-page-container">
+
+  @if (selectedVehicle()) {
+    <app-vehicle-details
+      [vehicle]="selectedVehicle()!"
+      (back)="onBackToCatalog()"
+      (edit)="onEdit($event)"
+      (delete)="onDelete($event)">
+    </app-vehicle-details>
+
+  } @else {
+    <header class="page-header">
+      <div class="header-text">
+        <h1>{{ 'vehicles.title' | translate }}</h1>
+        <p>{{ 'vehicles.subtitle' | translate }}</p>
+      </div>
+
+      <div class="header-tools">
+        <div class="filter-wrapper">
+          <label>{{ 'vehicles.filter.model' | translate }}</label>
+          <select class="custom-select" (change)="onFilterChange($event)">
+            <option value="">{{ 'vehicles.filter.all' | translate }}</option>
+
+            @for (model of uniqueModels(); track model) {
+              <option [value]="model">{{ model }}</option>
+            }
+          </select>
+        </div>
+        <button mat-flat-button class="register-btn" (click)="openRegisterForm()">
+          {{ 'vehicles.register' | translate }}
+        </button>
+      </div>
+    </header>
+
+    <app-vehicles-catalog
+      [vehicles]="filteredVehicles()"
+      (viewDetails)="onViewDetails($event)">
+    </app-vehicles-catalog>
+  }
+</div>

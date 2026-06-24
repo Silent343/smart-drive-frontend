@@ -1,0 +1,90 @@
+<div class="home-container">
+  <h1 class="welcome-title">{{ 'home.welcome' | translate }}</h1>
+
+  <div class="dashboard-grid">
+    <div class="main-content-column">
+
+      @if (currentUser(); as user) {
+        <div class="profile-summary-card">
+          <div class="user-profile-meta">
+            <div class="profile-avatar">
+              @if (avatarPhoto(); as photo) {
+                <img [src]="photo" alt="Profile" />
+              } @else {
+                <img src="/assets/user_default.jpeg" alt="Profile" />
+              }
+            </div>
+            <div class="profile-details">
+              <span class="serial-code">ID #{{ userId() || '—' }}</span>
+
+              <h2 class="client-name">{{ user.fullName }}</h2>
+
+              <p class="client-info"><strong>DNI:</strong> {{ user.dni }}</p>
+
+              <p class="client-info"><strong>{{ 'home.email' | translate }}</strong> {{ user.email }}</p>
+            </div>
+          </div>
+          <div class="card-action-space"></div>
+        </div>
+      } @else {
+        <div class="profile-summary-card">
+          <p>Cargando datos del usuario...</p>
+        </div>
+      }
+
+      <div class="financial-chart-card">
+        <h3>{{ 'home.financialSummary' | translate }}</h3>
+
+        <div class="chart-wrapper">
+          <canvas baseChart
+                  [data]="financialChartData()"
+                  [options]="chartOptions"
+                  [type]="'line'">
+          </canvas>
+        </div>
+      </div>
+    </div>
+
+    <div class="home-container-card">
+      <header class="page-header">
+        <div class="header-text">
+          <h1>{{ 'home.title' | translate }}</h1>
+          <p>{{ 'home.subtitle' | translate }}</p>
+        </div>
+      </header>
+
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-icon available-icon">
+            <mat-icon>directions_car</mat-icon>
+          </div>
+          <div class="stat-info">
+            <h3>{{ 'home.stats.available' | translate }}</h3>
+            <span class="stat-value">{{ availableVehicles() }}</span>
+          </div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-icon sold-icon">
+            <mat-icon>sell</mat-icon>
+          </div>
+          <div class="stat-info">
+            <h3>{{ 'home.stats.sold' | translate }}</h3>
+            <span class="stat-value">{{ soldVehicles() }}</span>
+          </div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-icon clients-icon">
+            <mat-icon>people</mat-icon>
+          </div>
+          <div class="stat-info">
+            <h3>{{ 'home.stats.clients' | translate }}</h3>
+            <span class="stat-value">{{ totalClients() }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>

@@ -1,0 +1,337 @@
+h2[mat-dialog-title] {
+  font-family: 'Roboto', sans-serif;
+  color: #0b1b3d; /* Azul Marino */
+  font-weight: 700;
+  font-size: 24px;
+  margin: 0;
+  padding: 24px 24px 16px 24px; /* Respiro superior y lateral */
+}
+
+mat-dialog-content.form-content {
+  display: flex;
+  flex-direction: column;
+  gap: 20px; /* Más espacio entre los inputs para que respiren */
+  padding: 8px 24px 24px 24px !important; /* Restaura el padding lateral */
+  max-height: 60vh;
+  overflow-y: auto;
+}
+
+mat-dialog-content.form-content::-webkit-scrollbar {
+  width: 6px;
+}
+mat-dialog-content.form-content::-webkit-scrollbar-track {
+  background: transparent;
+}
+mat-dialog-content.form-content::-webkit-scrollbar-thumb {
+  background-color: #cbd5e1;
+  border-radius: 10px;
+}
+mat-dialog-content.form-content::-webkit-scrollbar-thumb:hover {
+  background-color: #94a3b8;
+}
+
+/* Grupos de Inputs */
+.input-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.input-group label {
+  font-size: 12px;
+  font-weight: 600;
+  color: #64748b; /* Gris azulado suave */
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+
+.custom-input {
+  height: 46px; /* Un poco más altos para mayor elegancia */
+  padding: 0 16px;
+  border: 1.5px solid #e2e8f0; /* Borde suave por defecto */
+  border-radius: 10px;
+  font-size: 15px;
+  color: #0b1b3d;
+  background-color: #f8fafc;
+  transition: all 0.25s ease;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.custom-input:focus {
+  outline: none;
+  border-color: #d4af37; /* Dorado Champagne */
+  background-color: #ffffff;
+  box-shadow: 0 0 0 4px rgba(212, 175, 55, 0.15); /* Halo de enfoque más suave */
+}
+
+mat-dialog-actions.form-actions {
+  padding: 16px 24px 24px 24px !important;
+  margin: 0;
+  justify-content: flex-end;
+  gap: 12px;
+  border-top: 1px solid #f1f5f9; /* Línea sutil para separar los botones del formulario */
+}
+
+.cancel-btn {
+  border-radius: 24px !important;
+  color: #64748b !important;
+  font-weight: 500;
+  padding: 0 20px !important;
+}
+
+.cancel-btn:hover {
+  background-color: #f1f5f9 !important;
+  color: #0b1b3d !important;
+}
+
+.save-btn {
+  background-color: #d4af37 !important;
+  color: #0b1b3d !important;
+  font-weight: 600 !important;
+  border-radius: 24px !important;
+  padding: 0 28px !important;
+  height: 42px !important;
+  box-shadow: 0 4px 12px rgba(212, 175, 55, 0.25) !important;
+  transition: all 0.2s ease !important;
+}
+
+.save-btn:hover:not([disabled]) {
+  background-color: #c49f2e !important;
+  transform: translateY(-2px); /* Efecto de elevación */
+  box-shadow: 0 6px 16px rgba(212, 175, 55, 0.3) !important;
+}
+
+.save-btn[disabled] {
+  background-color: #e2e8f0 !important;
+  color: #94a3b8 !important;
+  box-shadow: none !important;
+}
+
+/* Contenedor del teléfono */
+.phone-composite {
+  display: flex;
+  align-items: stretch;
+  height: 46px; /* Misma altura que tus otros inputs */
+}
+
+/* Estilo para el mat-select que imita tu input premium */
+.country-select-premium {
+  width: 120px !important;
+  border: 1.5px solid #e2e8f0;
+  border-right: none;
+  border-radius: 10px 0 0 10px;
+  background-color: #f8fafc;
+  display: flex;
+  align-items: center;
+  padding: 0 12px !important;
+  box-sizing: border-box;
+}
+
+.phone-input {
+  flex: 1;
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
+  height: 46px !important;
+}
+
+/* Diseño de la opción dentro del desplegable */
+.option-container {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.country-name {
+  flex: 1;
+  font-size: 14px;
+  color: #0b1b3d;
+}
+
+.country-code {
+  font-size: 13px;
+  color: #8c9199;
+  font-weight: 500;
+}
+
+/* Diseño del valor seleccionado (bandera + código) */
+.selected-value {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 600;
+  color: #0b1b3d;
+  font-size: 14px;
+}
+
+/* Quitar la línea de subrayado por defecto de Angular Material si existe */
+::ng-deep .mat-mdc-select-arrow-wrapper {
+  padding-right: 0 !important;
+}
+
+::ng-deep .mat-mdc-form-field-focus-overlay {
+  background-color: transparent !important;
+}
+
+/* =========================================
+   GLOBAL OVERLAY STYLES (NG-DEEP)
+   ========================================= */
+
+/* Dropdown panel container */
+::ng-deep .phone-country-panel {
+  margin-top: 4px !important;
+  border-radius: 8px !important;
+  box-shadow: 0 10px 25px rgba(11, 27, 61, 0.1) !important;
+  background-color: #ffffff !important; /* Forces solid white background */
+}
+
+/* Adjust option padding and height */
+::ng-deep .country-option {
+  min-height: 36px !important;
+  padding: 0 12px !important;
+  background-color: #ffffff !important; /* Ensures options are solid */
+}
+
+/* Hover effect for options */
+::ng-deep .country-option:hover {
+  background-color: #f1f5f9 !important; /* Light gray on hover */
+}
+
+/* Custom scrollbar for the dropdown panel */
+::ng-deep .phone-country-panel::-webkit-scrollbar {
+  width: 6px;
+}
+::ng-deep .phone-country-panel::-webkit-scrollbar-thumb {
+  background-color: #cbd5e1;
+  border-radius: 10px;
+}
+
+
+
+/* =========================================
+   VEHICLE AUTOCOMPLETE OVERLAY FIX
+   ========================================= */
+
+/* Forces solid white background on the autocomplete panel overlay */
+vehicle-autocomplete-panel {
+  background-color: #ffffff !important;
+  border-radius: 8px !important;
+  box-shadow: 0 8px 24px rgba(11, 27, 61, 0.15) !important;
+  margin-top: 4px !important;
+
+  .mat-mdc-option {
+    background-color: #ffffff !important;
+
+    &:hover,
+    &.mat-mdc-option-active {
+      background-color: #f1f5f9 !important;
+    }
+  }
+}
+
+
+/* Vehicle Option Internal Layout */
+.vehicle-option-container {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+}
+
+.vehicle-option-img {
+  width: 45px;
+  height: 30px;
+  object-fit: cover;
+  border-radius: 4px;
+  border: 1px solid #e2e8f0;
+  background-color: #f8fafc;
+  display: block; /* Prevents image collapsing */
+}
+
+.vehicle-option-text {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.2;
+}
+
+.vehicle-code {
+  font-size: 13px;
+  font-weight: 700;
+  color: #0b1b3d;
+}
+
+.vehicle-name {
+  font-size: 12px;
+  color: #64748b;
+}
+
+/* ============================================================
+   Rediseño del formulario de cliente
+   ============================================================ */
+.cfd { padding: 4px 4px 0; }
+.cfd__head {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 4px 4px 16px;
+  border-bottom: 1px solid #f1f3f5;
+  margin-bottom: 6px;
+}
+.cfd__head-icon {
+  width: 46px;
+  height: 46px;
+  border-radius: 12px;
+  display: grid;
+  place-items: center;
+  background: linear-gradient(135deg, #0b1b3d, #1b3a73);
+  color: #d4af37;
+  flex-shrink: 0;
+}
+.cfd__head-icon mat-icon { font-size: 24px; width: 24px; height: 24px; }
+.cfd__title { margin: 0 !important; padding: 0 !important; font-size: 1.2rem; font-weight: 800; color: #0b1b3d; }
+.cfd__subtitle { margin: 2px 0 0; font-size: 0.8rem; color: #94a3b8; }
+
+.cfd__row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+.input-group--full { grid-column: 1 / -1; }
+
+.req { color: #d4af37; font-weight: 700; }
+
+.field-wrap { position: relative; display: flex; align-items: center; }
+.field-ic {
+  position: absolute;
+  left: 12px;
+  color: #94a3b8;
+  font-size: 19px;
+  width: 19px;
+  height: 19px;
+  pointer-events: none;
+}
+.custom-input.has-ic { padding-left: 40px !important; }
+.field-prefix {
+  position: absolute;
+  left: 12px;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #64748b;
+  pointer-events: none;
+}
+.custom-input.has-prefix { padding-left: 38px !important; }
+
+.field-err {
+  display: block;
+  margin-top: 5px;
+  font-size: 0.73rem;
+  font-weight: 600;
+  color: #dc2626;
+}
+
+.save-btn { display: inline-flex !important; align-items: center; gap: 6px; }
+.save-btn mat-icon { font-size: 18px; width: 18px; height: 18px; }
+
+@media (max-width: 520px) {
+  .cfd__row { grid-template-columns: 1fr; }
+}

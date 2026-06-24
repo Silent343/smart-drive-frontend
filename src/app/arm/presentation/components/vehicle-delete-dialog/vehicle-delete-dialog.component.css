@@ -1,0 +1,17 @@
+h2[mat-dialog-title] {
+  color: #d32f2f; /* Un tono rojo para indicar que es una acción destructiva (opcional) */
+  margin-bottom: 10px;
+}
+
+mat-dialog-content p {
+  font-size: 1rem;
+  color: #4b5563;
+  line-height: 1.5;
+  margin: 0;
+  padding-bottom: 8px;
+}
+
+mat-dialog-actions {
+  border-top: 1px solid #f3f4f6;
+  padding-top: 12px;
+}

@@ -1,0 +1,54 @@
+<div class="table-card">
+  <table class="custom-table">
+    <thead>
+    <tr>
+      <th>{{ 'clients.table.name' | translate }}</th>
+      <th>{{ 'clients.table.dni' | translate }}</th>
+      <th>{{ 'clients.table.income' | translate }}</th>
+      <th>{{ 'clients.table.occupation' | translate }}</th>
+      <th>{{ 'clients.table.phone' | translate }}</th>
+      <th>{{ 'clients.table.vehicle' | translate }}</th> <th class="actions-column">{{ 'clients.table.actions' | translate }}</th>
+    </tr>
+    </thead>
+
+    <tbody>
+      @for (client of clients(); track client.id) {
+        <tr>
+          <td>{{ client.name }}</td>
+          <td>{{ client.dni }}</td>
+          <td>{{ client.income | currency }}</td>
+          <td>{{ client.occupation }}</td>
+          <td>{{ client.phone }}</td>
+
+          <td>
+            @if (getVehicleCode(client.vehicleId)) {
+              <div class="vehicle-badge-wrapper">
+                <button class="unlink-btn" (click)="unlinkVehicle.emit(client)" title="Desvincular vehículo">
+                  &#10006;
+                </button>
+                <span class="vehicle-code-badge">{{ getVehicleCode(client.vehicleId) }}</span>
+              </div>
+            } @else {
+              <span class="unassigned-badge">{{ 'clients.table.unassigned' | translate }}</span>
+            }
+          </td>
+
+          <td class="actions-cell">
+            <button mat-button class="edit-btn" (click)="edit.emit(client)">
+              {{ 'clients.actions.edit' | translate }}
+            </button>
+            <button mat-button class="delete-btn" (click)="delete.emit(client)">
+              {{ 'clients.actions.delete' | translate }}
+            </button>
+          </td>
+        </tr>
+      } @empty {
+        <tr>
+          <td colspan="7" class="empty-table-row">
+            {{ 'clients.table.noData' | translate }}
+          </td>
+        </tr>
+      }
+    </tbody>
+  </table>
+</div>

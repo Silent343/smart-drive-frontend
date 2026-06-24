@@ -1,0 +1,165 @@
+<div class="login-page">
+  <div class="login-card">
+
+    <div class="header">
+      <img src="/assets/smartFinance.png" alt="SmartDrive Logo" class="logo-img" />
+      <h2>SmartDrive</h2>
+      <p>Create your corporate account</p>
+    </div>
+
+    <form [formGroup]="signUpForm" (ngSubmit)="performSignUp()">
+
+      <div class="form-group">
+        <label>Full Name</label>
+        <div class="input-wrapper">
+          <span class="input-icon"><mat-icon>person_outline</mat-icon></span>
+          <input class="custom-input" formControlName="fullName" placeholder="Enter your full name" />
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label>ID (DNI)</label>
+          <div class="input-wrapper" [class.error]="signUpForm.get('dni')?.invalid && signUpForm.get('dni')?.dirty">
+            <span class="input-icon"><mat-icon>badge</mat-icon></span>
+            <input class="custom-input" formControlName="dni" placeholder="12345678" maxlength="8" />
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Tax ID (RUC)</label>
+          <div class="input-wrapper" [class.error]="signUpForm.get('ruc')?.invalid && signUpForm.get('ruc')?.dirty">
+            <span class="input-icon"><mat-icon>business</mat-icon></span>
+            <input class="custom-input" formControlName="ruc" placeholder="20XXXXXXXXX" maxlength="11" />
+          </div>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>Business Name</label>
+        <div class="input-wrapper">
+          <span class="input-icon"><mat-icon>domain</mat-icon></span>
+          <input
+            class="custom-input"
+            formControlName="businessName"
+            placeholder="Your company's name"
+          />
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>Email</label>
+        <div class="input-wrapper">
+          <span class="input-icon"><mat-icon>mark_email_unread</mat-icon></span>
+          <input
+            class="custom-input"
+            formControlName="recoveryEmail"
+            type="email"
+            placeholder="email@personal.com"
+          />
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>Phone</label>
+        <div class="input-wrapper phone-wrapper">
+          <button type="button" class="country-selector" (click)="toggleCountryDropdown()">
+            <span class="flag">{{ selectedCountry.flag }}</span>
+            <span class="dial-code">{{ selectedCountry.dial }}</span>
+            <mat-icon class="chevron">{{ showCountryDropdown ? 'expand_less' : 'expand_more' }}</mat-icon>
+          </button>
+          <div class="divider"></div>
+          <input class="custom-input" formControlName="phone" placeholder="999 999 999" type="tel" />
+        </div>
+        <div class="country-dropdown" *ngIf="showCountryDropdown">
+          <div
+            class="country-option"
+            *ngFor="let country of countries"
+            (click)="selectCountry(country)"
+            [class.selected]="country.code === selectedCountry.code"
+          >
+            <span class="flag">{{ country.flag }}</span>
+            <span class="country-name">{{ country.name }}</span>
+            <span class="dial">{{ country.dial }}</span>
+            <mat-icon *ngIf="country.code === selectedCountry.code" class="check">check</mat-icon>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>Password</label>
+        <div class="input-wrapper">
+          <span class="input-icon"><mat-icon>lock_outline</mat-icon></span>
+          <input
+            class="custom-input"
+            formControlName="password"
+            [type]="showPassword ? 'text' : 'password'"
+            placeholder="Minimum 8 characters"
+          />
+          <span class="input-icon-right" (click)="togglePassword()">
+            <mat-icon>{{ showPassword ? 'visibility_off' : 'visibility' }}</mat-icon>
+          </span>
+
+        </div>
+        <div class="password-strength" *ngIf="signUpForm.get('password')?.value">
+          <div class="strength-bars">
+            <span class="bar" [class]="strengthLevel >= 1 ? 'bar--' + strengthColor : ''"></span>
+            <span class="bar" [class]="strengthLevel >= 2 ? 'bar--' + strengthColor : ''"></span>
+            <span class="bar" [class]="strengthLevel >= 3 ? 'bar--' + strengthColor : ''"></span>
+            <span class="bar" [class]="strengthLevel >= 4 ? 'bar--' + strengthColor : ''"></span>
+          </div>
+          <span class="strength-label" [class]="'label--' + strengthColor">{{ strengthLabel }}</span>
+        </div>
+        <ul class="password-rules">
+          <li [class.ok]="rules.length">
+            <mat-icon>{{ rules.length ? 'check_circle' : 'radio_button_unchecked' }}</mat-icon>
+            Minimum 8 characters
+          </li>
+          <li [class.ok]="rules.upper">
+            <mat-icon>{{ rules.upper ? 'check_circle' : 'radio_button_unchecked' }}</mat-icon>
+            At least one uppercase letter
+          </li>
+          <li [class.ok]="rules.number">
+            <mat-icon>{{ rules.number ? 'check_circle' : 'radio_button_unchecked' }}</mat-icon>
+            At least one number
+          </li>
+          <li [class.ok]="rules.special">
+            <mat-icon>{{ rules.special ? 'check_circle' : 'radio_button_unchecked' }}</mat-icon>
+            At least one symbol (!#$%...)
+          </li>
+          <li [class.ok]="rules.noRepeat">
+            <mat-icon>{{ rules.noRepeat ? 'check_circle' : 'radio_button_unchecked' }}</mat-icon>
+            No excessively repeated characters
+          </li>
+        </ul>
+      </div>
+
+      <div class="form-group">
+        <label>Confirm Password</label>
+        <div class="input-wrapper" [class.error]="passwordMismatch">
+          <span class="input-icon"><mat-icon>lock_outline</mat-icon></span>
+          <input
+            class="custom-input"
+            formControlName="confirmPassword"
+            [type]="showConfirm ? 'text' : 'password'"
+            placeholder="Repeat your password"
+          />
+          <span class="input-icon-right" (click)="toggleConfirm()">
+            <mat-icon>{{ showConfirm ? 'visibility_off' : 'visibility' }}</mat-icon>
+          </span>
+        </div>
+        <p class="field-error" *ngIf="passwordMismatch">Passwords do not match.</p>
+      </div>
+
+      <button mat-flat-button class="submit-btn" type="submit" [disabled]="signUpForm.invalid">
+        CREATE ACCOUNT
+      </button>
+
+    </form>
+
+    <div class="footer-link">
+      <span>Already have an account?</span>
+      <a routerLink="/sign-in" class="signup-link">Sign in</a>
+    </div>
+
+  </div>
+</div>

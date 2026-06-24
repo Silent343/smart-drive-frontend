@@ -1,0 +1,39 @@
+.metric-card {
+  background: #1e3a5f;
+  border-radius: 10px;
+  padding: 14px 16px;
+}
+.metric-card__header {
+  font-size: 12px;
+  font-weight: 500;
+  color: #c9a96e;
+  margin-bottom: 10px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+.metric-card__grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px;
+}
+.metric-card__box {
+  background: rgba(255,255,255,0.07);
+  border-radius: 7px;
+  padding: 8px 10px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.metric-card__lbl {
+  font-size: 10px;
+  color: rgba(201,169,110,0.7);
+}
+.metric-card__val {
+  font-size: 15px;
+  font-weight: 500;
+  color: #ffffff;
+}
+.metric-card__val--gold {
+  color: #c9a96e;
+}

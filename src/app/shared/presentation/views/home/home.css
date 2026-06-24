@@ -1,0 +1,346 @@
+/*
+Azul Ultramar Profundo / Navy Blue (#0B1B3D): El color corporativo por excelencia para finanzas. Transmite seguridad, transparencia, lealtad y poder institucional. Es la base sólida del logo.
+
+Champagne Gold / Oro Suave (#D4AF37): En lugar de un amarillo chillón, usamos un dorado satinado o champagne. Aporta el estatus del dinero, el éxito, la exclusividad y la alta gama del sector automotriz.
+
+Blanco Puro / Gris Platino (#F5F5F7): Para los fondos y espacios negativos, manteniendo la estética limpia y minimalista de las marcas de lujo actuales (estilo Apple, Tesla o Mercedes-Benz).
+*/
+
+.home-container {
+  padding: 24px;
+  background-color: #ffffff;
+  min-height: 100vh;
+  font-family: 'Roboto', sans-serif;
+}
+
+.welcome-title {
+  font-size: 28px;
+  font-weight: 700;
+  color: #0b1b3d; /* Azul Marino Corporativo */
+  margin-bottom: 24px;
+}
+
+/* Dashboard Grid Layout balanced */
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 24px;
+  /* Prevents the sidebar from stretching vertically if the left side is taller */
+  align-items: start;
+}
+
+/* CRITICAL FIX: Add min-width: 0 to prevent inner content (like canvas) from breaking the grid width */
+.main-content-column,
+.home-container-card {
+  min-width: 0;
+}
+
+.main-content-column, .activity-sidebar-column {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+@media (max-width: 1024px) {
+  .dashboard-grid {
+    grid-template-columns: 1fr;
+  }
+
+  /* On mobile, we can display the stats horizontally if space permits */
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 16px;
+  }
+}
+
+.main-content-column, .activity-sidebar-column {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+/* Tarjeta de Perfil Superior */
+.profile-summary-card {
+  background: #ffffff;
+  border: 1px solid rgba(11, 27, 61, 0.08);
+  border-radius: 16px;
+  padding: 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.02);
+}
+
+.user-profile-meta {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.profile-avatar img {
+  width: 70px;
+  height: 70px;
+  border-radius: 50%;
+  border: 2px solid #d4af37; /* Detalle dorado premium */
+  object-fit: cover;
+}
+
+.serial-code {
+  font-size: 12px;
+  font-weight: 600;
+  color: #8c9199;
+  display: block;
+  margin-bottom: 4px;
+}
+
+.client-name {
+  font-size: 20px;
+  color: #0b1b3d;
+  margin: 0 0 6px 0;
+}
+
+.client-info {
+  font-size: 13px;
+  color: #495057;
+  margin: 2px 0;
+}
+
+.card-action-space {
+  width: 40px; /* Mantiene la simetría visual del espacio limpio */
+}
+
+/* Tarjeta del Gráfico Financiero */
+
+.financial-chart-card, .activity-card {
+  background: #ffffff;
+  border: 1px solid rgba(11, 27, 61, 0.08);
+  border-radius: 16px;
+  padding: 24px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.02);
+
+}
+
+.financial-chart-card h3, .activity-card h3 {
+  font-size: 16px;
+  color: #8c9199;
+  font-weight: 600;
+  margin-top: 0;
+  margin-bottom: 20px;
+}
+
+/* Simulación de la curva del gráfico */
+.chart-wrapper {
+  position: relative;
+  height: 200px;
+  margin-top: 10px;
+}
+
+.chart-placeholder {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  height: 100%;
+  border-bottom: 1px solid #e9ecef;
+}
+
+.axis-label {
+  font-size: 11px;
+  color: #8c9199;
+  padding-bottom: 5px;
+}
+
+/* Sidebar de métricas */
+.metrics-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.metric-item-card {
+  background: #ffffff;
+  border: 1px solid rgba(11, 27, 61, 0.08);
+  border-radius: 14px;
+  padding: 16px 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  transition: transform 0.2s ease;
+}
+
+.metric-item-card:hover {
+  transform: translateY(-2px);
+}
+
+.metric-label {
+  font-size: 14px;
+  font-weight: 500;
+  color: #495057;
+}
+
+.metric-value {
+  font-size: 26px;
+  font-weight: 700;
+  color: #0b1b3d;
+}
+
+/* Resaltado del botón activo (Vehículos disponibles en tu mockup) */
+.metric-item-card.active-highlight {
+  background: linear-gradient(135deg, #0b1b3d 0%, #152954 100%);
+  border: none;
+}
+
+.metric-item-card.active-highlight .metric-label {
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.metric-item-card.active-highlight .metric-value {
+  color: #d4af37; /* Valor destacado en oro champagne */
+}
+
+.activity-summary{
+  background: rgba(212, 175, 55, 0.34)
+}
+
+
+
+
+
+
+/* Contenedor del gráfico */
+.chart-wrapper {
+  position: relative;
+  width: 100%;
+  height: 220px; /* Altura controlada para mantener la proporción de la UI */
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  margin-top: 15px;
+}
+
+/* Comportamiento del SVG responsivo */
+.mock-svg-chart {
+  width: 100%;
+  height: 180px; /* Deja espacio inferior para los textos del eje */
+  display: block;
+}
+
+/* Contenedor para las etiquetas inferiores */
+.chart-axis-labels {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-top: 1px solid #f1f3f5; /* Línea base del eje sutil */
+  padding-top: 8px;
+}
+
+
+
+
+
+
+
+
+
+.page-header {
+  margin-bottom: 32px;
+}
+
+.header-text h1 {
+  font-size: 28px;
+  color: #0b1b3d; /* Tu azul marino premium */
+  margin: 0 0 8px 0;
+  font-weight: 700;
+}
+
+.header-text p {
+  color: #64748b;
+  margin: 0;
+  font-size: 15px;
+}
+
+/* Grid de Métricas */
+/* Stats Grid - Changed from auto-fit Grid to Flex Column for sidebar behavior */
+.stats-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+/* Tarjetas Individuales */
+.stat-card {
+  background-color: #0B1B3D;
+  border-radius: 16px;
+  padding: 24px;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  box-shadow: 0 4px 15px rgba(11, 27, 61, 0.05);
+  border: 1px solid #f1f5f9;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.stat-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 10px 25px rgba(11, 27, 61, 0.1);
+}
+
+/* Contenedores de Iconos (Colores temáticos) */
+.stat-icon {
+  width: 64px;
+  height: 64px;
+  border-radius: 16px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.stat-icon mat-icon {
+  font-size: 32px;
+  width: 32px;
+  height: 32px;
+}
+
+/* Colores específicos para cada métrica */
+.available-icon {
+  background-color: #e0e7ff; /* Azul claro */
+  color: #3730a3;
+}
+
+.sold-icon {
+  background-color: #fef3c7; /* Dorado/Amarillo claro */
+  color: #b45309;
+}
+
+.clients-icon {
+  background-color: #f1f5f9; /* Gris azulado */
+  color: #0b1b3d;
+}
+
+/* Textos de la tarjeta */
+.stat-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.stat-info h3 {
+  margin: 0;
+  font-size: 14px;
+  color: #ffffff;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.stat-value {
+  font-size: 36px;
+  font-weight: 700;
+  color: #d4af37;
+  line-height: 1.2;
+  margin-top: 4px;
+}
+
+.home-container-card{
+  padding: 15px;
+  border-radius: 20px;
+  background: #F5F5F7;
+}

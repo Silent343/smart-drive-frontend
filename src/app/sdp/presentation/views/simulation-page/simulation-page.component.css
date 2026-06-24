@@ -1,0 +1,42 @@
+/* ============================================================================
+   Simulation page — two-column body layout
+   Left  : advisor chat  (~420 px fixed)
+   Right : summary + financial indicators stacked
+   ========================================================================= */
+
+.sim-page__body {
+  display: grid;
+  grid-template-columns: 420px 1fr;
+  gap: 20px;
+  align-items: start;        /* each col scrolls/grows independently */
+  margin-bottom: 24px;
+}
+
+/* Advisor column — let the chat component fill its own height */
+.sim-page__advisor-col {
+  position: sticky;
+  top: 16px;                 /* stays visible while the user scrolls results */
+}
+
+/* Results column — stacked cards */
+.sim-page__results-col {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* ── Responsive: stack to single column on narrow screens ─────────────────── */
+@media (max-width: 900px) {
+  .sim-page__body {
+    grid-template-columns: 1fr;
+  }
+
+  .sim-page__advisor-col {
+    position: static;
+    order: 2;                /* results first, advisor below on mobile */
+  }
+
+  .sim-page__results-col {
+    order: 1;
+  }
+}

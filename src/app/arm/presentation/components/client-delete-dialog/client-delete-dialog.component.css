@@ -1,0 +1,33 @@
+h2[mat-dialog-title] {
+  color: #ff6b6b; /* Título destructivo en rojo */
+  font-weight: 700;
+  font-size: 20px;
+}
+
+mat-dialog-content p {
+  color: #495057;
+  font-size: 15px;
+  line-height: 1.5;
+}
+
+mat-dialog-actions {
+  gap: 12px;
+  padding-top: 16px !important;
+}
+
+mat-dialog-actions button[mat-button] {
+  border-radius: 20px !important;
+  color: #8c9199 !important;
+}
+
+mat-dialog-actions button[color="warn"] {
+  background-color: #ff6b6b !important; /* Botón de confirmación rojo */
+  color: #ffffff !important;
+  border-radius: 20px !important;
+  padding: 0 20px !important;
+  box-shadow: 0 4px 10px rgba(255, 107, 107, 0.2) !important;
+}
+
+mat-dialog-actions button[color="warn"]:hover {
+  background-color: #fa5252 !important;
+}

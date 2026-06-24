@@ -1,0 +1,65 @@
+<div class="totp-container">
+  <a routerLink="/iam/sign-in" class="back-link">
+    <mat-icon>arrow_back</mat-icon>
+    {{ 'iam.totp.backToLogin' | translate }}
+  </a>
+
+  <div class="totp-card" *ngIf="!verified; else successTpl">
+    <div class="shield-icon">
+      <mat-icon>shield</mat-icon>
+    </div>
+    <h2>{{ 'iam.totp.title' | translate }}</h2>
+    <p class="subtitle">{{ 'iam.totp.subtitle' | translate }}</p>
+
+    <div class="timer-row">
+      <mat-icon class="timer-icon">schedule</mat-icon>
+      {{ 'iam.totp.timerText' | translate }} <span class="timer-pill">{{ timerDisplay }}</span>
+    </div>
+
+    <form [formGroup]="form" (ngSubmit)="verify()">
+      <div class="digits-wrap" (click)="hiddenInput.focus()">
+        <input #hiddenInput
+               class="hidden-input"
+               type="text"
+               inputmode="numeric"
+               maxlength="6"
+               autocomplete="one-time-code"
+               (input)="onInput($event)" />
+        <div class="digits-row">
+          <div *ngFor="let i of digitIndices"
+               class="digit-box"
+               [class.active]="currentLength === i"
+               [class.filled]="currentLength > i">
+            <span *ngIf="digits[i]">{{ digits[i] }}</span>
+            <span *ngIf="currentLength === i" class="cursor"></span>
+          </div>
+        </div>
+      </div>
+
+      <p class="error-msg" *ngIf="errorMsg">{{ errorMsg }}</p>
+
+      <button mat-flat-button color="primary"
+              type="submit"
+              [disabled]="currentLength < 6"
+              class="submit-btn">
+        {{ 'iam.totp.btnVerify' | translate }}
+      </button>
+    </form>
+
+    <p class="resend-row">
+      {{ 'iam.totp.notReceived' | translate }}
+      <a (click)="requestNewCode()" class="resend-link">{{ 'iam.totp.btnRequestNew' | translate }}</a>
+    </p>
+  </div>
+
+  <ng-template #successTpl>
+    <div class="totp-card success-card">
+      <div class="success-circle">
+        <mat-icon>check_circle</mat-icon>
+      </div>
+      <h2>{{ 'iam.totp.successTitle' | translate }}</h2>
+      <p class="subtitle">{{ 'iam.totp.successSubtitle' | translate }}</p>
+      <div class="progress-bar"><div class="progress-fill"></div></div>
+    </div>
+  </ng-template>
+</div>

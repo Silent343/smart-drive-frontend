@@ -1,0 +1,148 @@
+/* Contenedor de la Tabla */
+.table-card {
+  background: #ffffff;
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.02);
+  border: 1px solid rgba(11, 27, 61, 0.08);
+}
+
+.custom-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-family: 'Roboto', sans-serif;
+}
+
+/* Encabezado de la Tabla (Gris Neutro del Mockup) */
+.custom-table thead {
+  background-color: #9ca3af;
+}
+
+.custom-table th {
+  padding: 16px 20px;
+  text-align: left;
+  color: #1f2937;
+  font-weight: 600;
+  font-size: 14px;
+  letter-spacing: 0.5px;
+}
+
+/* Cuerpo de la Tabla */
+.custom-table td {
+  padding: 16px 20px;
+  border-bottom: 1px solid #f1f3f5;
+  color: #495057;
+  font-size: 14px;
+}
+
+.custom-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.custom-table tbody tr:hover {
+  background-color: rgba(11, 27, 61, 0.01);
+}
+
+/* Alineación de Acciones */
+.actions-column {
+  text-align: center !important;
+}
+
+.actions-cell {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  align-items: center;
+}
+
+/* Botones de Acción Estilizados en Píldora */
+.edit-btn {
+  background-color: #ffffff !important;
+  color: #0b1b3d !important; /* Texto Azul Marino */
+  border: 1px solid rgba(11, 27, 61, 0.15) !important;
+  border-radius: 20px !important;
+  font-size: 13px !important;
+  font-weight: 500 !important;
+  padding: 0 16px !important;
+  height: 32px !important;
+  line-height: 32px !important;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02) !important;
+  transition: all 0.2s ease !important;
+}
+
+.edit-btn:hover {
+  background-color: #f8f9fa !important;
+  border-color: #0b1b3d !important;
+}
+
+.delete-btn {
+  background-color: #ffffff !important;
+  color: #ff6b6b !important; /* Texto Rojo suave */
+  border: 1px solid rgba(255, 107, 107, 0.25) !important;
+  border-radius: 20px !important;
+  font-size: 13px !important;
+  font-weight: 500 !important;
+  padding: 0 16px !important;
+  height: 32px !important;
+  line-height: 32px !important;
+  transition: all 0.2s ease !important;
+}
+
+.delete-btn:hover {
+  background-color: #ffe3e3 !important;
+  border-color: #ff6b6b !important;
+}
+
+/* Estilo para el estado sin registros dentro de la tabla */
+.empty-table-row {
+  text-align: center;
+  padding: 32px !important;
+  color: #8c9199; /* Gris neutro de la paleta */
+  font-weight: 500;
+  font-style: italic;
+  letter-spacing: 0.3px;
+  background-color: rgba(11, 27, 61, 0.01);
+}
+
+.vehicle-code-badge {
+  background-color: #f8fafc;
+  color: #0b1b3d;
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-weight: 600;
+  font-size: 13px;
+  border: 1px solid #e2e8f0;
+  display: inline-block;
+}
+
+.unassigned-badge {
+  color: #94a3b8;
+  font-style: italic;
+  font-size: 13px;
+}
+
+
+.vehicle-badge-wrapper {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+}
+
+.unlink-btn {
+  background: none;
+  border: none;
+  color: #ff4d4f; /* Un rojo suave para indicar acción de eliminar/desvincular */
+  cursor: pointer;
+  font-size: 10px;
+  padding: 2px;
+  line-height: 1;
+  position: absolute;
+  top: -10px;
+  right: -10px;
+  border-radius: 50%;
+}
+
+.unlink-btn:hover {
+  background-color: #ffe5e5;
+}

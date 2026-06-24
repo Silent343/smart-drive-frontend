@@ -1,0 +1,181 @@
+<div class="cfg-page">
+  <app-flow-header activeStep="configuration" />
+
+  <div class="cfg-page__grid">
+
+    <div>
+      <div class="sdp-card">
+        <p class="sdp-card__title">{{ 'sdp.configuration.clientVehicleData' | translate }}</p>
+        <div class="sdp-g2 sdp-mb">
+
+          <!-- DNI — dispara búsqueda al escribir -->
+          <div class="sdp-field">
+            <label class="sdp-label">{{ 'sdp.configuration.clientDni' | translate }}</label>
+            <input
+              class="sdp-input"
+              [class.sdp-input--error]="dniError"
+              type="text"
+              [(ngModel)]="dni"
+              (ngModelChange)="onDniChange()"
+              placeholder="00000000"
+              maxlength="8"
+            />
+            <span class="sdp-field__error" *ngIf="dniError">{{ dniError }}</span>
+          </div>
+
+          <!-- Código vehículo — autocomplete con imágenes -->
+          <div class="sdp-field sdp-field--autocomplete">
+            <label class="sdp-label">{{ 'sdp.configuration.vehicleCode' | translate }}</label>
+            <input
+              class="sdp-input"
+              [class.sdp-input--error]="showCarNotFound"
+              type="text"
+              [(ngModel)]="codigoAuto"
+              (ngModelChange)="onVehicleInput()"
+              (focus)="openVehicleList()"
+              autocomplete="off"
+              placeholder="VH-001"
+            />
+
+            @if (showVehicleList) {
+              <div class="sdp-ac-backdrop" (click)="closeVehicleList()"></div>
+              <ul class="sdp-ac-list">
+                @for (v of filteredVehicles; track v.id) {
+                  <li class="sdp-ac-item" (click)="selectVehicle(v)">
+                    <div class="sdp-ac-thumb">
+                      @if (v.imageUrl) {
+                        <img [src]="v.imageUrl" [alt]="v.code" />
+                      } @else {
+                        <span class="sdp-ac-thumb__ph">🚗</span>
+                      }
+                    </div>
+                    <div class="sdp-ac-text">
+                      <span class="sdp-ac-code">{{ v.code }}</span>
+                      <span class="sdp-ac-name">{{ v.label }}</span>
+                    </div>
+                  </li>
+                } @empty {
+                  <li class="sdp-ac-empty">{{ 'sdp.configuration.vehicleNotFound' | translate }}</li>
+                }
+              </ul>
+            }
+
+            <span class="sdp-field__error" *ngIf="showCarNotFound">
+              {{ 'sdp.configuration.vehicleNotFound' | translate }}
+            </span>
+          </div>
+        </div>
+
+        <!-- Resultados de búsqueda (readonly) -->
+        <div class="sdp-g2">
+          <div class="sdp-field">
+            <label class="sdp-label">{{ 'sdp.configuration.client' | translate }}</label>
+            <input
+              class="sdp-input sdp-input--readonly"
+              [class.sdp-input--found]="clientName"
+              [value]="clientName || '—'"
+              readonly
+            />
+          </div>
+          <div class="sdp-field">
+            <label class="sdp-label">{{ 'sdp.configuration.vehicle' | translate }}</label>
+            <input
+              class="sdp-input sdp-input--readonly"
+              [class.sdp-input--found]="vehicleName"
+              [value]="vehicleName || '—'"
+              readonly
+            />
+          </div>
+        </div>
+      </div>
+
+      <div class="sdp-card sdp-card--accent">
+        <p class="sdp-card__title">{{ 'sdp.configuration.mainConfig' | translate }}</p>
+
+        <div class="sdp-g2 sdp-mb">
+          <div class="sdp-field">
+            <label class="sdp-label">{{ 'sdp.common.currency' | translate }}</label>
+            <select class="sdp-select" [(ngModel)]="currency">
+              <option *ngFor="let opt of currencyOptions" [value]="opt.value">{{ opt.label }}</option>
+            </select>
+          </div>
+          <div class="sdp-field">
+            <label class="sdp-label">{{ 'sdp.common.rateType' | translate }}</label>
+            <select class="sdp-select" [(ngModel)]="interestRateType">
+              <option value="efectiva">{{ 'sdp.configuration.rateTypeEffective' | translate }}</option>
+              <option value="nominal">{{ 'sdp.configuration.rateTypeNominal' | translate }}</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="sdp-g2 sdp-mb">
+          <div class="sdp-field">
+            <label class="sdp-label">{{ effectiveRateLabel }} (%)</label>
+            <input class="sdp-input" type="number" [(ngModel)]="annualRate" min="0" max="100" step="0.01" />
+          </div>
+          <div class="sdp-field" *ngIf="isNominal">
+            <label class="sdp-label">{{ 'sdp.configuration.capitalization' | translate }}</label>
+            <select class="sdp-select" [(ngModel)]="capitalization">
+              <option *ngFor="let opt of capitalizationOptions" [ngValue]="opt.value">{{ opt.label }}</option>
+            </select>
+          </div>
+          <div class="sdp-field" *ngIf="isNominal">
+            <label class="sdp-label">{{ 'sdp.common.equivalentTea' | translate }}</label>
+            <input class="sdp-input sdp-input--readonly" [value]="equivalentTEA" readonly />
+          </div>
+        </div>
+
+        <div class="sdp-g2">
+          <div class="sdp-field">
+            <label class="sdp-label">{{ 'sdp.common.graceMonths' | translate }}</label>
+            <input class="sdp-input" type="number" [(ngModel)]="gracePeriodMonths" min="0" max="24" />
+          </div>
+          <div class="sdp-field">
+            <label class="sdp-label">{{ 'sdp.common.graceType' | translate }}</label>
+            <select class="sdp-select" [(ngModel)]="gracePeriodType">
+              <option *ngFor="let opt of gracePeriodOptions" [value]="opt.value">{{ opt.label }}</option>
+            </select>
+          </div>
+        </div>
+
+        <app-grace-period-info [months]="gracePeriodMonths" [type]="gracePeriodType" />
+      </div>
+    </div>
+
+    <div>
+      <div class="sdp-card">
+        <p class="sdp-card__title">{{ 'sdp.configuration.advancedConfig' | translate }}</p>
+
+        <div class="sdp-field sdp-mb">
+          <label class="sdp-label">{{ 'sdp.configuration.monthlyCarInsurance' | translate }} (%)</label>
+          <input class="sdp-input" type="number" [(ngModel)]="insuranceRatePct" step="0.01" />
+        </div>
+        <div class="sdp-field sdp-mb">
+          <label class="sdp-label">{{ 'sdp.configuration.postageFee' | translate }} ({{ currency === 'PEN' ? 'S/' : '$' }})</label>
+          <input class="sdp-input" type="number" [(ngModel)]="postageFeeAmount" step="0.5" />
+        </div>
+        <div class="sdp-field sdp-mb">
+          <label class="sdp-label">{{ 'sdp.configuration.adminFee' | translate }} (%)</label>
+          <input class="sdp-input" type="number" [(ngModel)]="administrationFeePct" step="0.01" />
+        </div>
+        <div class="sdp-field sdp-mb">
+          <label class="sdp-label">{{ 'sdp.configuration.taxIgvItf' | translate }} (%)</label>
+          <input class="sdp-input" type="number" [(ngModel)]="igvPct" step="0.01" />
+        </div>
+
+        <div class="sdp-info-box">
+          <span class="sdp-info-box__text">{{ 'sdp.configuration.sbsDisclaimer' | translate }}</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="sdp-btn-row" style="justify-content: space-between;">
+    <button class="sdp-btn-outline" (click)="onNewRecord()">
+      {{ 'sdp.common.newRecord' | translate }}
+    </button>
+    <button class="sdp-btn-primary" (click)="onContinue()" [disabled]="!canContinue">
+      {{ 'sdp.common.continue' | translate }} →
+    </button>
+  </div>
+</div>

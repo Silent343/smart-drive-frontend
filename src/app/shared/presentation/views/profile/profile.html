@@ -1,0 +1,122 @@
+<div class="profile-page">
+  <header class="profile-page__header">
+    <h1>{{ 'profile.title' | translate }}</h1>
+    <p>{{ 'profile.subtitle' | translate }}</p>
+  </header>
+
+  <div class="profile-grid">
+
+    <!-- Columna izquierda: cuenta + foto -->
+    <section class="profile-card">
+      <h2 class="profile-card__title">{{ 'profile.account.title' | translate }}</h2>
+
+      <div class="avatar-block">
+        <div class="avatar-preview">
+          @if (photo(); as p) {
+            <img [src]="p" alt="avatar" />
+          } @else {
+            <span class="avatar-initial">{{ initial }}</span>
+          }
+        </div>
+
+        <div class="avatar-actions">
+          <label class="btn btn--gold">
+            <mat-icon>photo_camera</mat-icon>
+            {{ 'profile.photo.change' | translate }}
+            <input type="file" accept="image/*" (change)="onPhotoSelected($event)" hidden />
+          </label>
+          @if (photo()) {
+            <button class="btn btn--ghost" (click)="removePhoto()">
+              <mat-icon>delete</mat-icon>
+              {{ 'profile.photo.remove' | translate }}
+            </button>
+          }
+          @if (photoError(); as err) {
+            <span class="field-error">{{ err }}</span>
+          }
+          <span class="avatar-hint">{{ 'profile.photo.hint' | translate }}</span>
+        </div>
+      </div>
+
+      <div class="readonly-grid">
+        <div class="readonly-field">
+          <span class="readonly-label">{{ 'profile.account.id' | translate }}</span>
+          <span class="readonly-value">#{{ userId() || '—' }}</span>
+        </div>
+        <div class="readonly-field">
+          <span class="readonly-label">{{ 'profile.account.name' | translate }}</span>
+          <span class="readonly-value">{{ fullName() || '—' }}</span>
+        </div>
+        <div class="readonly-field">
+          <span class="readonly-label">{{ 'profile.account.email' | translate }}</span>
+          <span class="readonly-value">{{ email() || '—' }}</span>
+        </div>
+        <div class="readonly-field">
+          <span class="readonly-label">{{ 'profile.account.dni' | translate }}</span>
+          <span class="readonly-value">{{ dni() || '—' }}</span>
+        </div>
+      </div>
+    </section>
+
+    <div class="profile-column">
+      <!-- Preferencias -->
+      <section class="profile-card">
+        <h2 class="profile-card__title">{{ 'profile.prefs.title' | translate }}</h2>
+
+        <div class="field">
+          <label class="field-label">{{ 'profile.prefs.displayName' | translate }}</label>
+          <input class="field-input" type="text" [(ngModel)]="displayName"
+                 placeholder="{{ 'profile.prefs.displayNamePh' | translate }}" />
+          <span class="field-hint">{{ 'profile.prefs.displayNameHint' | translate }}</span>
+        </div>
+
+        <div class="toggle-row">
+          <div class="toggle-text">
+            <span class="toggle-title">{{ 'profile.prefs.notifications' | translate }}</span>
+            <span class="toggle-desc">{{ 'profile.prefs.notificationsDesc' | translate }}</span>
+          </div>
+          <label class="switch">
+            <input type="checkbox" [(ngModel)]="notificationsEnabled" />
+            <span class="switch-slider"></span>
+          </label>
+        </div>
+
+        <div class="card-actions">
+          <button class="btn btn--primary" (click)="savePreferences()">
+            <mat-icon>save</mat-icon>
+            {{ 'profile.prefs.save' | translate }}
+          </button>
+        </div>
+      </section>
+
+      <!-- Seguridad -->
+      <section class="profile-card">
+        <h2 class="profile-card__title">{{ 'profile.security.title' | translate }}</h2>
+
+        <div class="field">
+          <label class="field-label">{{ 'profile.security.current' | translate }}</label>
+          <input class="field-input" type="password" [(ngModel)]="currentPassword" autocomplete="current-password" />
+        </div>
+        <div class="field">
+          <label class="field-label">{{ 'profile.security.new' | translate }}</label>
+          <input class="field-input" type="password" [(ngModel)]="newPassword" autocomplete="new-password" />
+          <span class="field-hint">{{ 'profile.security.newHint' | translate }}</span>
+        </div>
+        <div class="field">
+          <label class="field-label">{{ 'profile.security.confirm' | translate }}</label>
+          <input class="field-input" type="password" [(ngModel)]="confirmPassword" autocomplete="new-password" />
+          @if (confirmPassword && newPassword !== confirmPassword) {
+            <span class="field-error">{{ 'profile.security.mismatch' | translate }}</span>
+          }
+        </div>
+
+        <div class="card-actions">
+          <button class="btn btn--primary" (click)="savePassword()" [disabled]="!passwordValid">
+            <mat-icon>lock_reset</mat-icon>
+            {{ 'profile.security.update' | translate }}
+          </button>
+        </div>
+      </section>
+    </div>
+  </div>
+</div>

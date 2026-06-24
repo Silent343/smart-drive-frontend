@@ -1,0 +1,12 @@
+<div class="fi-card">
+  <p class="fi-card__title">{{ 'sdp.components.financialIndicators.title' | translate }}</p>
+  <div class="fi-card__list">
+    <div class="fi-card__row" *ngFor="let ind of indicators">
+      <span class="fi-card__key">{{ ind.label | translate }}</span>
+      <span class="fi-card__val" [class.fi-card__val--gold]="ind.highlight">
+        {{ ind.value }}
+      </span>
+    </div>
+  </div>
+  <p class="fi-card__footnote" *ngIf="footNote">{{ footNote | translate }}</p>
+</div>

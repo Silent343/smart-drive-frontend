@@ -1,0 +1,56 @@
+<div class="details-container">
+  <header class="details-header">
+    <div class="title-group">
+      <button mat-icon-button class="back-btn" (click)="back.emit()">
+        <mat-icon>arrow_back_ios</mat-icon>
+      </button>
+      <h2>{{ vehicle.specification?.brand }} {{ vehicle.specification?.model }} {{ vehicle.specification?.year }}</h2>
+    </div>
+    <div class="action-group">
+      <button mat-flat-button class="edit-btn" (click)="edit.emit(vehicle)">
+        {{ 'vehicles.actions.edit' | translate }}
+      </button>
+      <button mat-flat-button class="delete-btn" (click)="delete.emit(vehicle)">
+        {{ 'vehicles.actions.delete' | translate }}
+      </button>
+    </div>
+  </header>
+
+  <div class="technical-sheet-card">
+    <div class="image-section">
+      <img [src]="vehicle.imageUrl || 'assets/placeholder-car.jpg'" alt="Imagen del Auto" class="featured-image">
+      <div class="price-tag">{{ vehicle.commercial?.price | currency }}</div>
+    </div>
+
+    <div class="info-section">
+      <h3>{{ 'vehicles.details.techSpecs' | translate }}</h3>
+
+      <div class="data-grid">
+        <div class="data-item">
+          <span class="data-label">{{ 'vehicles.details.code' | translate }}</span>
+          <span class="data-value">{{ vehicle.code }}</span>
+        </div>
+        <div class="data-item">
+          <span class="data-label">{{ 'vehicles.details.brand' | translate }}</span>
+          <span class="data-value">{{ vehicle.specification?.brand }}</span>
+        </div>
+        <div class="data-item">
+          <span class="data-label">{{ 'vehicles.details.model' | translate }}</span>
+          <span class="data-value">{{ vehicle.specification?.model }}</span>
+        </div>
+        <div class="data-item">
+          <span class="data-label">{{ 'vehicles.details.transmission' | translate }}</span>
+          <span class="data-value">{{ vehicle.specification?.transmission }}</span>
+        </div>
+        <div class="data-item">
+          <span class="data-label">{{ 'vehicles.details.status' | translate }}</span>
+          <span class="data-value status-highlight">{{ vehicle.status }}</span>
+        </div>
+        <div class="data-item">
+          <span class="data-label">{{ 'vehicles.details.company' | translate }}</span>
+          <span class="data-value">{{ vehicle.commercial?.company }}</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

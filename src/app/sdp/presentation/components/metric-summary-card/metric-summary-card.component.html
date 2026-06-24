@@ -1,0 +1,11 @@
+<div class="metric-card">
+  <div class="metric-card__header">{{ 'sdp.components.metricSummary.title' | translate }}</div>
+  <div class="metric-card__grid">
+    <div class="metric-card__box" *ngFor="let m of metrics">
+      <span class="metric-card__lbl">{{ m.label | translate }}</span>
+      <span class="metric-card__val" [class.metric-card__val--gold]="m.highlight">
+        {{ m.value }}
+      </span>
+    </div>
+  </div>
+</div>

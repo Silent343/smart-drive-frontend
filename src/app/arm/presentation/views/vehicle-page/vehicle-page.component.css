@@ -1,0 +1,80 @@
+/* Contenedor principal de la página */
+.vehicles-page-container {
+  padding: 24px 32px;
+  background-color: #f8f9fa;
+  min-height: calc(100vh - 64px); /* Ajusta según tu navbar */
+  font-family: 'Roboto', sans-serif;
+}
+
+/* --- ENCABEZADO Y ALINEACIÓN --- */
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 32px;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+
+.header-text h1 {
+  color: #0b1b3d; /* Azul Marino */
+  font-size: 28px;
+  font-weight: 700;
+  margin: 0 0 6px 0;
+}
+
+.header-text p {
+  color: #8c9199;
+  font-size: 15px;
+  margin: 0;
+}
+
+/* --- ZONA DE FILTROS Y BOTÓN --- */
+.header-tools {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+}
+
+.filter-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.filter-wrapper label {
+  font-size: 14px;
+  color: #495057;
+  font-weight: 600;
+}
+
+.custom-select {
+  height: 42px;
+  padding: 0 16px;
+  border: 1px solid rgba(11, 27, 61, 0.15);
+  border-radius: 8px;
+  background-color: #ffffff;
+  color: #0b1b3d;
+  font-size: 14px;
+  font-weight: 500;
+  outline: none;
+  cursor: pointer;
+  min-width: 160px;
+  transition: border-color 0.2s ease;
+}
+
+.custom-select:focus {
+  border-color: #d4af37; /* Foco Dorado Champagne */
+}
+
+/* Botón Registrar */
+.register-btn {
+  background-color: #d4af37 !important; /* Dorado */
+  color: #0b1b3d !important;
+  font-weight: 600 !important;
+  border-radius: 20px !important;
+  padding: 0 24px !important;
+  height: 42px !important;
+  box-shadow: 0 4px 10px rgba(212, 175, 55, 0.2) !important;
+  transition: transform 0.2s ease !important;
+}

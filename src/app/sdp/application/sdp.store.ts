@@ -1,0 +1,393 @@
+import { Injectable, signal } from '@angular/core';
+
+import { CreditConfig } from '../domain/model/credit-config';
+import { Loan } from '../domain/model/loan';
+import { ScheduleRow } from '../domain/model/schedule-row';
+import { LoanReport } from '../domain/model/loan-report';
+import { SdpApi } from '../infrastructure/sdp-api';
+import {Observable, tap} from 'rxjs';
+
+// ─── French Amortization Utilities ───────────────────────────────────────────
+
+function calcTEM(config: CreditConfig): number {
+  return Math.pow(1 + config.effectiveAnnualRate / 100, 1 / 12) - 1;
+}
+
+/**
+ * Calculates all loan indicators using the ordinary expired French method
+ * (30 days/month) supporting partial and total grace periods.
+ * Returns the Loan with financial fields populated.
+ */
+function calculateFrench(loan: Loan, config: CreditConfig): {
+  updatedLoan: Loan;
+  schedule: ScheduleRow[];
+} {
+  const tem   = calcTEM(config);
+  const n     = loan.installmentsQty;
+  const mg    = config.gracePeriodMonths;
+  const tg    = config.gracePeriodType;
+  const insPct = config.insuranceRatePct / 100;
+  const postage = config.postageFeeAmount;
+  const comPct = config.administrationFeePct / 100;
+
+  // Base French installment (only for months that amortize)
+  const nAmort   = n - (tg !== 'none' ? mg : 0);
+  const baseInstallment = nAmort > 0
+    ? loan.loanAmount * tem / (1 - Math.pow(1 + tem, -nAmort))
+    : 0;
+
+  let balance = loan.loanAmount;
+  let totalInterest    = 0;
+  let totalInsurance   = 0;
+  let totalPostage     = 0;
+  let totalCommission  = 0;
+  const schedule: ScheduleRow[] = [];
+
+  // IRR: debtor's cash flows (negative at the beginning = capital received)
+  const cashFlows: number[] = [-loan.loanAmount];
+
+  for (let i = 1; i <= n; i++) {
+    const openingBalance = balance;
+
+    const interest  = balance * tem;
+    const insurance = balance * insPct;
+    const commission = balance * comPct;
+    let   amortization = 0;
+    let   installment  = 0;
+    const gracePeriodType = i <= mg && tg !== 'none' ? tg : 'none';
+
+    if (gracePeriodType === 'total') {
+      // Pays nothing, interest is capitalized
+      amortization = 0;
+      installment = 0;
+      balance += interest;
+    } else if (gracePeriodType === 'partial') {
+      // Only pays interest, does not amortize capital
+      amortization = 0;
+      installment = interest;
+    } else {
+      amortization = baseInstallment - interest;
+      installment = baseInstallment;
+    }
+
+    const totalInstallment = installment + insurance + postage + commission;
+    balance -= amortization;
+    if (balance < 0.001) balance = 0;
+
+    totalInterest   += interest;
+    totalInsurance  += insurance;
+    totalPostage    += postage;
+    totalCommission += commission;
+    cashFlows.push(totalInstallment);
+
+    schedule.push(new ScheduleRow({
+      id:              `row-${i}`,
+      loanId:          loan.id || 'pending',
+      installmentNo:   i,
+      paymentDate:     addMonths(loan.startDate, i),
+      openingBalance,
+      interest,
+      amortization,
+      insurance,
+      postage,
+      commission,
+      monthlyPayment:  totalInstallment,
+      endingBalance:   Math.max(0, balance),
+      gracePeriodType,
+    }));
+  }
+
+  const ctc  = totalInterest + totalInsurance + totalPostage + totalCommission;
+  const tcea = Math.pow(1 + tem, 12) - 1;
+  const npv  = cashFlows.reduce((acc, f, t) => acc + f / Math.pow(1 + tem, t), 0);
+  const irr  = calcIRR(cashFlows);
+
+  const updatedLoan = new Loan({
+    id:              loan.id,
+    carId:           loan.carId,
+    clientId:        loan.clientId,
+    configId:        loan.configId,
+    initialFee:      loan.initialFee,
+    vehiclePrice:    loan.vehiclePrice,
+    loanAmount:      loan.loanAmount,
+    installmentsQty: loan.installmentsQty,
+    startDate:       loan.startDate,
+    fixedInstallment: baseInstallment,
+    tcea,
+    npvDebtor:       npv,
+    irrDebtor:       irr,
+    totalInterest,
+    totalInsurance,
+    totalPostage,
+    totalCommission,
+    ctc,
+  });
+
+  return { updatedLoan, schedule };
+}
+
+function addMonths(date: Date, months: number): Date {
+  const d = new Date(date);
+  d.setMonth(d.getMonth() + months);
+  return d;
+}
+
+/** Newton-Raphson for monthly IRR */
+function calcIRR(cashFlows: number[], guess = 0.01): number {
+  let rate = guess;
+  for (let iter = 0; iter < 100; iter++) {
+    let f  = 0, df = 0;
+    for (let t = 0; t < cashFlows.length; t++) {
+      f  += cashFlows[t] / Math.pow(1 + rate, t);
+      df -= t * cashFlows[t] / Math.pow(1 + rate, t + 1);
+    }
+    const newRate = rate - f / df;
+    if (Math.abs(newRate - rate) < 1e-8) return newRate;
+    rate = newRate;
+  }
+  return rate;
+}
+
+// ─── Store ───────────────────────────────────────────────────────────────────
+
+@Injectable({ providedIn: 'root' })
+export class SdpStore {
+
+  // Private signals
+  private readonly creditConfigsSignal  = signal<CreditConfig[]>([]);
+  private readonly activeCreditConfigSignal = signal<CreditConfig | null>(null);
+  private readonly currentLoanSignal    = signal<Loan | null>(null);
+  private readonly currentScheduleSignal = signal<ScheduleRow[]>([]);
+  private readonly currentReportSignal  = signal<LoanReport | null>(null);
+  private readonly errorSignal          = signal<string | null>(null);
+  private readonly isLoadingSignal      = signal<boolean>(false);
+
+  // Flow data that persists between tabs
+  private readonly flowClientIdSignal   = signal<string>('');
+  private readonly flowCarIdSignal      = signal<string>('');
+  private readonly flowClientNameSignal = signal<string>('');
+  private readonly flowCarNameSignal    = signal<string>('');
+
+  // Public signals
+  readonly creditConfigs      = this.creditConfigsSignal.asReadonly();
+  readonly activeCreditConfig = this.activeCreditConfigSignal.asReadonly();
+  readonly currentLoan        = this.currentLoanSignal.asReadonly();
+  readonly currentSchedule    = this.currentScheduleSignal.asReadonly();
+  readonly currentReport      = this.currentReportSignal.asReadonly();
+  readonly error              = this.errorSignal.asReadonly();
+  readonly isLoading          = this.isLoadingSignal.asReadonly();
+
+  // Flow data
+  readonly flowClientId   = this.flowClientIdSignal.asReadonly();
+  readonly flowCarId      = this.flowCarIdSignal.asReadonly();
+  readonly flowClientName = this.flowClientNameSignal.asReadonly();
+  readonly flowCarName    = this.flowCarNameSignal.asReadonly();
+
+  constructor(private sdpApi: SdpApi) {}
+
+  // ── CREDIT CONFIG ───────────────────────────────────────────────────────────
+
+  loadCreditConfigs(): void {
+    this.isLoadingSignal.set(true);
+    this.sdpApi.getCreditConfigs().subscribe({
+      next: (configs) => {
+        this.creditConfigsSignal.set(configs);
+        // Restores active config if one was already saved
+        if (!this.activeCreditConfigSignal() && configs.length > 0) {
+          this.activeCreditConfigSignal.set(configs[configs.length - 1]);
+        }
+        this.isLoadingSignal.set(false);
+      },
+      error: (err) => {
+        this.errorSignal.set('Error loading configurations');
+        this.isLoadingSignal.set(false);
+      },
+    });
+  }
+
+  createCreditConfig(config: CreditConfig): Observable<CreditConfig> {
+    this.isLoadingSignal.set(true);
+    return this.sdpApi.createCreditConfig(config).pipe(
+      tap((saved) => {
+        this.creditConfigsSignal.update(list => [...list, saved]);
+        this.activeCreditConfigSignal.set(saved);
+        this.isLoadingSignal.set(false);
+      }),
+    );
+  }
+
+  updateCreditConfig(config: CreditConfig): Observable<CreditConfig> {
+    this.isLoadingSignal.set(true);
+    return this.sdpApi.updateCreditConfig(config).pipe(
+      tap((updated) => {
+        this.creditConfigsSignal.update(list =>
+          list.map(c => c.id === updated.id ? updated : c)
+        );
+        this.activeCreditConfigSignal.set(updated);
+        this.isLoadingSignal.set(false);
+      }),
+    );
+  }
+
+  // ── FLOW: client and vehicle data ──────────────────────────────────────────
+
+  setFlowClient(id: string, name: string): void {
+    this.flowClientIdSignal.set(id);
+    this.flowClientNameSignal.set(name);
+  }
+
+  setFlowCar(id: string, name: string): void {
+    this.flowCarIdSignal.set(id);
+    this.flowCarNameSignal.set(name);
+  }
+
+  // ── LOCAL SIMULATION → persist as Loan ─────────────────────────────────────
+
+  /**
+   * Calculates the payment schedule locally (no round-trip to the backend)
+   * and updates the currentLoan + currentSchedule signals instantly.
+   * Then persists the Loan in the loans table of db.json.
+   */
+  simulateAndSave(
+    vehiclePrice: number,
+    initialFee: number,
+    installmentsQty: number,
+    startDate: Date,
+  ): void {
+    const config = this.activeCreditConfigSignal();
+    if (!config) {
+      this.errorSignal.set('Please complete the configuration first');
+      return;
+    }
+
+    const loanAmount = vehiclePrice - initialFee;
+    if (loanAmount <= 0) return;
+
+    // 1. Build base loan with input data
+    const baseLoan = new Loan({
+      id:               '',
+      carId:            this.flowCarIdSignal(),
+      clientId:         this.flowClientIdSignal(),
+      configId:         config.id,
+      initialFee,
+      vehiclePrice,
+      loanAmount,
+      installmentsQty,
+      startDate,
+      fixedInstallment: 0,
+      npvDebtor:        0,
+      irrDebtor:        0,
+      tcea:             0,
+      totalInterest:    0,
+      totalInsurance:   0,
+      totalPostage:     0,
+      totalCommission:  0,
+      ctc:              0,
+    });
+
+    // 2. Calculate locally (immediate, without waiting for backend)
+    const { updatedLoan, schedule } = calculateFrench(baseLoan, config);
+    this.currentLoanSignal.set(updatedLoan);
+    this.currentScheduleSignal.set(schedule);
+
+    // 3. Persist in loans (db.json)
+    this.sdpApi.createLoan(updatedLoan).subscribe({
+      next: (savedLoan) => {
+        // Update with the id assigned by the backend
+        this.currentLoanSignal.set(new Loan({
+          id:              savedLoan.id, // <-- Este es el ÚNICO valor nuevo
+          carId:           updatedLoan.carId,
+          clientId:        updatedLoan.clientId,
+          configId:        updatedLoan.configId,
+          initialFee:      updatedLoan.initialFee,
+          vehiclePrice:    updatedLoan.vehiclePrice,
+          loanAmount:      updatedLoan.loanAmount,
+          installmentsQty: updatedLoan.installmentsQty,
+          startDate:       updatedLoan.startDate,
+          fixedInstallment: updatedLoan.fixedInstallment,
+          tcea:            updatedLoan.tcea,
+          npvDebtor:       updatedLoan.npvDebtor,
+          irrDebtor:       updatedLoan.irrDebtor,
+          totalInterest:   updatedLoan.totalInterest,
+          totalInsurance:  updatedLoan.totalInsurance,
+          totalPostage:    updatedLoan.totalPostage,
+          totalCommission: updatedLoan.totalCommission,
+          ctc:             updatedLoan.ctc
+        }));
+      },
+      error: () => {
+        // Local calculation is already done; persistence error
+        // does not block the flow, it is only reported
+        this.errorSignal.set('Could not persist the loan, but you can continue.');
+      },
+    });
+  }
+
+  // ── SCHEDULE ────────────────────────────────────────────────────────────────
+
+  loadScheduleByLoan(loanId: string): void {
+    // If we already have the schedule calculated locally, no need to call backend
+    if (this.currentScheduleSignal().length > 0) return;
+
+    this.isLoadingSignal.set(true);
+    this.sdpApi.getScheduleByLoan(loanId).subscribe({
+      next: (schedule) => {
+        this.currentScheduleSignal.set(schedule);
+        this.isLoadingSignal.set(false);
+      },
+      error: () => {
+        this.errorSignal.set('Error loading schedule');
+        this.isLoadingSignal.set(false);
+      },
+    });
+  }
+
+  // ── REPORT ──────────────────────────────────────────────────────────────────
+
+  loadReportByLoan(loanId: string): void {
+    // If we already have the data, we build the report locally
+    const loan     = this.currentLoanSignal();
+    const config   = this.activeCreditConfigSignal();
+    const schedule = this.currentScheduleSignal();
+
+    if (loan && config && schedule.length > 0) {
+      this.currentReportSignal.set(new LoanReport({
+        id: `report-${loan.id}`, // Add this required property
+        loan,
+        config,
+        schedule
+      }));
+      return;
+    }
+
+    this.isLoadingSignal.set(true);
+    this.sdpApi.getReportByLoan(loanId).subscribe({
+      next: (report) => {
+        this.currentReportSignal.set(report);
+        this.isLoadingSignal.set(false);
+      },
+      error: () => {
+        this.errorSignal.set('Error loading report');
+        this.isLoadingSignal.set(false);
+      },
+    });
+  }
+
+  // ── RESET ────────────────────────────────────────────────────────────────────
+
+  clearCurrentLoanData(): void {
+    this.currentLoanSignal.set(null);
+    this.currentScheduleSignal.set([]);
+    this.currentReportSignal.set(null);
+    this.errorSignal.set(null);
+  }
+
+  clearAll(): void {
+    this.clearCurrentLoanData();
+    this.activeCreditConfigSignal.set(null);
+    this.flowClientIdSignal.set('');
+    this.flowCarIdSignal.set('');
+    this.flowClientNameSignal.set('');
+    this.flowCarNameSignal.set('');
+  }
+}

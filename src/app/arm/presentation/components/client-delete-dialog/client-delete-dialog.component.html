@@ -1,0 +1,10 @@
+<h2 mat-dialog-title>{{ 'clients.dialog.deleteTitle' | translate }}</h2>
+<mat-dialog-content>
+  <p>{{ 'clients.dialog.deleteConfirm' | translate: { name: data.name } }}</p>
+</mat-dialog-content>
+<mat-dialog-actions align="end">
+  <button mat-button [mat-dialog-close]="false">No</button>
+  <button mat-flat-button color="warn" [mat-dialog-close]="true">
+    {{ 'clients.actions.delete' | translate }}
+  </button>
+</mat-dialog-actions>

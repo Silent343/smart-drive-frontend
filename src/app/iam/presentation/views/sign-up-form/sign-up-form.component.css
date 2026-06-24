@@ -1,0 +1,375 @@
+.login-page {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  background-color: #eaeaf1;
+  padding: 32px 20px;
+}
+
+.login-card {
+  background: #ffffff;
+  padding: 44px 40px;
+  border-radius: 24px;
+  width: 100%;
+  max-width: 480px;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.25);
+}
+
+.header {
+  text-align: center;
+  margin-bottom: 32px;
+
+  img{
+    border-radius: 15%;
+    height: 70px;
+  }
+}
+
+.logo-img {
+  height: 52px;
+  width: auto;
+  object-fit: contain;
+  margin: 0 auto 14px;
+  display: block;
+}
+
+.header h2 {
+  font-size: 22px;
+  font-weight: 700;
+  color: #0b1b3d;
+  margin: 0 0 4px;
+}
+
+.header p {
+  color: #64748b;
+  font-size: 13px;
+  margin: 0;
+}
+
+/* ── Labels ── */
+.form-group {
+  margin-bottom: 18px;
+  position: relative;
+}
+
+.form-group label {
+  display: block;
+  font-size: 11px;
+  font-weight: 700;
+  color: #334155;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  margin-bottom: 7px;
+}
+
+/* ── Fila de dos columnas ── */
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+
+/* ── Input wrapper ── */
+.input-wrapper {
+  display: flex;
+  align-items: center;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 10px;
+  background: #ffffff;
+  padding: 0 14px;
+  height: 48px;
+  transition: border-color 0.2s;
+  position: relative;
+}
+
+.input-wrapper:focus-within {
+  border-color: #b8962d;
+}
+
+.input-icon {
+  display: flex;
+  align-items: center;
+  color: #94a3b8;
+  margin-right: 10px;
+  flex-shrink: 0;
+}
+
+.input-icon mat-icon,
+.input-icon-right mat-icon {
+  font-size: 18px;
+  height: 18px;
+  width: 18px;
+}
+
+.input-icon-right {
+  display: flex;
+  align-items: center;
+  color: #94a3b8;
+  margin-left: 8px;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: color 0.2s;
+}
+
+.input-icon-right:hover { color: #475569; }
+
+.custom-input {
+  flex: 1;
+  border: none;
+  outline: none;
+  background: transparent;
+  font-size: 14px;
+  color: #1e293b;
+  font-family: inherit;
+  min-width: 0;
+}
+
+.custom-input::placeholder {
+  color: #b0bec5;
+  font-size: 14px;
+}
+
+/* ── Email con dominio ── */
+.email-domain {
+  font-size: 13px;
+  font-weight: 600;
+  color: #b8962d;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.email-preview {
+  margin: 6px 0 0 2px;
+  font-size: 12px;
+  color: #64748b;
+}
+
+.email-preview strong {
+  color: #0b1b3d;
+  font-weight: 700;
+}
+
+/* ── Phone selector ── */
+.phone-wrapper {
+  padding-left: 0;
+  overflow: visible;
+}
+
+.country-selector {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  background: #f8fafc;
+  border: none;
+  border-right: 1.5px solid #e2e8f0;
+  border-radius: 10px 0 0 10px;
+  padding: 0 12px;
+  height: 46px;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: background 0.2s;
+}
+
+.country-selector:hover { background: #f1f5f9; }
+
+.flag { font-size: 18px; line-height: 1; }
+
+.dial-code {
+  font-size: 13px;
+  font-weight: 600;
+  color: #1e293b;
+}
+
+.country-selector .chevron {
+  font-size: 16px;
+  height: 16px;
+  width: 16px;
+  color: #94a3b8;
+}
+
+.divider { width: 1px; }
+
+.phone-wrapper .custom-input { padding-left: 12px; }
+
+/* ── Dropdown países ── */
+.country-dropdown {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  right: 0;
+  background: #ffffff;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 12px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+  z-index: 100;
+  overflow: hidden;
+}
+
+.country-option {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 16px;
+  cursor: pointer;
+  transition: background 0.15s;
+  font-size: 14px;
+  color: #1e293b;
+}
+
+.country-option:hover { background: #f8fafc; }
+
+.country-option.selected { background: #fefce8; }
+
+.country-option .flag { font-size: 20px; }
+
+.country-option .country-name { flex: 1; font-weight: 500; }
+
+.country-option .dial { color: #64748b; font-size: 13px; }
+
+.country-option .check {
+  font-size: 16px;
+  height: 16px;
+  width: 16px;
+  color: #b8962d;
+}
+
+/* ── Botón ── */
+.submit-btn {
+  width: 100%;
+  height: 50px !important;
+  background-color: #b8962d !important;
+  color: #0b1b3d !important;
+  font-weight: 700 !important;
+  font-size: 14px !important;
+  letter-spacing: 0.08em !important;
+  border-radius: 12px !important;
+  margin-top: 8px !important;
+  border: none;
+  cursor: pointer;
+  transition: opacity 0.2s, transform 0.1s;
+}
+
+.submit-btn:hover:not(:disabled) {
+  opacity: 0.9;
+  transform: translateY(-1px);
+}
+
+.submit-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* ── Footer ── */
+.footer-link {
+  text-align: center;
+  margin-top: 24px;
+  font-size: 13px;
+  color: #64748b;
+}
+
+.footer-link span { margin-right: 4px; }
+
+.signup-link {
+  font-weight: 700;
+  color: #0b1b3d;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  transition: color 0.2s;
+}
+
+.signup-link:hover { color: #b8962d; }
+
+/* ── Medidor de contraseña ── */
+.password-strength {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 8px;
+}
+
+.strength-bars {
+  display: flex;
+  gap: 5px;
+  flex: 1;
+}
+
+.bar {
+  flex: 1;
+  height: 4px;
+  border-radius: 99px;
+  background: #e2e8f0;
+  transition: background 0.3s;
+}
+
+.bar--red    { background: #ef4444; }
+.bar--orange { background: #f97316; }
+.bar--yellow { background: #eab308; }
+.bar--green  { background: #22c55e; }
+
+.strength-label {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.label--red    { color: #ef4444; }
+.label--orange { color: #f97316; }
+.label--yellow { color: #eab308; }
+.label--green  { color: #22c55e; }
+
+/* ── Reglas de contraseña ── */
+.password-rules {
+  list-style: none;
+  padding: 0;
+  margin: 8px 0 0;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4px 12px;
+}
+
+.password-rules li {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 12px;
+  color: #94a3b8;
+  transition: color 0.2s;
+}
+
+.password-rules li mat-icon {
+  font-size: 14px;
+  height: 14px;
+  width: 14px;
+  color: #cbd5e1;
+  transition: color 0.2s;
+}
+
+.password-rules li.ok {
+  color: #22c55e;
+}
+
+.password-rules li.ok mat-icon {
+  color: #22c55e;
+}
+
+/* ── Hints y errores ── */
+.field-hint {
+  margin: 5px 0 0 2px;
+  font-size: 12px;
+  color: #94a3b8;
+}
+
+.field-error {
+  margin: 5px 0 0 2px;
+  font-size: 12px;
+  color: #ef4444;
+  font-weight: 600;
+}
+
+.input-wrapper.error {
+  border-color: #ef4444;
+}
+

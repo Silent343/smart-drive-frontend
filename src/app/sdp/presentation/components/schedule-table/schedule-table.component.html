@@ -1,0 +1,50 @@
+<div class="sch-table__wrap">
+  <div class="sch-table__legend">
+    <span class="sch-table__badge sch-table__badge--gold">{{ 'sdp.components.scheduleTable.partialGraceLegend' | translate }}</span>
+    <span class="sch-table__badge sch-table__badge--navy">{{ 'sdp.components.scheduleTable.totalGraceLegend' | translate }}</span>
+  </div>
+
+  <div class="sch-table__scroll">
+    <table class="sch-table">
+      <thead>
+      <tr>
+        <th class="sch-table__th--center">{{ 'sdp.components.scheduleTable.month' | translate }}</th>
+        <th>{{ 'sdp.components.scheduleTable.initialBalance' | translate }}</th>
+        <th>{{ 'sdp.components.scheduleTable.installment' | translate }}</th>
+        <th>{{ 'sdp.components.scheduleTable.interest' | translate }}</th>
+        <th>{{ 'sdp.components.scheduleTable.amortization' | translate }}</th>
+        <th>{{ 'sdp.components.scheduleTable.insurance' | translate }}</th>
+        <th>{{ 'sdp.components.scheduleTable.postage' | translate }}</th>
+        <th>{{ 'sdp.components.scheduleTable.totalBalance' | translate }}</th>
+      </tr>
+      </thead>
+      <tbody>
+      <ng-container *ngIf="rows.length > 0; else empty">
+        <tr *ngFor="let row of rows">
+          <td class="sch-table__td--center">
+            {{ row.installmentNo }}
+            <span *ngIf="row.gracePeriodType === 'partial'"
+                  class="sch-table__grace sch-table__grace--gold">{{ 'sdp.components.scheduleTable.partial' | translate }}</span>
+            <span *ngIf="row.gracePeriodType === 'total'"
+                  class="sch-table__grace sch-table__grace--navy">{{ 'sdp.components.scheduleTable.total' | translate }}</span>
+          </td>
+          <td>{{ fmt(row.openingBalance) }}</td>
+          <td>{{ fmt(row.monthlyPayment) }}</td>
+          <td>{{ fmt(row.interest) }}</td>
+          <td>{{ fmt(row.amortization) }}</td>
+          <td>{{ fmt(row.insurance) }}</td>
+          <td>{{ fmt(row.postage) }}</td>
+          <td>{{ fmt(row.endingBalance) }}</td>
+        </tr>
+      </ng-container>
+      <ng-template #empty>
+        <tr>
+          <td colspan="8" class="sch-table__empty">
+            {{ 'sdp.components.scheduleTable.emptyMessage' | translate }}
+          </td>
+        </tr>
+      </ng-template>
+      </tbody>
+    </table>
+  </div>
+</div>
