@@ -3,6 +3,7 @@
   @if (selectedVehicle()) {
     <app-vehicle-details
       [vehicle]="selectedVehicle()!"
+      [canManage]="canManage()"
       (back)="onBackToCatalog()"
       (edit)="onEdit($event)"
       (delete)="onDelete($event)">
@@ -26,9 +27,11 @@
             }
           </select>
         </div>
-        <button mat-flat-button class="register-btn" (click)="openRegisterForm()">
-          {{ 'vehicles.register' | translate }}
-        </button>
+        @if (canManage()) {
+          <button mat-flat-button class="register-btn" (click)="openRegisterForm()">
+            {{ 'vehicles.register' | translate }}
+          </button>
+        }
       </div>
     </header>
 

@@ -27,8 +27,18 @@ function calculateFrench(loan: Loan, config: CreditConfig): {
   const mg    = config.gracePeriodMonths;
   const tg    = config.gracePeriodType;
   const insPct = config.insuranceRatePct / 100;
+  const riskInsPct = config.riskInsuranceRatePct / 100;
   const postage = config.postageFeeAmount;
   const comPct = config.administrationFeePct / 100;
+  const gps = config.gpsFeeAmount;
+  const taxPct = config.igvItfPct / 100;
+  const residualValue = loan.vehiclePrice * (config.finalInstallmentPct / 100);
+  const initialCosts =
+    config.notaryCostAmount +
+    config.registryCostAmount +
+    config.appraisalCostAmount +
+    config.studyCommissionAmount +
+    config.activationCommissionAmount;
 
   // Base French installment (only for months that amortize)
   const nAmort   = n - (tg !== 'none' ? mg : 0);
@@ -39,8 +49,11 @@ function calculateFrench(loan: Loan, config: CreditConfig): {
   let balance = loan.loanAmount;
   let totalInterest    = 0;
   let totalInsurance   = 0;
+  let totalRiskInsurance = 0;
+  let totalGps = 0;
   let totalPostage     = 0;
   let totalCommission  = 0;
+  let totalTax = 0;
   const schedule: ScheduleRow[] = [];
 
   // IRR: debtor's cash flows (negative at the beginning = capital received)
@@ -51,6 +64,7 @@ function calculateFrench(loan: Loan, config: CreditConfig): {
 
     const interest  = balance * tem;
     const insurance = balance * insPct;
+    const riskInsurance = balance * riskInsPct;
     const commission = balance * comPct;
     let   amortization = 0;
     let   installment  = 0;
@@ -70,14 +84,19 @@ function calculateFrench(loan: Loan, config: CreditConfig): {
       installment = baseInstallment;
     }
 
-    const totalInstallment = installment + insurance + postage + commission;
+    const taxableBase = installment + insurance + riskInsurance + postage + commission + gps;
+    const tax = taxableBase * taxPct;
+    const totalInstallment = taxableBase + tax;
     balance -= amortization;
     if (balance < 0.001) balance = 0;
 
     totalInterest   += interest;
     totalInsurance  += insurance;
+    totalRiskInsurance += riskInsurance;
+    totalGps += gps;
     totalPostage    += postage;
     totalCommission += commission;
+    totalTax += tax;
     cashFlows.push(totalInstallment);
 
     schedule.push(new ScheduleRow({
@@ -97,8 +116,9 @@ function calculateFrench(loan: Loan, config: CreditConfig): {
     }));
   }
 
-  const ctc  = totalInterest + totalInsurance + totalPostage + totalCommission;
+  const ctc  = totalInterest + totalInsurance + totalRiskInsurance + totalGps + totalPostage + totalCommission + totalTax + initialCosts + residualValue;
   const tcea = Math.pow(1 + tem, 12) - 1;
+  const trea = config.discountAnnualRatePct > 0 ? config.discountAnnualRatePct / 100 : tcea;
   const npv  = cashFlows.reduce((acc, f, t) => acc + f / Math.pow(1 + tem, t), 0);
   const irr  = calcIRR(cashFlows);
 
@@ -118,8 +138,14 @@ function calculateFrench(loan: Loan, config: CreditConfig): {
     irrDebtor:       irr,
     totalInterest,
     totalInsurance,
+    totalRiskInsurance,
+    totalGps,
     totalPostage,
     totalCommission,
+    totalTax,
+    initialCosts,
+    residualValue,
+    trea,
     ctc,
   });
 
@@ -280,8 +306,14 @@ export class SdpStore {
       tcea:             0,
       totalInterest:    0,
       totalInsurance:   0,
+      totalRiskInsurance: 0,
+      totalGps:         0,
       totalPostage:     0,
       totalCommission:  0,
+      totalTax:         0,
+      initialCosts:     0,
+      residualValue:    0,
+      trea:             0,
       ctc:              0,
     });
 
@@ -290,37 +322,49 @@ export class SdpStore {
     this.currentLoanSignal.set(updatedLoan);
     this.currentScheduleSignal.set(schedule);
 
-    // 3. Persist in loans (db.json)
-    this.sdpApi.createLoan(updatedLoan).subscribe({
-      next: (savedLoan) => {
-        // Update with the id assigned by the backend
-        this.currentLoanSignal.set(new Loan({
-          id:              savedLoan.id, // <-- Este es el ÚNICO valor nuevo
-          carId:           updatedLoan.carId,
-          clientId:        updatedLoan.clientId,
-          configId:        updatedLoan.configId,
-          initialFee:      updatedLoan.initialFee,
-          vehiclePrice:    updatedLoan.vehiclePrice,
-          loanAmount:      updatedLoan.loanAmount,
-          installmentsQty: updatedLoan.installmentsQty,
-          startDate:       updatedLoan.startDate,
-          fixedInstallment: updatedLoan.fixedInstallment,
-          tcea:            updatedLoan.tcea,
-          npvDebtor:       updatedLoan.npvDebtor,
-          irrDebtor:       updatedLoan.irrDebtor,
-          totalInterest:   updatedLoan.totalInterest,
-          totalInsurance:  updatedLoan.totalInsurance,
-          totalPostage:    updatedLoan.totalPostage,
-          totalCommission: updatedLoan.totalCommission,
-          ctc:             updatedLoan.ctc
-        }));
-      },
-      error: () => {
-        // Local calculation is already done; persistence error
-        // does not block the flow, it is only reported
-        this.errorSignal.set('Could not persist the loan, but you can continue.');
-      },
+    // The confirmed loan is persisted only from the report page.
+  }
+
+  confirmCurrentLoan(): Observable<Loan> {
+    const loan = this.currentLoanSignal();
+    if (!loan) {
+      throw new Error('No current loan to confirm');
+    }
+
+    const confirmedLoan = new Loan({
+      id: loan.id && !loan.id.startsWith('pending') ? loan.id : '',
+      carId: loan.carId,
+      clientId: loan.clientId,
+      configId: loan.configId,
+      sellerId: loan.sellerId,
+      status: 'CONFIRMED',
+      initialFee: loan.initialFee,
+      vehiclePrice: loan.vehiclePrice,
+      loanAmount: loan.loanAmount,
+      installmentsQty: loan.installmentsQty,
+      startDate: loan.startDate,
+      fixedInstallment: loan.fixedInstallment,
+      npvDebtor: loan.npvDebtor,
+      irrDebtor: loan.irrDebtor,
+      tcea: loan.tcea,
+      trea: loan.trea,
+      totalInterest: loan.totalInterest,
+      totalInsurance: loan.totalInsurance,
+      totalRiskInsurance: loan.totalRiskInsurance,
+      totalGps: loan.totalGps,
+      totalPostage: loan.totalPostage,
+      totalCommission: loan.totalCommission,
+      totalTax: loan.totalTax,
+      initialCosts: loan.initialCosts,
+      residualValue: loan.residualValue,
+      ctc: loan.ctc,
     });
+
+    return this.sdpApi.createLoan(confirmedLoan).pipe(
+      tap((savedLoan) => {
+        this.currentLoanSignal.set(savedLoan);
+      }),
+    );
   }
 
   // ── SCHEDULE ────────────────────────────────────────────────────────────────

@@ -34,14 +34,11 @@ export class Home implements OnInit {
     this.store.loadVehicleCommercials();
   }
 
-  clients = computed(() => {
-    const userId = this.iamStore.currentUserId();
-    return this.store.clients().filter(c => c.userId === (userId || ''));
-  });
+  clients = computed(() =>
+    this.store.clients().filter(c => this.iamStore.belongsToCompany(c.userId))
+  );
 
   vehicles = computed(() => {
-    const userId = this.iamStore.currentUserId() || '';
-
     // Obtenemos todas las colecciones del store
     const baseVehicles = this.store.vehicles();
     const specs = this.store.vehicleSpecifications();
@@ -65,7 +62,7 @@ export class Home implements OnInit {
       }
 
       return v;
-    }).filter(v => v.commercial?.userId === userId);
+    }).filter(v => this.iamStore.belongsToCompany(v.commercial?.userId));
   });
 
   totalClients = computed(() => {

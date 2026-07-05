@@ -11,8 +11,11 @@ import { Router, RouterLink } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { TranslateModule } from '@ngx-translate/core';
 import {SignUpCommand} from '../../../domain/model/sign-up.command';
 import {IamStore} from '../../../application/iam.store';
+import { LanguageSwitcher } from '../../../../shared/presentation/components/language-switcher/language-switcher';
 
 interface Country {
   code: string;
@@ -56,10 +59,17 @@ function rucValidator(control: AbstractControl): ValidationErrors | null {
   return /^(10|20)\d{9}$/.test(v) ? null : { invalidRuc: true };
 }
 
+function companyDomainValidator(control: AbstractControl): ValidationErrors | null {
+  const v: string = control.value ?? '';
+  return /^[a-z0-9][a-z0-9-]{2,24}$/.test(v) && !v.endsWith('-')
+    ? null
+    : { invalidDomain: true };
+}
+
 @Component({
   selector: 'app-sign-up-form',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, RouterLink, MatButtonModule, MatIconModule],
+  imports: [CommonModule, ReactiveFormsModule, RouterLink, MatButtonModule, MatIconModule, MatProgressSpinnerModule, TranslateModule, LanguageSwitcher],
   templateUrl: './sign-up-form.component.html',
   styleUrls: ['./sign-up-form.component.css']
 })
@@ -67,6 +77,8 @@ export class SignUpForm implements OnInit{
   private readonly fb = inject(FormBuilder);
   private router = inject(Router);
   private store = inject(IamStore)
+  /** Spinner state for the submit button, shared with the store. */
+  readonly loading = this.store.authLoading;
 
   showPassword = false;
   showConfirm  = false;
@@ -74,6 +86,11 @@ export class SignUpForm implements OnInit{
 
   emailDomain = '';
   emailPreview = '';
+  generatedHandlePreview = '';
+  /** Company handle in SmartDrive format, e.g. `@rekir.sdf`. */
+  domainHandlePreview = '';
+  showPrivacyPolicy = false;
+  private domainEdited = false;
 
   strengthLevel = 0;
   strengthColor = 'red';
@@ -100,27 +117,66 @@ export class SignUpForm implements OnInit{
     dni:          ['', [Validators.required, dniValidator]],
     ruc:          ['', [Validators.required, rucValidator]],
     businessName: ['', Validators.required],
+    companyDomain: ['', [Validators.required, companyDomainValidator]],
+    maxWorkers: [5, [Validators.required, Validators.min(1), Validators.max(250)]],
     phone:        ['', [Validators.required, Validators.pattern('^[0-9]{9,15}$')]],
     recoveryEmail:   ['', [Validators.required, Validators.email]],
     password:        ['', [Validators.required, strongPasswordValidator]],
     confirmPassword: ['', Validators.required],
+    privacyAccepted: [false, Validators.requiredTrue],
   }, { validators: passwordMatchValidator });
 
   /** Genera el dominio y el preview cuando cambia la razón social */
-  /*
   onBusinessNameChange(): void {
+    if (this.domainEdited) {
+      this.updateDomainPreview();
+      return;
+    }
     const raw: string = this.signUpForm.value.businessName ?? '';
-    const slug = raw.toLowerCase().replace(/\s+/g, '').replace(/[^a-z0-9]/g, '');
+    const slug = this.slugifyDomain(raw);
 
     if (slug) {
-      this.emailDomain  = `@${slug}.sdf.pe`;
-      this.emailPreview = `nombre@${slug}.sdf.pe`;
+      this.signUpForm.get('companyDomain')?.setValue(slug, { emitEvent: false });
     } else {
-      this.emailDomain  = '';
-      this.emailPreview = '';
+      this.signUpForm.get('companyDomain')?.setValue('', { emitEvent: false });
     }
+    this.updateDomainPreview();
   }
-  */
+
+  onCompanyDomainInput(): void {
+    this.domainEdited = true;
+    const raw = this.signUpForm.value.companyDomain ?? '';
+    const slug = this.slugifyDomain(raw);
+    if (raw !== slug) {
+      this.signUpForm.get('companyDomain')?.setValue(slug, { emitEvent: false });
+    }
+    this.updateDomainPreview();
+  }
+
+  openPrivacyPolicy(): void {
+    this.showPrivacyPolicy = true;
+  }
+
+  closePrivacyPolicy(): void {
+    this.showPrivacyPolicy = false;
+  }
+
+  private slugifyDomain(value: string): string {
+    return value
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .toLowerCase()
+      .trim()
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/^-+|-+$/g, '')
+      .slice(0, 25);
+  }
+
+  private updateDomainPreview(): void {
+    const domain = this.signUpForm.value.companyDomain ?? '';
+    this.domainHandlePreview = domain ? `@${domain}.sdf` : '';
+    this.generatedHandlePreview = domain ? `${domain}-ven001` : '';
+  }
 
   get passwordMismatch(): boolean {
     return !!(
@@ -133,6 +189,8 @@ export class SignUpForm implements OnInit{
     this.signUpForm.get('password')!.valueChanges.subscribe(v => {
       this.evaluatePassword(v ?? '');
     });
+    this.signUpForm.get('businessName')!.valueChanges.subscribe(() => this.onBusinessNameChange());
+    this.onBusinessNameChange();
   }
 
   evaluatePassword(v: string): void {
@@ -187,9 +245,11 @@ export class SignUpForm implements OnInit{
       ruc: formValues.ruc,
       phone: formValues.phone,
       businessName: formValues.businessName,
+      companyDomain: formValues.companyDomain,
+      maxWorkers: Number(formValues.maxWorkers),
     })
 
-    this.store.signUp(signUpCommand, this.router)
+    this.store.signUp(signUpCommand, this.router);
   }
 
 

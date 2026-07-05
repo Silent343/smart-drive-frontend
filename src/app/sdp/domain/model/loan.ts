@@ -5,6 +5,8 @@ export class Loan implements BaseEntity {
   private _carId!: string;                 // FK → vehicle-entity (bounded ARM)
   private _clientId!: string;              // FK → client-entity  (bounded ARM)
   private _configId!: string;              // FK → CreditConfig
+  private _sellerId!: string;
+  private _status!: string;
   private _initialFee!: number;            // cuota inicial (down payment)
   private _vehiclePrice!: number;          // precio del vehículo
   private _loanAmount!: number;            // vehiclePrice - initialFee
@@ -16,25 +18,35 @@ export class Loan implements BaseEntity {
   private _npvDebtor!: number;             // VAN desde perspectiva del deudor
   private _irrDebtor!: number;             // TIR mensual del deudor
   private _tcea!: number;                  // Tasa de costo efectivo anual (SBS)
+  private _trea!: number;
   private _totalInterest!: number;
   private _totalInsurance!: number;
+  private _totalRiskInsurance!: number;
+  private _totalGps!: number;
   private _totalPostage!: number;
   private _totalCommission!: number;
+  private _totalTax!: number;
+  private _initialCosts!: number;
+  private _residualValue!: number;
   private _ctc!: number;                   // Costo total del crédito
 
 
   constructor(props:{
     id: string, carId: string, clientId: string, configId: string,
+    sellerId?: string, status?: string,
     initialFee: number, vehiclePrice: number, loanAmount: number,
     installmentsQty: number, startDate: Date, fixedInstallment: number,
     npvDebtor: number, irrDebtor: number, tcea: number, totalInterest: number,
     totalInsurance: number, totalPostage: number, totalCommission: number,
-    ctc: number
+    ctc: number, trea?: number, totalRiskInsurance?: number, totalGps?: number,
+    totalTax?: number, initialCosts?: number, residualValue?: number
   }) {
     this._id = props.id;
     this._carId = props.carId;
     this._clientId = props.clientId;
     this._configId = props.configId;
+    this._sellerId = props.sellerId ?? '';
+    this._status = props.status ?? 'SIMULATED';
     this._initialFee = props.initialFee;
     this._vehiclePrice = props.vehiclePrice;
     this._loanAmount = props.loanAmount;
@@ -44,10 +56,16 @@ export class Loan implements BaseEntity {
     this._npvDebtor = props.npvDebtor;
     this._irrDebtor = props.irrDebtor;
     this._tcea = props.tcea;
+    this._trea = props.trea ?? 0;
     this._totalInterest = props.totalInterest;
     this._totalInsurance = props.totalInsurance;
+    this._totalRiskInsurance = props.totalRiskInsurance ?? 0;
+    this._totalGps = props.totalGps ?? 0;
     this._totalPostage = props.totalPostage;
     this._totalCommission = props.totalCommission;
+    this._totalTax = props.totalTax ?? 0;
+    this._initialCosts = props.initialCosts ?? 0;
+    this._residualValue = props.residualValue ?? 0;
     this._ctc = props.ctc;
   }
 
@@ -81,6 +99,22 @@ export class Loan implements BaseEntity {
 
   set configId(value: string) {
     this._configId = value;
+  }
+
+  get sellerId(): string {
+    return this._sellerId;
+  }
+
+  set sellerId(value: string) {
+    this._sellerId = value;
+  }
+
+  get status(): string {
+    return this._status;
+  }
+
+  set status(value: string) {
+    this._status = value;
   }
 
   get initialFee(): number {
@@ -155,6 +189,14 @@ export class Loan implements BaseEntity {
     this._tcea = value;
   }
 
+  get trea(): number {
+    return this._trea;
+  }
+
+  set trea(value: number) {
+    this._trea = value;
+  }
+
   get totalInterest(): number {
     return this._totalInterest;
   }
@@ -171,6 +213,22 @@ export class Loan implements BaseEntity {
     this._totalInsurance = value;
   }
 
+  get totalRiskInsurance(): number {
+    return this._totalRiskInsurance;
+  }
+
+  set totalRiskInsurance(value: number) {
+    this._totalRiskInsurance = value;
+  }
+
+  get totalGps(): number {
+    return this._totalGps;
+  }
+
+  set totalGps(value: number) {
+    this._totalGps = value;
+  }
+
   get totalPostage(): number {
     return this._totalPostage;
   }
@@ -185,6 +243,30 @@ export class Loan implements BaseEntity {
 
   set totalCommission(value: number) {
     this._totalCommission = value;
+  }
+
+  get totalTax(): number {
+    return this._totalTax;
+  }
+
+  set totalTax(value: number) {
+    this._totalTax = value;
+  }
+
+  get initialCosts(): number {
+    return this._initialCosts;
+  }
+
+  set initialCosts(value: number) {
+    this._initialCosts = value;
+  }
+
+  get residualValue(): number {
+    return this._residualValue;
+  }
+
+  set residualValue(value: number) {
+    this._residualValue = value;
   }
 
   get ctc(): number {

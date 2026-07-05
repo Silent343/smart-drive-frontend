@@ -9,6 +9,8 @@ export class SignUpCommand {
   private readonly _ruc: string;
   private readonly _phone: string;
   private readonly _businessName: string;
+  private readonly _companyDomain: string;
+  private readonly _maxWorkers: number;
 
   /**
    * @param {Object} props - Sign-up credentials and profile info.
@@ -21,6 +23,8 @@ export class SignUpCommand {
     ruc: string;
     phone: string;
     businessName: string;
+    companyDomain: string;
+    maxWorkers: number;
   }) {
     this._email = props.email.toLowerCase();
     this._password = props.password;
@@ -29,6 +33,8 @@ export class SignUpCommand {
     this._ruc = props.ruc;
     this._phone = props.phone;
     this._businessName = props.businessName;
+    this._companyDomain = props.companyDomain.trim().toLowerCase();
+    this._maxWorkers = props.maxWorkers;
   }
 
   /** @returns {string} The email used for authentication. */
@@ -51,4 +57,8 @@ export class SignUpCommand {
 
   /** @returns {string} User business name. */
   get businessName(): string { return this._businessName; }
+
+  get companyDomain(): string { return this._companyDomain; }
+
+  get maxWorkers(): number { return this._maxWorkers; }
 }

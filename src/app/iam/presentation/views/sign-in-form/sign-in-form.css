@@ -161,11 +161,36 @@
   margin-top: 24px;
 }
 
-/* ── Forgot password ── */
-.forgot-row {
+.field-hint {
+  margin: 6px 0 0;
+  color: #64748b;
+  font-size: 12px;
+  line-height: 1.4;
+}
+
+/* ── Remember + Forgot password ── */
+.login-options {
   display: flex;
-  justify-content: flex-end;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
   margin-bottom: 16px;
+}
+
+.remember-check {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: #475569;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.remember-check input {
+  width: 16px;
+  height: 16px;
+  accent-color: #b8962d;
 }
 
 .forgot-link {
@@ -203,4 +228,35 @@
 
 .signup-link:hover {
   color: #b8962d;
+}
+
+@media (max-width: 520px) {
+  .login-options {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+}
+
+/* ── Language switcher inside the login card ── */
+.login-card {
+  position: relative;
+}
+
+.card-lang {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  transform: scale(0.85);
+  transform-origin: top right;
+}
+
+/* Loading state inside submit buttons */
+.btn-loading {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+.btn-loading ::ng-deep circle {
+  stroke: currentColor;
 }

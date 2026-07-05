@@ -37,8 +37,10 @@ export class VehiclePageComponent implements OnInit {
   selectedVehicle = signal<Vehicle | null>(null);
   filterModel = signal<string>('');
 
+  /** Only the admin performs CRUD on vehicles; sellers browse a read-only catalog. */
+  readonly canManage = this.iam.isAdmin;
+
   vehicles = computed(() => {
-    const userId = this.iam.currentUserId() || '';
     const baseVehicles = this.store.vehicles();
     const specs = this.store.vehicleSpecifications();
     const commercials = this.store.vehicleCommercials();
@@ -55,7 +57,7 @@ export class VehiclePageComponent implements OnInit {
       }
 
       return v;
-    }).filter(v => v.commercial?.userId === userId);
+    }).filter(v => this.iam.belongsToCompany(v.commercial?.userId));
   });
 
   filteredVehicles = computed(() => {
@@ -98,7 +100,8 @@ export class VehiclePageComponent implements OnInit {
 
     dialogRef.afterClosed().subscribe((result: any) => {
       if (result) {
-        const currentUserId = this.iam.currentUserId() || '';
+        // Vehicles belong to the company: every worker sees the same inventory.
+        const companyScope = this.iam.companyScope();
 
         this.store.createVehicle({
           code: result.code,
@@ -120,7 +123,7 @@ export class VehiclePageComponent implements OnInit {
 
           this.store.createVehicleCommercial({
             vehicleId: generatedId,
-            userId: currentUserId,
+            userId: companyScope,
             price: result.price,
             company: result.company
           });

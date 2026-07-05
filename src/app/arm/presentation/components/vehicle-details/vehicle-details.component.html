@@ -6,14 +6,16 @@
       </button>
       <h2>{{ vehicle.specification?.brand }} {{ vehicle.specification?.model }} {{ vehicle.specification?.year }}</h2>
     </div>
-    <div class="action-group">
-      <button mat-flat-button class="edit-btn" (click)="edit.emit(vehicle)">
-        {{ 'vehicles.actions.edit' | translate }}
-      </button>
-      <button mat-flat-button class="delete-btn" (click)="delete.emit(vehicle)">
-        {{ 'vehicles.actions.delete' | translate }}
-      </button>
-    </div>
+    @if (canManage) {
+      <div class="action-group">
+        <button mat-flat-button class="edit-btn" (click)="edit.emit(vehicle)">
+          {{ 'vehicles.actions.edit' | translate }}
+        </button>
+        <button mat-flat-button class="delete-btn" (click)="delete.emit(vehicle)">
+          {{ 'vehicles.actions.delete' | translate }}
+        </button>
+      </div>
+    }
   </header>
 
   <div class="technical-sheet-card">

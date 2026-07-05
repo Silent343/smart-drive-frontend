@@ -7,7 +7,10 @@
       <th>{{ 'clients.table.income' | translate }}</th>
       <th>{{ 'clients.table.occupation' | translate }}</th>
       <th>{{ 'clients.table.phone' | translate }}</th>
-      <th>{{ 'clients.table.vehicle' | translate }}</th> <th class="actions-column">{{ 'clients.table.actions' | translate }}</th>
+      <th>{{ 'clients.table.vehicle' | translate }}</th>
+      @if (!readonly()) {
+        <th class="actions-column">{{ 'clients.table.actions' | translate }}</th>
+      }
     </tr>
     </thead>
 
@@ -23,9 +26,11 @@
           <td>
             @if (getVehicleCode(client.vehicleId)) {
               <div class="vehicle-badge-wrapper">
-                <button class="unlink-btn" (click)="unlinkVehicle.emit(client)" title="Desvincular vehículo">
-                  &#10006;
-                </button>
+                @if (!readonly()) {
+                  <button class="unlink-btn" (click)="unlinkVehicle.emit(client)" title="Desvincular vehículo">
+                    &#10006;
+                  </button>
+                }
                 <span class="vehicle-code-badge">{{ getVehicleCode(client.vehicleId) }}</span>
               </div>
             } @else {
@@ -33,14 +38,16 @@
             }
           </td>
 
-          <td class="actions-cell">
-            <button mat-button class="edit-btn" (click)="edit.emit(client)">
-              {{ 'clients.actions.edit' | translate }}
-            </button>
-            <button mat-button class="delete-btn" (click)="delete.emit(client)">
-              {{ 'clients.actions.delete' | translate }}
-            </button>
-          </td>
+          @if (!readonly()) {
+            <td class="actions-cell">
+              <button mat-button class="edit-btn" (click)="edit.emit(client)">
+                {{ 'clients.actions.edit' | translate }}
+              </button>
+              <button mat-button class="delete-btn" (click)="delete.emit(client)">
+                {{ 'clients.actions.delete' | translate }}
+              </button>
+            </td>
+          }
         </tr>
       } @empty {
         <tr>

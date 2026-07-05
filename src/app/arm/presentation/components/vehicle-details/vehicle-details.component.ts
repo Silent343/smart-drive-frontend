@@ -16,6 +16,9 @@ export class VehicleDetailsComponent {
 // Recibe el vehículo específico desde el padre
   @Input({ required: true }) vehicle!: Vehicle;
 
+  /** When false (seller view) the catalog is read-only: edit/delete are hidden. */
+  @Input() canManage = false;
+
   // Emite los eventos hacia el padre
   @Output() back = new EventEmitter<void>();
   @Output() edit = new EventEmitter<Vehicle>();

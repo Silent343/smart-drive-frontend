@@ -60,6 +60,14 @@ export class SdpApi extends BaseApi {
     return this.loanEndpoint.getById(id);
   }
 
+  getConfirmedLoans(): Observable<Loan[]> {
+    const assembler = new LoanAssembler();
+    const url = `${environment.platformProviderApiBaseUrl}${environment.platformProviderLoansEndpointPath}/confirmed`;
+    return this.http
+      .get<LoanResource[]>(url)
+      .pipe(map(resources => resources.map(resource => assembler.toEntityFromResource(resource))));
+  }
+
   /** Persiste el préstamo una vez confirmado */
   createLoan(loan: Omit<Loan, 'id'>): Observable<Loan> {
     return this.loanEndpoint.create(<Loan>loan);

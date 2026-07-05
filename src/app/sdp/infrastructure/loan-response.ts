@@ -6,6 +6,8 @@ export interface LoanResource extends BaseResource{
   car_id: string;
   client_id: string;
   config_id: string;
+  seller_id?: string;
+  status?: string;
   initial_fee: number;
   vehicle_price: number;
   loan_amount: number;
@@ -15,10 +17,16 @@ export interface LoanResource extends BaseResource{
   npv_debtor: number;
   irr_debtor: number;
   tcea: number;
+  trea?: number;
   total_interest: number;
   total_insurance: number;
+  total_risk_insurance?: number;
+  total_gps?: number;
   total_postage: number;
   total_commission: number;
+  total_tax?: number;
+  initial_costs?: number;
+  residual_value?: number;
   ctc: number;
 }
 

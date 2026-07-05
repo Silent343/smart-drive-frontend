@@ -16,6 +16,8 @@ import {Vehicle} from '../../../domain/model/vehicle.entity';
 export class ClientsTableComponent {
   clients = input.required<Client[]>();
   vehicles = input<Vehicle[]>([]); // Nuevo input para recibir la lista
+  /** When true (admin view) all CRUD actions are hidden: list is read-only. */
+  readonly = input<boolean>(false);
 
   edit = output<Client>();
   delete = output<Client>();

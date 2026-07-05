@@ -1,4 +1,4 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, effect, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
@@ -23,6 +23,10 @@ export class ConfigurationPageComponent implements OnInit {
   private readonly armStore = inject(ArmStore);
   private readonly iamStore = inject(IamStore);
   private readonly router   = inject(Router);
+  private readonly syncActiveConfig = effect(() => {
+    const config = this.store.activeCreditConfig();
+    if (config) this.applyConfig(config);
+  });
 
   // ── Cliente / vehículo ───────────────────────────────────────
   dni         = '';
@@ -47,7 +51,19 @@ export class ConfigurationPageComponent implements OnInit {
   insuranceRatePct                   = this.savedConfig?.insuranceRatePct     ?? 0.05;
   postageFeeAmount                   = this.savedConfig?.postageFeeAmount      ?? 3.50;
   administrationFeePct               = this.savedConfig?.administrationFeePct ?? 0;
-  igvPct                             = 0;
+  riskInsuranceRatePct                = this.savedConfig?.riskInsuranceRatePct ?? 0.30;
+  gpsFeeAmount                       = this.savedConfig?.gpsFeeAmount ?? 20;
+  finalInstallmentPct                 = this.savedConfig?.finalInstallmentPct ?? 1;
+  igvPct                             = this.savedConfig?.igvItfPct ?? 18;
+  notaryCostAmount                   = this.savedConfig?.notaryCostAmount ?? 100;
+  registryCostAmount                 = this.savedConfig?.registryCostAmount ?? 75;
+  appraisalCostAmount                = this.savedConfig?.appraisalCostAmount ?? 0;
+  studyCommissionAmount              = this.savedConfig?.studyCommissionAmount ?? 100;
+  activationCommissionAmount         = this.savedConfig?.activationCommissionAmount ?? 0;
+  discountAnnualRatePct              = this.savedConfig?.discountAnnualRatePct ?? 5;
+
+  readonly isSeller = this.iamStore.isSeller;
+  readonly isAdmin = this.iamStore.isAdmin;
 
   // ── Derivados ────────────────────────────────────────────────
   get isNominal():          boolean { return this.interestRateType === 'nominal'; }
@@ -71,6 +87,28 @@ export class ConfigurationPageComponent implements OnInit {
     // Es vital cargar las particiones para poder leer brand y model al buscar
     this.armStore.loadVehicleSpecifications();
     this.armStore.loadVehicleCommercials();
+  }
+
+  private applyConfig(config: CreditConfig): void {
+    this.currency = config.currency;
+    this.interestRateType = config.interestRateType;
+    this.annualRate = config.annualRate;
+    this.capitalization = config.capitalization ?? 12;
+    this.gracePeriodMonths = config.gracePeriodMonths;
+    this.gracePeriodType = config.gracePeriodType;
+    this.insuranceRatePct = config.insuranceRatePct;
+    this.postageFeeAmount = config.postageFeeAmount;
+    this.administrationFeePct = config.administrationFeePct;
+    this.riskInsuranceRatePct = config.riskInsuranceRatePct;
+    this.gpsFeeAmount = config.gpsFeeAmount;
+    this.finalInstallmentPct = config.finalInstallmentPct;
+    this.igvPct = config.igvItfPct;
+    this.notaryCostAmount = config.notaryCostAmount;
+    this.registryCostAmount = config.registryCostAmount;
+    this.appraisalCostAmount = config.appraisalCostAmount;
+    this.studyCommissionAmount = config.studyCommissionAmount;
+    this.activationCommissionAmount = config.activationCommissionAmount;
+    this.discountAnnualRatePct = config.discountAnnualRatePct;
   }
 
   // ── Búsqueda por DNI ─────────────────────────────────────────
@@ -109,10 +147,9 @@ export class ConfigurationPageComponent implements OnInit {
   get vehicleOptions() {
     const specs = this.armStore.vehicleSpecifications();
     const commercials = this.armStore.vehicleCommercials();
-    const userId = this.iamStore.currentUserId() || '';
 
     return this.armStore.vehicles()
-      .filter(v => commercials.find(c => c.vehicleId === v.id)?.userId === userId)
+      .filter(v => this.iamStore.belongsToCompany(commercials.find(c => c.vehicleId === v.id)?.userId))
       .map(v => {
         const spec = specs.find(s => s.vehicleId === v.id);
         const brand = spec?.brand ?? '';
@@ -183,7 +220,7 @@ export class ConfigurationPageComponent implements OnInit {
     if (!this.canContinue) return;
 
     const config = new CreditConfig({
-      id:                   this.savedConfig?.id ?? '',
+      id:                   this.store.activeCreditConfig()?.id ?? this.savedConfig?.id ?? '',
       currency:             this.currency,
       interestRateType:     this.interestRateType,
       annualRate:           this.annualRate,
@@ -193,9 +230,19 @@ export class ConfigurationPageComponent implements OnInit {
       insuranceRatePct:     this.insuranceRatePct,
       postageFeeAmount:     this.postageFeeAmount,
       administrationFeePct: this.administrationFeePct,
+      riskInsuranceRatePct: this.riskInsuranceRatePct,
+      gpsFeeAmount: this.gpsFeeAmount,
+      finalInstallmentPct: this.finalInstallmentPct,
+      igvItfPct: this.igvPct,
+      notaryCostAmount: this.notaryCostAmount,
+      registryCostAmount: this.registryCostAmount,
+      appraisalCostAmount: this.appraisalCostAmount,
+      studyCommissionAmount: this.studyCommissionAmount,
+      activationCommissionAmount: this.activationCommissionAmount,
+      discountAnnualRatePct: this.discountAnnualRatePct,
     });
 
-    const operation$ = this.savedConfig?.id
+    const operation$ = config.id
       ? this.store.updateCreditConfig(config)
       : this.store.createCreditConfig(config);
 
@@ -227,6 +274,15 @@ export class ConfigurationPageComponent implements OnInit {
     this.insuranceRatePct = 0.05;
     this.postageFeeAmount = 3.50;
     this.administrationFeePct = 0;
-    this.igvPct = 0;
+    this.riskInsuranceRatePct = 0.30;
+    this.gpsFeeAmount = 20;
+    this.finalInstallmentPct = 1;
+    this.igvPct = 18;
+    this.notaryCostAmount = 100;
+    this.registryCostAmount = 75;
+    this.appraisalCostAmount = 0;
+    this.studyCommissionAmount = 100;
+    this.activationCommissionAmount = 0;
+    this.discountAnnualRatePct = 5;
   }
 }

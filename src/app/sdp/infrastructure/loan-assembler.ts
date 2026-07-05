@@ -7,10 +7,12 @@ export class LoanAssembler
 {
   toEntityFromResource(resource: LoanResource): Loan {
     return new Loan({
-      id: resource.id,
+      id: resource.id != null ? String(resource.id) : '',
       carId: resource.car_id,
       clientId: resource.client_id,
-      configId: resource.config_id,
+      configId: resource.config_id != null ? String(resource.config_id) : '',
+      sellerId: resource.seller_id != null ? String(resource.seller_id) : '',
+      status: resource.status ?? 'SIMULATED',
       initialFee: resource.initial_fee,
       vehiclePrice: resource.vehicle_price,
       loanAmount: resource.loan_amount,
@@ -20,20 +22,28 @@ export class LoanAssembler
       npvDebtor: resource.npv_debtor,
       irrDebtor: resource.irr_debtor,
       tcea: resource.tcea,
+      trea: resource.trea ?? 0,
       totalInterest: resource.total_interest,
       totalInsurance: resource.total_insurance,
+      totalRiskInsurance: resource.total_risk_insurance ?? 0,
+      totalGps: resource.total_gps ?? 0,
       totalPostage: resource.total_postage,
       totalCommission: resource.total_commission,
+      totalTax: resource.total_tax ?? 0,
+      initialCosts: resource.initial_costs ?? 0,
+      residualValue: resource.residual_value ?? 0,
       ctc: resource.ctc,
     });
   }
 
   toResourceFromEntity(entity: Loan): LoanResource {
     return {
-      id: entity.id,
+      id: (entity.id ? entity.id : null) as any,
       car_id: entity.carId,
       client_id: entity.clientId,
       config_id: entity.configId,
+      seller_id: (entity.sellerId ? entity.sellerId : null) as any,
+      status: entity.status,
       initial_fee: entity.initialFee,
       vehicle_price: entity.vehiclePrice,
       loan_amount: entity.loanAmount,
@@ -43,10 +53,16 @@ export class LoanAssembler
       npv_debtor: entity.npvDebtor,
       irr_debtor: entity.irrDebtor,
       tcea: entity.tcea,
+      trea: entity.trea,
       total_interest: entity.totalInterest,
       total_insurance: entity.totalInsurance,
+      total_risk_insurance: entity.totalRiskInsurance,
+      total_gps: entity.totalGps,
       total_postage: entity.totalPostage,
       total_commission: entity.totalCommission,
+      total_tax: entity.totalTax,
+      initial_costs: entity.initialCosts,
+      residual_value: entity.residualValue,
       ctc: entity.ctc,
     };
   }

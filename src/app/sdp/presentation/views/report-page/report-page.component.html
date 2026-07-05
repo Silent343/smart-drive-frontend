@@ -8,6 +8,18 @@
         <span class="rp-section__k">{{ 'sdp.report.clientId' | translate }}</span>
         <span class="rp-section__v">{{ loan?.clientId || '—' }}</span>
       </div>
+      <div class="rp-section__row">
+        <span class="rp-section__k">Client name</span>
+        <span class="rp-section__v">{{ clientName() || '—' }}</span>
+      </div>
+      <div class="rp-section__row">
+        <span class="rp-section__k">Seller</span>
+        <span class="rp-section__v">{{ currentUser()?.fullName || '—' }}</span>
+      </div>
+      <div class="rp-section__row">
+        <span class="rp-section__k">Role</span>
+        <span class="rp-section__v">{{ currentUser()?.roleLabel || '—' }}</span>
+      </div>
     </div>
     <div class="rp-section">
       <p class="rp-section__title">{{ 'sdp.report.vehicleData' | translate }}</p>
@@ -18,6 +30,10 @@
       <div class="rp-section__row">
         <span class="rp-section__k">{{ 'sdp.report.price' | translate }}</span>
         <span class="rp-section__v">{{ fmt(loan?.vehiclePrice) }}</span>
+      </div>
+      <div class="rp-section__row">
+        <span class="rp-section__k">Vehicle name</span>
+        <span class="rp-section__v">{{ carName() || '—' }}</span>
       </div>
     </div>
   </div>
@@ -60,6 +76,14 @@
           <span class="rp-section__k">{{ 'sdp.common.graceType' | translate }}</span>
           <span class="rp-section__v">{{ config?.gracePeriodType || '—' }}</span>
         </div>
+        <div class="rp-section__row">
+          <span class="rp-section__k">Final installment</span>
+          <span class="rp-section__v">{{ config?.finalInstallmentPct }}%</span>
+        </div>
+        <div class="rp-section__row">
+          <span class="rp-section__k">Discount annual rate</span>
+          <span class="rp-section__v">{{ config?.discountAnnualRatePct }}%</span>
+        </div>
       </div>
     </div>
   </div>
@@ -81,11 +105,31 @@
           <span class="rp-section__v">{{ fmt(loan?.totalInsurance) }}</span>
         </div>
         <div class="rp-section__row">
+          <span class="rp-section__k">Risk insurance</span>
+          <span class="rp-section__v">{{ fmt(loan?.totalRiskInsurance) }}</span>
+        </div>
+        <div class="rp-section__row">
+          <span class="rp-section__k">GPS total</span>
+          <span class="rp-section__v">{{ fmt(loan?.totalGps) }}</span>
+        </div>
+        <div class="rp-section__row">
           <span class="rp-section__k">{{ 'sdp.report.totalPostage' | translate }}</span>
           <span class="rp-section__v">{{ fmt(loan?.totalPostage) }}</span>
         </div>
+        <div class="rp-section__row">
+          <span class="rp-section__k">Initial costs</span>
+          <span class="rp-section__v">{{ fmt(loan?.initialCosts) }}</span>
+        </div>
       </div>
       <div>
+        <div class="rp-section__row">
+          <span class="rp-section__k">Tax IGV/ITF</span>
+          <span class="rp-section__v">{{ fmt(loan?.totalTax) }}</span>
+        </div>
+        <div class="rp-section__row">
+          <span class="rp-section__k">Residual value</span>
+          <span class="rp-section__v">{{ fmt(loan?.residualValue) }}</span>
+        </div>
         <div class="rp-section__row">
           <span class="rp-section__k">{{ 'sdp.report.ctc' | translate }}</span>
           <span class="rp-section__v rp-section__v--gold">{{ fmt(loan?.ctc) }}</span>
@@ -102,6 +146,10 @@
           <span class="rp-section__k">{{ 'sdp.report.irrMonthly' | translate }}</span>
           <span class="rp-section__v">{{ fmtPct(loan?.irrDebtor, 4) }}</span>
         </div>
+        <div class="rp-section__row">
+          <span class="rp-section__k">TREA</span>
+          <span class="rp-section__v">{{ fmtPct(loan?.trea, 4) }}</span>
+        </div>
       </div>
     </div>
   </div>
@@ -113,8 +161,7 @@
   <!-- Success message -->
   <div class="sdp-info-box sdp-mb" *ngIf="confirmSuccess">
   <span class="sdp-info-box__text" style="color: #2e7d32; font-weight: 600;">
-    ✓ Credit confirmed. The vehicle has been successfully linked to the client.
-    You can start a new flow from Configuration.
+    ✓ Credit confirmed. It is now available in the administrator company reports.
   </span>
   </div>
 
@@ -144,6 +191,10 @@
         (click)="onConfirm()"
         [disabled]="isConfirming || confirmSuccess">
         {{ isConfirming ? 'Confirming...' : confirmSuccess ? '✓ Confirmed' : 'Confirm credit' }}
+      </button>
+
+      <button class="sdp-btn-outline" *ngIf="confirmSuccess" (click)="onNewSimulation()">
+        New simulation
       </button>
     </div>
   </div>

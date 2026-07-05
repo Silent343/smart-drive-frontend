@@ -81,3 +81,30 @@
   color: #94a3b8;
   font-size: 0.82rem;
 }
+
+/* Fixed-by-authority (SUNAT) field styling */
+.sdp-label--fixed {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.sdp-fixed-badge {
+  display: inline-block;
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  color: #8a5a12;
+  background: #fff2df;
+  border: 1px solid #e5c489;
+  border-radius: 999px;
+  padding: 2px 8px;
+}
+.sdp-field-hint {
+  display: block;
+  margin-top: 4px;
+  font-size: 0.72rem;
+  color: #6b7a82;
+  font-style: italic;
+}

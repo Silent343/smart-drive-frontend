@@ -24,13 +24,14 @@ export class ClientPageComponent implements OnInit {
   private dialog = inject(MatDialog);
   private iam = inject(IamStore);
 
-  clients = computed(() => {
-    const userId = this.iam.currentUserId() || '';
-    return this.store.clients().filter(c => c.userId === userId);
-  });
+  /** Only sellers register/edit clients; the admin has a read-only view. */
+  readonly canManage = this.iam.isSeller;
+
+  clients = computed(() =>
+    this.store.clients().filter(c => this.iam.belongsToCompany(c.userId))
+  );
 
   vehicles = computed(() => {
-    const userId = this.iam.currentUserId() || '';
     const baseVehicles = this.store.vehicles();
     const specs = this.store.vehicleSpecifications();
     const commercials = this.store.vehicleCommercials();
@@ -39,7 +40,7 @@ export class ClientPageComponent implements OnInit {
       v.specification = specs.find(s => s.vehicleId === v.id);
       v.commercial = commercials.find(c => c.vehicleId === v.id);
       return v;
-    }).filter(v => v.commercial?.userId === userId);
+    }).filter(v => this.iam.belongsToCompany(v.commercial?.userId));
   });
 
   ngOnInit(): void {
@@ -59,11 +60,11 @@ export class ClientPageComponent implements OnInit {
 
     dialogRef.afterClosed().subscribe((result: Omit<Client, 'id'> | null) => {
       if (result) {
-        const currentUserId = this.iam.currentUserId() || '';
-
+        // Records are tagged with the shared company scope so every
+        // worker of the company (admin + sellers) sees the same data.
         const newClientWithUser = {
           ...result,
-          userId: currentUserId
+          userId: this.iam.companyScope()
         };
 
         this.store.createClient(newClientWithUser);

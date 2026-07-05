@@ -31,6 +31,8 @@ export class Profile {
 
   // Read-only account data
   readonly email = this.iamStore.currentEmail;
+  readonly role = this.iamStore.currentRole;
+  readonly companyDomain = this.iamStore.displayDomain;
   readonly fullName = this.iamStore.currentFullName;
   readonly dni = this.iamStore.currentDni;
   readonly userId = this.iamStore.currentUserId;

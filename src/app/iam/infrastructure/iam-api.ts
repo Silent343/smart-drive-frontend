@@ -13,6 +13,42 @@ import { SignUpAssembler } from './sign-up-assembler';
 import { SignUpResource } from './sign-up-response';
 import {environment} from '../../../environments/environment';
 
+export interface ForgotPasswordResult {
+  requested: boolean;
+  resetToken?: string | null;
+}
+
+export interface ResetPasswordResult {
+  success: boolean;
+}
+
+export interface SellerResource {
+  id: string;
+  username: string;
+  fullName: string;
+  firstName: string;
+  lastName: string;
+  code: string;
+  dni: string;
+  phone: string;
+}
+
+export interface RegisterSellerRequest {
+  firstName: string;
+  lastName: string;
+  code: string;
+  dni: string;
+  phone: string;
+}
+
+export interface SellerRegistrationResult {
+  id: string;
+  username: string;
+  initialPassword: string;
+  fullName: string;
+  code: string;
+}
+
 /**
  * Application service facade for IAM domain API operations.
  */
@@ -69,6 +105,31 @@ export class IamApi extends BaseApi {
     return this.http.post(
       `${environment.platformProviderApiBaseUrl}/verify-totp`,
       { userId, token }
+    );
+  }
+
+  forgotPassword(identifier: string): Observable<ForgotPasswordResult> {
+    return this.http.post<ForgotPasswordResult>(
+      `${environment.platformProviderApiBaseUrl}/authentication/forgot-password`,
+      { identifier }
+    );
+  }
+
+  resetPassword(token: string, newPassword: string): Observable<ResetPasswordResult> {
+    return this.http.post<ResetPasswordResult>(
+      `${environment.platformProviderApiBaseUrl}/authentication/reset-password`,
+      { token, newPassword }
+    );
+  }
+
+  listSellers(): Observable<SellerResource[]> {
+    return this.http.get<SellerResource[]>(`${environment.platformProviderApiBaseUrl}/sellers`);
+  }
+
+  registerSeller(request: RegisterSellerRequest): Observable<SellerRegistrationResult> {
+    return this.http.post<SellerRegistrationResult>(
+      `${environment.platformProviderApiBaseUrl}/sellers`,
+      request
     );
   }
 }

@@ -11,6 +11,16 @@ export interface CreditConfigResource extends BaseResource{
   insurance_rate_pct: number;
   postage_fee_amount: number;
   administration_fee_pct: number;
+  risk_insurance_rate_pct?: number;
+  gps_fee_amount?: number;
+  final_installment_pct?: number;
+  igv_itf_pct?: number;
+  notary_cost_amount?: number;
+  registry_cost_amount?: number;
+  appraisal_cost_amount?: number;
+  study_commission_amount?: number;
+  activation_commission_amount?: number;
+  discount_annual_rate_pct?: number;
 }
 
 export interface CreditConfigResponse extends BaseResponse {

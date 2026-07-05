@@ -4,6 +4,8 @@
     "client": "Cliente",
     "vehicle": "Vehiculos",
     "simulation": "Simulacion",
+    "workers": "Trabajadores",
+    "reports": "Reportes",
     "out": "Salir",
     "profile": "Perfil"
   },
@@ -51,7 +53,8 @@
         "name": "Juan Perez",
         "role": "Super User · Samy"
       },
-      "adminLabel": "Administrador"
+      "adminLabel": "Administrador",
+      "sellerLabel": "Vendedor"
     }
   },
   "auth": {
@@ -100,6 +103,54 @@
       "btnRequestNew": "Solicitar nuevo código",
       "successTitle": "Identidad verificada",
       "successSubtitle": "Autenticación completada. Redirigiendo al panel..."
+    },
+    "login": {
+      "subtitle": "Acceso al sistema financiero",
+      "identifier": "Identificador",
+      "identifierPlaceholder": "Correo de admin o usuario de vendedor",
+      "identifierHint": "Los vendedores inician sesión con el usuario generado por el administrador (ej. empresa-ven001).",
+      "password": "Contraseña",
+      "passwordPlaceholder": "Ingresa tu contraseña",
+      "remember": "Recordar mi identificador",
+      "forgot": "¿Olvidaste tu contraseña?",
+      "submit": "INICIAR SESIÓN",
+      "noAccount": "¿No tienes una cuenta?",
+      "signUpLink": "Regístrate",
+      "submitting": "INGRESANDO…"
+    },
+    "signup": {
+      "subtitle": "Crea tu cuenta corporativa",
+      "fullName": "Nombre completo",
+      "fullNamePlaceholder": "Ingresa tu nombre completo",
+      "dni": "Documento (DNI)",
+      "ruc": "RUC",
+      "businessName": "Razón social",
+      "businessNamePlaceholder": "El nombre de tu empresa",
+      "companyDomain": "Dominio de la empresa",
+      "domainHint": "El identificador de tu empresa será",
+      "usernameExample": "Ejemplo de usuario vendedor:",
+      "domainError": "Usa de 3 a 25 letras minúsculas, números o guiones.",
+      "workers": "Trabajadores",
+      "email": "Correo",
+      "phone": "Teléfono",
+      "password": "Contraseña",
+      "passwordPlaceholder": "Mínimo 8 caracteres",
+      "confirmPassword": "Confirmar contraseña",
+      "confirmPlaceholder": "Repite tu contraseña",
+      "mismatch": "Las contraseñas no coinciden.",
+      "rules": {
+        "length": "Mínimo 8 caracteres",
+        "upper": "Al menos una letra mayúscula",
+        "number": "Al menos un número",
+        "special": "Al menos un símbolo (!#$%...)",
+        "noRepeat": "Sin caracteres repetidos en exceso"
+      },
+      "privacy": "Doy mi consentimiento para el tratamiento de datos de la empresa, del administrador y de los vendedores según la",
+      "privacyPolicy": "Política de Privacidad",
+      "submit": "CREAR CUENTA",
+      "haveAccount": "¿Ya tienes una cuenta?",
+      "signInLink": "Inicia sesión",
+      "submitting": "CREANDO CUENTA…"
     }
   },
   "clients": {
@@ -132,7 +183,7 @@
       "occupationPh": "Ej: Ingeniero de Software",
       "errors": {
         "nameRequired": "El nombre es obligatorio",
-        "dni": "DNI inválido (8 a 12 dígitos)",
+        "dni": "El DNI debe tener exactamente 8 dígitos",
         "income": "Ingresa un monto válido",
         "occupation": "La ocupación es obligatoria",
         "phone": "Teléfono inválido (9 a 15 dígitos)"
@@ -254,7 +305,19 @@
       "adminFee": "Comisión de administración (%)",
       "taxIgvItf": "Impuesto IGV/ITF (%)",
       "sbsDisclaimer": "Estos valores aplican a la norma de transparencia del sistema financiero peruano (SBS).",
-      "vehicleNotFound": "Vehículo no encontrado"
+      "vehicleNotFound": "Vehículo no encontrado",
+      "editableHint": "Estos son los valores por defecto de la empresa. Puedes ajustarlos para esta simulación; los definidos por una entidad peruana quedan fijos.",
+      "riskInsurance": "Seguro contra todo riesgo",
+      "gpsFee": "GPS",
+      "finalInstallment": "Cuota final (valor residual)",
+      "notaryCost": "Gastos notariales",
+      "registryCost": "Gastos registrales",
+      "appraisalCost": "Tasación",
+      "studyCommission": "Comisión de estudio",
+      "activationCommission": "Comisión de activación",
+      "discountRate": "Tasa de descuento (COK)",
+      "fixedBySunat": "Fijado por SUNAT",
+      "igvFixedHint": "El IGV/ITF está fijado por la SUNAT y no puede modificarse."
     },
     "components": {
       "scheduleTable": {
@@ -365,6 +428,92 @@
       "tcea": "¿Qué significa la TCEA de mi préstamo?",
       "monthlyInstallment": "¿Cuánto es mi cuota mensual y qué incluye?",
       "initialFee": "¿Qué pasa si aumento la cuota inicial?"
+    }
+  },
+  "admin": {
+    "workers": {
+      "title": "Gestión de trabajadores",
+      "subtitle": "Registra vendedores para el dominio de la empresa",
+      "refresh": "Actualizar",
+      "form": {
+        "heading": "Registrar vendedor",
+        "headingHint": "Crea las credenciales de acceso para un nuevo vendedor de la empresa.",
+        "firstName": "Nombre",
+        "firstNamePlaceholder": "Ana",
+        "firstNameError": "Ingresa un nombre (2 a 40 caracteres).",
+        "lastName": "Apellido",
+        "lastNamePlaceholder": "Torres",
+        "lastNameError": "Ingresa un apellido (2 a 60 caracteres).",
+        "dni": "DNI",
+        "dniPlaceholder": "12345678",
+        "dniError": "El DNI debe tener exactamente 8 dígitos.",
+        "phone": "Teléfono",
+        "phonePlaceholder": "999888777",
+        "phoneError": "Ingresa un teléfono de 9 a 15 dígitos.",
+        "code": "Código de vendedor",
+        "codePlaceholder": "ANTO01",
+        "codeHint": "El código se genera automáticamente a partir del nombre y no se puede editar.",
+        "loginUsername": "Usuario de acceso",
+        "submit": "Registrar vendedor",
+        "submitting": "Registrando…"
+      },
+      "credentials": {
+        "heading": "Credenciales generadas",
+        "hint": "Muéstralas una sola vez al vendedor. La contraseña no se puede recuperar después.",
+        "username": "Usuario",
+        "password": "Contraseña inicial",
+        "copy": "Copiar credenciales"
+      },
+      "helper": {
+        "heading": "¿Cómo funciona?",
+        "body": "Cada vendedor inicia sesión con un usuario formado por tu dominio y su código. Al registrarlo, aquí se mostrará una contraseña inicial de un solo uso."
+      },
+      "table": {
+        "heading": "Vendedores de la empresa",
+        "count": "registrados",
+        "seller": "Vendedor",
+        "username": "Usuario",
+        "code": "Código",
+        "dni": "DNI",
+        "phone": "Teléfono",
+        "empty": "Aún no hay vendedores registrados.",
+        "loading": "Cargando vendedores…"
+      },
+      "errors": {
+        "load": "No se pudieron cargar los vendedores de esta empresa.",
+        "register": "No se pudo registrar el vendedor. Revisa código o DNI duplicado, o el límite de trabajadores."
+      }
+    },
+    "reports": {
+      "title": "Reportes de la empresa",
+      "subtitle": "Créditos vehiculares confirmados de",
+      "refresh": "Actualizar",
+      "kpi": {
+        "confirmed": "Créditos confirmados",
+        "vehicleAmount": "Monto de vehículos",
+        "totalCost": "Costo total del crédito",
+        "avgTcea": "TCEA promedio"
+      },
+      "searchPlaceholder": "Buscar por cliente, vehículo o vendedor…",
+      "allSellers": "Todos los vendedores",
+      "results": "de",
+      "creditsWord": "créditos",
+      "table": {
+        "credit": "Crédito",
+        "seller": "Vendedor",
+        "client": "Cliente",
+        "vehicle": "Vehículo",
+        "price": "Precio",
+        "term": "Plazo",
+        "tcea": "TCEA",
+        "tcc": "CTC",
+        "status": "Estado",
+        "months": "meses"
+      },
+      "loading": "Cargando créditos confirmados…",
+      "emptyNone": "Aún no hay créditos confirmados.",
+      "emptyFilter": "Ningún crédito coincide con los filtros.",
+      "error": "No se pudieron cargar los créditos confirmados."
     }
   }
 }

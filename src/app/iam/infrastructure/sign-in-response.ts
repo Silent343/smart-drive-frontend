@@ -5,11 +5,12 @@ import { BaseResource, BaseResponse } from '../../shared/infrastructure/base-res
  */
 export interface SignInResource extends BaseResource {
   id: string;
-  email: string;
+  identifier: string;
   fullName: string;
   token: string;
   role: string;
   dni: string;
+  companyDomain?: string;
   requiresTotp?: boolean;
   userId?: string;
 }

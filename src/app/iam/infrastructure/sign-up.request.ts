@@ -9,4 +9,6 @@ export interface SignUpRequest {
   ruc: string;
   phone: string;
   businessName: string;
+  companyDomain: string;
+  maxWorkers: number;
 }

@@ -48,8 +48,16 @@
           <span class="readonly-value">{{ fullName() || '—' }}</span>
         </div>
         <div class="readonly-field">
-          <span class="readonly-label">{{ 'profile.account.email' | translate }}</span>
+          <span class="readonly-label">Identifier</span>
           <span class="readonly-value">{{ email() || '—' }}</span>
+        </div>
+        <div class="readonly-field">
+          <span class="readonly-label">Role</span>
+          <span class="readonly-value">{{ role() || '—' }}</span>
+        </div>
+        <div class="readonly-field">
+          <span class="readonly-label">Company domain</span>
+          <span class="readonly-value">{{ companyDomain() || '—' }}</span>
         </div>
         <div class="readonly-field">
           <span class="readonly-label">{{ 'profile.account.dni' | translate }}</span>

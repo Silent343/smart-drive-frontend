@@ -1,0 +1,196 @@
+<div class="admin-page">
+  <header class="admin-page__header">
+    <div class="header-copy">
+      <h1>{{ 'admin.workers.title' | translate }}</h1>
+      <p>
+        {{ 'admin.workers.subtitle' | translate }}
+        <span class="domain-chip">
+          <mat-icon>alternate_email</mat-icon>
+          {{ displayDomain() || '@company.sdf' }}
+        </span>
+      </p>
+    </div>
+    <button class="sdp-btn-outline" type="button" (click)="loadSellers()">
+      <mat-icon>refresh</mat-icon>
+      {{ 'admin.workers.refresh' | translate }}
+    </button>
+  </header>
+
+  <div class="admin-grid">
+    <section class="admin-card form-card">
+      <div class="card-head">
+        <div class="card-head__icon">
+          <mat-icon>person_add</mat-icon>
+        </div>
+        <div>
+          <h2>{{ 'admin.workers.form.heading' | translate }}</h2>
+          <p>{{ 'admin.workers.form.headingHint' | translate }}</p>
+        </div>
+      </div>
+
+      <form [formGroup]="sellerForm" (ngSubmit)="registerSeller()" class="worker-form">
+        <div class="field-row">
+          <label [class.invalid]="isInvalid('firstName')">
+            <span>{{ 'admin.workers.form.firstName' | translate }}</span>
+            <div class="input-shell">
+              <mat-icon>badge</mat-icon>
+              <input formControlName="firstName" [placeholder]="'admin.workers.form.firstNamePlaceholder' | translate" autocomplete="off" />
+            </div>
+            @if (isInvalid('firstName')) {
+              <small class="field-error">{{ 'admin.workers.form.firstNameError' | translate }}</small>
+            }
+          </label>
+
+          <label [class.invalid]="isInvalid('lastName')">
+            <span>{{ 'admin.workers.form.lastName' | translate }}</span>
+            <div class="input-shell">
+              <mat-icon>badge</mat-icon>
+              <input formControlName="lastName" [placeholder]="'admin.workers.form.lastNamePlaceholder' | translate" autocomplete="off" />
+            </div>
+            @if (isInvalid('lastName')) {
+              <small class="field-error">{{ 'admin.workers.form.lastNameError' | translate }}</small>
+            }
+          </label>
+        </div>
+
+        <div class="field-row">
+          <label [class.invalid]="isInvalid('dni')">
+            <span>{{ 'admin.workers.form.dni' | translate }}</span>
+            <div class="input-shell">
+              <mat-icon>fingerprint</mat-icon>
+              <input formControlName="dni" maxlength="8" [placeholder]="'admin.workers.form.dniPlaceholder' | translate" inputmode="numeric" />
+            </div>
+            @if (isInvalid('dni')) {
+              <small class="field-error">{{ 'admin.workers.form.dniError' | translate }}</small>
+            }
+          </label>
+
+          <label [class.invalid]="isInvalid('phone')">
+            <span>{{ 'admin.workers.form.phone' | translate }}</span>
+            <div class="input-shell">
+              <mat-icon>call</mat-icon>
+              <input formControlName="phone" [placeholder]="'admin.workers.form.phonePlaceholder' | translate" inputmode="tel" />
+            </div>
+            @if (isInvalid('phone')) {
+              <small class="field-error">{{ 'admin.workers.form.phoneError' | translate }}</small>
+            }
+          </label>
+        </div>
+
+        <label>
+          <span>{{ 'admin.workers.form.code' | translate }}</span>
+          <div class="input-shell input-shell--readonly">
+            <mat-icon>qr_code_2</mat-icon>
+            <input formControlName="code" [placeholder]="'admin.workers.form.codePlaceholder' | translate" autocomplete="off" readonly />
+          </div>
+          <small class="field-hint">{{ 'admin.workers.form.codeHint' | translate }}</small>
+        </label>
+
+        <div class="username-preview" [class.username-preview--ready]="usernamePreview()">
+          <mat-icon>vpn_key</mat-icon>
+          <div>
+            <span>{{ 'admin.workers.form.loginUsername' | translate }}</span>
+            <strong>{{ usernamePreview() || (domainSlug() || 'domain') + '-code' }}</strong>
+          </div>
+          <span class="preview-domain">{{ displayDomain() || '@company.sdf' }}</span>
+        </div>
+
+        @if (error()) {
+          <p class="admin-error">
+            <mat-icon>error_outline</mat-icon>
+            {{ error() }}
+          </p>
+        }
+
+        <button mat-flat-button class="sdp-btn-primary admin-submit" type="submit"
+                [disabled]="sellerForm.invalid || isSubmitting">
+          <mat-icon>person_add</mat-icon>
+          {{ (isSubmitting ? 'admin.workers.form.submitting' : 'admin.workers.form.submit') | translate }}
+        </button>
+      </form>
+    </section>
+
+    @if (generatedCredentials(); as credentials) {
+      <section class="admin-card credentials-card">
+        <div class="card-head">
+          <div class="card-head__icon card-head__icon--gold">
+            <mat-icon>key</mat-icon>
+          </div>
+          <div>
+            <h2>{{ 'admin.workers.credentials.heading' | translate }}</h2>
+            <p class="credentials-hint">{{ 'admin.workers.credentials.hint' | translate }}</p>
+          </div>
+        </div>
+
+        <div class="credential-row">
+          <span>{{ 'admin.workers.credentials.username' | translate }}</span>
+          <strong>{{ credentials.username }}</strong>
+        </div>
+        <div class="credential-row">
+          <span>{{ 'admin.workers.credentials.password' | translate }}</span>
+          <strong>{{ credentials.initialPassword }}</strong>
+        </div>
+        <button class="sdp-btn-outline" type="button" (click)="copyCredentials()">
+          <mat-icon>content_copy</mat-icon>
+          {{ 'admin.workers.credentials.copy' | translate }}
+        </button>
+      </section>
+    } @else {
+      <section class="admin-card helper-card">
+        <mat-icon>info</mat-icon>
+        <h3>{{ 'admin.workers.helper.heading' | translate }}</h3>
+        <p>{{ 'admin.workers.helper.body' | translate }}</p>
+      </section>
+    }
+  </div>
+
+  <section class="admin-card sellers-card">
+    <div class="table-title">
+      <h2>{{ 'admin.workers.table.heading' | translate }}</h2>
+      <span class="count-pill">{{ sellers().length }} {{ 'admin.workers.table.count' | translate }}</span>
+    </div>
+
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>{{ 'admin.workers.table.seller' | translate }}</th>
+            <th>{{ 'admin.workers.table.username' | translate }}</th>
+            <th>{{ 'admin.workers.table.code' | translate }}</th>
+            <th>{{ 'admin.workers.table.dni' | translate }}</th>
+            <th>{{ 'admin.workers.table.phone' | translate }}</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (seller of sellers(); track seller.username) {
+            <tr>
+              <td>
+                <div class="seller-cell">
+                  <div class="seller-avatar">{{ initials(seller.fullName) }}</div>
+                  <span>{{ seller.fullName }}</span>
+                </div>
+              </td>
+              <td><code class="username-badge">{{ seller.username }}</code></td>
+              <td><span class="code-badge">{{ seller.code }}</span></td>
+              <td>{{ seller.dni }}</td>
+              <td>{{ seller.phone }}</td>
+            </tr>
+          }
+          @if (!isLoading && sellers().length === 0) {
+            <tr>
+              <td colspan="5" class="empty">
+                <mat-icon>group_off</mat-icon>
+                <span>{{ 'admin.workers.table.empty' | translate }}</span>
+              </td>
+            </tr>
+          }
+          @if (isLoading) {
+            <tr>
+              <td colspan="5" class="empty">{{ 'admin.workers.table.loading' | translate }}</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  </section>
+</div>

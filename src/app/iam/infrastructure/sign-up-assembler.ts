@@ -30,6 +30,8 @@ export class SignUpAssembler {
       ruc: command.ruc,
       phone: command.phone,
       businessName: command.businessName,
+      companyDomain: command.companyDomain,
+      maxWorkers: command.maxWorkers,
     } as SignUpRequest;
   }
 }

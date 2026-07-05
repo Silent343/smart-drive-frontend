@@ -91,6 +91,11 @@
 
       <div class="sdp-card sdp-card--accent">
         <p class="sdp-card__title">{{ 'sdp.configuration.mainConfig' | translate }}</p>
+        <div class="sdp-info-box sdp-mb">
+          <span class="sdp-info-box__text">
+            {{ 'sdp.configuration.editableHint' | translate }}
+          </span>
+        </div>
 
         <div class="sdp-g2 sdp-mb">
           <div class="sdp-field">
@@ -159,8 +164,54 @@
           <input class="sdp-input" type="number" [(ngModel)]="administrationFeePct" step="0.01" />
         </div>
         <div class="sdp-field sdp-mb">
-          <label class="sdp-label">{{ 'sdp.configuration.taxIgvItf' | translate }} (%)</label>
-          <input class="sdp-input" type="number" [(ngModel)]="igvPct" step="0.01" />
+          <label class="sdp-label">{{ 'sdp.configuration.riskInsurance' | translate }} (%)</label>
+          <input class="sdp-input" type="number" [(ngModel)]="riskInsuranceRatePct" step="0.01" />
+        </div>
+        <div class="sdp-field sdp-mb">
+          <label class="sdp-label">{{ 'sdp.configuration.gpsFee' | translate }} ({{ currency === 'PEN' ? 'S/' : '$' }})</label>
+          <input class="sdp-input" type="number" [(ngModel)]="gpsFeeAmount" step="0.5" />
+        </div>
+        <div class="sdp-field sdp-mb">
+          <label class="sdp-label">{{ 'sdp.configuration.finalInstallment' | translate }} (%)</label>
+          <input class="sdp-input" type="number" [(ngModel)]="finalInstallmentPct" step="0.01" />
+        </div>
+        <div class="sdp-field sdp-mb">
+          <label class="sdp-label sdp-label--fixed">
+            {{ 'sdp.configuration.taxIgvItf' | translate }} (%)
+            <span class="sdp-fixed-badge">{{ 'sdp.configuration.fixedBySunat' | translate }}</span>
+          </label>
+          <input class="sdp-input sdp-input--readonly" type="number" [(ngModel)]="igvPct" step="0.01" readonly disabled />
+          <small class="sdp-field-hint">{{ 'sdp.configuration.igvFixedHint' | translate }}</small>
+        </div>
+        <div class="sdp-g2 sdp-mb">
+          <div class="sdp-field">
+            <label class="sdp-label">{{ 'sdp.configuration.notaryCost' | translate }}</label>
+            <input class="sdp-input" type="number" [(ngModel)]="notaryCostAmount" step="0.5" />
+          </div>
+          <div class="sdp-field">
+            <label class="sdp-label">{{ 'sdp.configuration.registryCost' | translate }}</label>
+            <input class="sdp-input" type="number" [(ngModel)]="registryCostAmount" step="0.5" />
+          </div>
+        </div>
+        <div class="sdp-g2 sdp-mb">
+          <div class="sdp-field">
+            <label class="sdp-label">{{ 'sdp.configuration.appraisalCost' | translate }}</label>
+            <input class="sdp-input" type="number" [(ngModel)]="appraisalCostAmount" step="0.5" />
+          </div>
+          <div class="sdp-field">
+            <label class="sdp-label">{{ 'sdp.configuration.studyCommission' | translate }}</label>
+            <input class="sdp-input" type="number" [(ngModel)]="studyCommissionAmount" step="0.5" />
+          </div>
+        </div>
+        <div class="sdp-g2 sdp-mb">
+          <div class="sdp-field">
+            <label class="sdp-label">{{ 'sdp.configuration.activationCommission' | translate }}</label>
+            <input class="sdp-input" type="number" [(ngModel)]="activationCommissionAmount" step="0.5" />
+          </div>
+          <div class="sdp-field">
+            <label class="sdp-label">{{ 'sdp.configuration.discountRate' | translate }} (%)</label>
+            <input class="sdp-input" type="number" [(ngModel)]="discountAnnualRatePct" step="0.01" />
+          </div>
         </div>
 
         <div class="sdp-info-box">

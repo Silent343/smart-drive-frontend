@@ -36,7 +36,7 @@
           <div class="field-wrap">
             <mat-icon class="field-ic">fingerprint</mat-icon>
             <input formControlName="dni" type="text" class="custom-input has-ic"
-                   maxlength="12" (input)="allowOnlyNumbers($event, 'dni')" placeholder="71234567" />
+                   maxlength="8" (input)="allowOnlyNumbers($event, 'dni')" placeholder="71234567" />
           </div>
           @if (clientForm.get('dni'); as c) {
             @if (c.invalid && c.touched) {

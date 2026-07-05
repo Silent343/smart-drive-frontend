@@ -20,6 +20,7 @@ interface MenuOption {
   icon: string;
   path: string;
   title: string;
+  roles?: string[];
 }
 
 /**
@@ -59,7 +60,9 @@ export class Layout implements OnInit, AfterViewInit {
     { icon: 'home', path: '/home', title: 'option.home' },
     { icon: 'supervised_user_circle', path: '/client', title: 'option.client' },
     { icon: 'directions_car', path: '/vehicle', title: 'option.vehicle' },
-    { icon: 'bar_chart', path: '/configuration', title: 'option.simulation' },
+    { icon: 'bar_chart', path: '/configuration', title: 'option.simulation', roles: ['SELLER'] },
+    { icon: 'groups', path: '/workers', title: 'option.workers', roles: ['ADMIN'] },
+    { icon: 'folder_copy', path: '/admin-reports', title: 'option.reports', roles: ['ADMIN'] },
   ];
 
   private observer = inject(BreakpointObserver);
@@ -71,15 +74,24 @@ export class Layout implements OnInit, AfterViewInit {
 
   currentUser = this.store.currentUser;
 
-  /** All options are visible: this app has a single administrator, no role filtering. */
-  readonly visibleOptions = computed(() => this.options);
+  readonly visibleOptions = computed(() => {
+    const role = (this.store.currentRole() || '').toUpperCase();
+    return this.options.filter(option => !option.roles || option.roles.includes(role));
+  });
 
-  /** Prefers the custom display name set in preferences, falling back to the account email. */
+  /** Prefers the custom display name set in preferences, falling back to the account name. */
   readonly displayName = computed(
     () =>
       this.preferences.displayName() ??
-      this.store.currentEmail() ??
+      this.store.currentFullName() ??
+      this.store.currentIdentifier() ??
       this.translate.instant('layout.user.placeholder.name'),
+  );
+
+  readonly roleLabel = computed(() =>
+    this.store.isAdmin()
+      ? this.translate.instant('layout.user.adminLabel')
+      : this.translate.instant('layout.user.sellerLabel')
   );
 
   readonly avatarPhoto = this.preferences.photo;
@@ -169,7 +181,7 @@ export class Layout implements OnInit, AfterViewInit {
     this.router.navigate(['/profile']);
   }
 
-  private static readonly NO_SHELL_ROUTES = new Set(['/iam/sign-in', '/iam/sign-up', '/totp-verify', '/totp-setup']);
+  private static readonly NO_SHELL_ROUTES = new Set(['/iam/sign-in', '/iam/sign-up', '/iam/forgot-password', '/totp-verify', '/totp-setup']);
 
   private updateShellVisibility(url: string): void {
     const pathOnly = url.split(/[?;]/)[0];

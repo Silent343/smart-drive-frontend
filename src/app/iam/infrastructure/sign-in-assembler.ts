@@ -6,19 +6,20 @@ export class SignInAssembler {
   toResourceFromResponse(response: SignInResponse): SignInResource {
     return {
       id: response.id,
-      email: response.email,
+      identifier: response.identifier,
       fullName: response.fullName,
       token: response.token,
       role: response.role,
       dni: response.dni,
-      requiresTotp: response.requiresTotp,  // ← faltaba esto
-      userId:       response.userId,
+      companyDomain: response.companyDomain,
+      requiresTotp: response.requiresTotp,
+      userId: response.userId,
     } as SignInResource;
   }
 
   toRequestFromCommand(command: SignInCommand): SignInRequest {
     return {
-      email: command.email, // Mapeo correcto
+      identifier: command.identifier,
       password: command.password,
     } as SignInRequest;
   }

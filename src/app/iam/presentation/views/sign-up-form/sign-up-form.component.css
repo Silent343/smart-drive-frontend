@@ -373,3 +373,161 @@
   border-color: #ef4444;
 }
 
+.privacy-check {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  margin: 2px 0 16px;
+  color: #475569;
+  font-size: 13px;
+  line-height: 1.45;
+}
+
+.privacy-check input {
+  width: 16px;
+  height: 16px;
+  margin-top: 2px;
+  flex-shrink: 0;
+  accent-color: #b8962d;
+}
+
+.privacy-check.error {
+  color: #ef4444;
+}
+
+.privacy-link {
+  border: none;
+  background: transparent;
+  padding: 0;
+  color: #0b1b3d;
+  font: inherit;
+  font-weight: 700;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  cursor: pointer;
+}
+
+.privacy-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  background: rgba(15, 23, 42, 0.58);
+}
+
+.privacy-modal {
+  position: fixed;
+  z-index: 1001;
+  top: 50%;
+  left: 50%;
+  width: min(620px, calc(100vw - 32px));
+  max-height: min(720px, calc(100vh - 48px));
+  transform: translate(-50%, -50%);
+  display: flex;
+  flex-direction: column;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 16px;
+  box-shadow: 0 24px 80px rgba(15, 23, 42, 0.35);
+  overflow: hidden;
+}
+
+.privacy-modal__header,
+.privacy-modal__footer {
+  display: flex;
+  align-items: center;
+  padding: 18px 22px;
+}
+
+.privacy-modal__header {
+  justify-content: space-between;
+  border-bottom: 1px solid #edf2f7;
+}
+
+.privacy-modal__header h3 {
+  margin: 0;
+  color: #0b1b3d;
+  font-size: 18px;
+}
+
+.privacy-modal__close {
+  display: grid;
+  place-items: center;
+  border: none;
+  background: #f8fafc;
+  border-radius: 8px;
+  width: 34px;
+  height: 34px;
+  cursor: pointer;
+}
+
+.privacy-modal__close mat-icon {
+  font-size: 18px;
+  width: 18px;
+  height: 18px;
+  color: #475569;
+}
+
+.privacy-modal__body {
+  padding: 18px 22px;
+  overflow-y: auto;
+  color: #334155;
+  font-size: 14px;
+  line-height: 1.58;
+}
+
+.privacy-modal__body p {
+  margin: 0 0 14px;
+}
+
+.privacy-modal__footer {
+  justify-content: flex-end;
+  border-top: 1px solid #edf2f7;
+}
+
+.privacy-modal__accept {
+  width: auto;
+  min-width: 150px;
+  margin-top: 0 !important;
+}
+
+@media (max-width: 640px) {
+  .login-card {
+    padding: 34px 22px;
+    border-radius: 18px;
+  }
+
+  .form-row,
+  .password-rules {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ── Language switcher inside the card ── */
+.login-card {
+  position: relative;
+}
+
+.card-lang {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  transform: scale(0.85);
+  transform-origin: top right;
+}
+
+/* ── Company handle preview (@domain.sdf) ── */
+.domain-handle {
+  color: #b8962d;
+  letter-spacing: 0.02em;
+}
+
+/* Loading state inside submit buttons */
+.btn-loading {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+.btn-loading ::ng-deep circle {
+  stroke: currentColor;
+}

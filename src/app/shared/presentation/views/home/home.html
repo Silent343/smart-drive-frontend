@@ -18,10 +18,11 @@
               <span class="serial-code">ID #{{ userId() || '—' }}</span>
 
               <h2 class="client-name">{{ user.fullName }}</h2>
+              <p class="client-info"><strong>Role:</strong> {{ user.roleLabel }}</p>
 
               <p class="client-info"><strong>DNI:</strong> {{ user.dni }}</p>
 
-              <p class="client-info"><strong>{{ 'home.email' | translate }}</strong> {{ user.email }}</p>
+              <p class="client-info"><strong>Identifier:</strong> {{ user.identifier }}</p>
             </div>
           </div>
           <div class="card-action-space"></div>

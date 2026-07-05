@@ -68,7 +68,7 @@ export class ClientFormDialogComponent implements OnInit {
       id:               [clientData?.id       || null],
       userId:           [clientData?.userId   || null],
       name:             [clientData?.name     || '', [Validators.required]],
-      dni:              [clientData?.dni      || '', [Validators.required, Validators.pattern('^[0-9]{8,12}$')]],
+      dni:              [clientData?.dni      || '', [Validators.required, Validators.pattern('^[0-9]{8}$')]],
       income:           [clientData?.income   || '', [Validators.required, Validators.min(0)]],
       occupation:       [clientData?.occupation || '', [Validators.required]],
       phoneCountryCode: [initialCountryCode,          [Validators.required]],

@@ -1,0 +1,126 @@
+<div class="reports-page">
+  <header class="reports-header">
+    <div>
+      <h1>{{ 'admin.reports.title' | translate }}</h1>
+      <p>
+        {{ 'admin.reports.subtitle' | translate }}
+        <span class="domain-chip">
+          <mat-icon>alternate_email</mat-icon>
+          {{ displayDomain() || '@company.sdf' }}
+        </span>
+      </p>
+    </div>
+    <button class="sdp-btn-outline" type="button" (click)="refresh()">
+      <mat-icon>refresh</mat-icon>
+      {{ 'admin.reports.refresh' | translate }}
+    </button>
+  </header>
+
+  <section class="kpi-grid">
+    <div class="kpi">
+      <div class="kpi__icon kpi__icon--blue"><mat-icon>verified</mat-icon></div>
+      <div class="kpi__body">
+        <span>{{ 'admin.reports.kpi.confirmed' | translate }}</span>
+        <strong>{{ totalConfirmed() }}</strong>
+      </div>
+    </div>
+    <div class="kpi">
+      <div class="kpi__icon kpi__icon--gold"><mat-icon>directions_car</mat-icon></div>
+      <div class="kpi__body">
+        <span>{{ 'admin.reports.kpi.vehicleAmount' | translate }}</span>
+        <strong>{{ money(totalAmount()) }}</strong>
+      </div>
+    </div>
+    <div class="kpi">
+      <div class="kpi__icon kpi__icon--green"><mat-icon>payments</mat-icon></div>
+      <div class="kpi__body">
+        <span>{{ 'admin.reports.kpi.totalCost' | translate }}</span>
+        <strong>{{ money(totalCreditCost()) }}</strong>
+      </div>
+    </div>
+    <div class="kpi">
+      <div class="kpi__icon kpi__icon--purple"><mat-icon>trending_up</mat-icon></div>
+      <div class="kpi__body">
+        <span>{{ 'admin.reports.kpi.avgTcea' | translate }}</span>
+        <strong>{{ averageTcea() }}</strong>
+      </div>
+    </div>
+  </section>
+
+  @if (error()) {
+    <p class="error">
+      <mat-icon>error_outline</mat-icon>
+      {{ error() }}
+    </p>
+  }
+
+  <section class="reports-card">
+    <div class="reports-toolbar">
+      <div class="search-shell">
+        <mat-icon>search</mat-icon>
+        <input
+          type="text"
+          [placeholder]="'admin.reports.searchPlaceholder' | translate"
+          [value]="searchTerm()"
+          (input)="onSearch($event)" />
+      </div>
+
+      <select class="seller-select" [value]="sellerFilter()" (change)="onSellerFilter($event)">
+        <option value="">{{ 'admin.reports.allSellers' | translate }}</option>
+        @for (seller of sellers(); track seller.username) {
+          <option [value]="seller.id">{{ seller.fullName }} ({{ seller.username }})</option>
+        }
+      </select>
+
+      <span class="results-pill">
+        {{ filteredLoans().length }} {{ 'admin.reports.results' | translate }} {{ loans().length }} {{ 'admin.reports.creditsWord' | translate }}
+      </span>
+    </div>
+
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>{{ 'admin.reports.table.credit' | translate }}</th>
+            <th>{{ 'admin.reports.table.seller' | translate }}</th>
+            <th>{{ 'admin.reports.table.client' | translate }}</th>
+            <th>{{ 'admin.reports.table.vehicle' | translate }}</th>
+            <th class="num">{{ 'admin.reports.table.price' | translate }}</th>
+            <th class="num">{{ 'admin.reports.table.term' | translate }}</th>
+            <th class="num">{{ 'admin.reports.table.tcea' | translate }}</th>
+            <th class="num">{{ 'admin.reports.table.tcc' | translate }}</th>
+            <th>{{ 'admin.reports.table.status' | translate }}</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (loan of filteredLoans(); track loan.id) {
+            <tr>
+              <td><span class="credit-id">#{{ loan.id || '—' }}</span></td>
+              <td>{{ sellerLabel(loan) }}</td>
+              <td class="strong-cell">{{ clientLabel(loan) }}</td>
+              <td>{{ vehicleLabel(loan) }}</td>
+              <td class="num">{{ money(loan.vehiclePrice) }}</td>
+              <td class="num">{{ loan.installmentsQty }} {{ 'admin.reports.table.months' | translate }}</td>
+              <td class="num">{{ pct(loan.tcea) }}</td>
+              <td class="num strong-cell">{{ money(loan.ctc) }}</td>
+              <td><span class="status">{{ loan.status || 'CONFIRMED' }}</span></td>
+            </tr>
+          }
+          @if (isLoading()) {
+            <tr>
+              <td colspan="9" class="empty">{{ 'admin.reports.loading' | translate }}</td>
+            </tr>
+          }
+          @if (!isLoading() && filteredLoans().length === 0) {
+            <tr>
+              <td colspan="9" class="empty">
+                <mat-icon>folder_off</mat-icon>
+                <span>{{ (loans().length === 0 ? 'admin.reports.emptyNone' : 'admin.reports.emptyFilter') | translate }}</span>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  </section>
+</div>

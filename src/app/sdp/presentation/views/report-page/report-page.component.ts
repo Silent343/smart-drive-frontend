@@ -11,6 +11,7 @@ import { Client } from '../../../../arm/domain/model/client.entity';
 import { jsPDF } from 'jspdf';
 import * as ExcelJS from 'exceljs';
 import { saveAs } from 'file-saver';
+import { IamStore } from '../../../../iam/application/iam.store';
 
 @Component({
   selector:    'app-report-page',
@@ -23,6 +24,7 @@ export class ReportPageComponent implements OnInit {
   private readonly store    = inject(SdpStore);
   private readonly armStore = inject(ArmStore);
   private readonly router   = inject(Router);
+  private readonly iamStore = inject(IamStore);
 
   readonly report    = this.store.currentReport;
   readonly isLoading = this.store.isLoading;
@@ -43,6 +45,7 @@ export class ReportPageComponent implements OnInit {
   // Datos del flujo
   readonly clientName = this.store.flowClientName;
   readonly carName    = this.store.flowCarName;
+  readonly currentUser = this.iamStore.currentUser;
 
   fmt(n: number | undefined): string {
     if (n == null) return '—';
@@ -73,12 +76,13 @@ export class ReportPageComponent implements OnInit {
     this.armStore.loadClients();
   }
 
-  // ── Confirmar: guarda vehicleId en cliente y limpia el flujo ──
+  // ── Confirmar: persiste el crédito confirmado para reportes admin ──
   onConfirm(): void {
     const clientId = this.store.flowClientId();
     const carId    = this.store.flowCarId();
+    const loan = this.loan;
 
-    if (!clientId || !carId) {
+    if (!clientId || !carId || !loan) {
       this.confirmError = 'No client or vehicle found in the current flow.';
       return;
     }
@@ -95,29 +99,33 @@ export class ReportPageComponent implements OnInit {
     this.confirmError  = '';
     this.confirmSuccess = false;
 
-    // Construir cliente actualizado con vehicleId
-    const updatedClient = new Client({
-      id:         client.id,
-      userId:     client.userId,
-      name:       client.name,
-      dni:        client.dni,
-      income:     client.income,
-      occupation: client.occupation,
-      phone:      client.phone,
-      vehicleId:  carId,
+    this.store.confirmCurrentLoan().subscribe({
+      next: () => {
+        const updatedClient = new Client({
+          id:         client.id,
+          userId:     client.userId,
+          name:       client.name,
+          dni:        client.dni,
+          income:     client.income,
+          occupation: client.occupation,
+          phone:      client.phone,
+          vehicleId:  carId,
+        });
+
+        this.armStore.updateClient(updatedClient);
+        this.isConfirming   = false;
+        this.confirmSuccess = true;
+      },
+      error: () => {
+        this.isConfirming = false;
+        this.confirmError = 'Could not confirm the credit in the company reports.';
+      },
     });
+  }
 
-    this.armStore.updateClient(updatedClient);
-
-    // updateClient en ArmStore es void (fire-and-forget), así que
-    // esperamos un tick y luego limpiamos el flujo
-    setTimeout(() => {
-      this.isConfirming   = false;
-      this.confirmSuccess = true;
-
-      // Limpiar todo el flujo tras confirmar
-      this.store.clearAll();
-    }, 800);
+  onNewSimulation(): void {
+    this.store.clearAll();
+    this.router.navigate(['/configuration']);
   }
 
   onBack(): void { this.router.navigate(['/schedule']); }
@@ -278,6 +286,8 @@ export class ReportPageComponent implements OnInit {
       'Initial Fee',   fmt(loan.initialFee),                    false);
     drawRowPair('Grace Months',  `${config.gracePeriodMonths}`,
       'Grace Type',    config.gracePeriodType || '—',           true);
+    drawRowPair('Final Installment', `${config.finalInstallmentPct}%`,
+      'Discount Rate', `${config.discountAnnualRatePct}%`, false);
 
     y += 4;
 
@@ -287,8 +297,14 @@ export class ReportPageComponent implements OnInit {
       'Total Interest',   fmt(loan.totalInterest),  false);
     drawRowPair('Total Insurance',  fmt(loan.totalInsurance),
       'Total Postage',    fmt(loan.totalPostage),   true);
+    drawRowPair('Risk Insurance', fmt(loan.totalRiskInsurance),
+      'GPS Total', fmt(loan.totalGps), false);
     drawRowPair('Admin Commission', fmt(loan.totalCommission ?? 0),
-      'Total Cost (CTC)', fmt(loan.ctc),            false);
+      'IGV/ITF Tax', fmt(loan.totalTax), true);
+    drawRowPair('Initial Costs', fmt(loan.initialCosts),
+      'Residual Value', fmt(loan.residualValue), false);
+    drawRowPair('Total Cost (CTC)', fmt(loan.ctc),
+      'TREA', fmtPct(loan.trea, 4), true);
 
     y += 3;
 
@@ -531,17 +547,20 @@ export class ReportPageComponent implements OnInit {
     ws.getRow(11).values = ['Annual Rate', config.annualRate / 100, '', 'Equivalent TEA', config.effectiveAnnualRate / 100];
     ws.getRow(12).values = ['Term (Months)', loan.installmentsQty, '', 'Grace Type', config.gracePeriodType || '—'];
     ws.getRow(13).values = ['Grace Months', config.gracePeriodMonths];
+    ws.getRow(14).values = ['Final Installment', config.finalInstallmentPct / 100, '', 'Discount Annual Rate', config.discountAnnualRatePct / 100];
 
     // --- BLOQUE 3: RESUMEN FINANCIERO ---
-    addSectionTitle('Financial Summary', 15);
-    ws.getRow(16).values = ['Financed Capital', loan.loanAmount, '', 'Total Interest', loan.totalInterest];
-    ws.getRow(17).values = ['Total Insurance', loan.totalInsurance, '', 'Total Postage', loan.totalPostage];
-    ws.getRow(18).values = ['Admin Commission', loan.totalCommission ?? 0, '', 'Total Cost (CTC)', loan.ctc];
-    ws.getRow(20).values = ['TCEA', loan.tcea, '', 'IRR (monthly)', loan.irrDebtor];
-    ws.getRow(21).values = ['NPV (debtor)', loan.npvDebtor];
-
+    addSectionTitle('Financial Summary', 16);
+    ws.getRow(17).values = ['Financed Capital', loan.loanAmount, '', 'Total Interest', loan.totalInterest];
+    ws.getRow(18).values = ['Total Insurance', loan.totalInsurance, '', 'Risk Insurance', loan.totalRiskInsurance];
+    ws.getRow(19).values = ['Total GPS', loan.totalGps, '', 'Total Postage', loan.totalPostage];
+    ws.getRow(20).values = ['Admin Commission', loan.totalCommission ?? 0, '', 'IGV/ITF Tax', loan.totalTax];
+    ws.getRow(21).values = ['Initial Costs', loan.initialCosts, '', 'Residual Value', loan.residualValue];
+    ws.getRow(22).values = ['Total Cost (CTC)', loan.ctc, '', 'TREA', loan.trea];
+    ws.getRow(24).values = ['TCEA', loan.tcea, '', 'IRR (monthly)', loan.irrDebtor];
+    ws.getRow(25).values = ['NPV (debtor)', loan.npvDebtor];
     // Aplicar estilos a las tablas de resumen (Negritas, alineaciones y formatos)
-    [5,6,7, 10,11,12,13, 16,17,18, 20,21].forEach(r => {
+    [5,6,7, 10,11,12,13,14, 17,18,19,20,21,22, 24,25].forEach(r => {
       const row = ws.getRow(r);
       row.getCell(1).font = normalFont;
       row.getCell(2).font = darkFont;
@@ -557,14 +576,18 @@ export class ReportPageComponent implements OnInit {
     // Formatos de celda del resumen
     ws.getCell('B7').numFmt = currencyFmt; ws.getCell('E7').numFmt = currencyFmt;
     ws.getCell('B11').numFmt = pctFmt;     ws.getCell('E11').numFmt = pctFmt;
-    ws.getCell('B16').numFmt = currencyFmt; ws.getCell('E16').numFmt = currencyFmt;
+    ws.getCell('B14').numFmt = pctFmt;     ws.getCell('E14').numFmt = pctFmt;
     ws.getCell('B17').numFmt = currencyFmt; ws.getCell('E17').numFmt = currencyFmt;
     ws.getCell('B18').numFmt = currencyFmt; ws.getCell('E18').numFmt = currencyFmt;
-    ws.getCell('B20').numFmt = pctFmt;     ws.getCell('E20').numFmt = pctFmt;
-    ws.getCell('B21').numFmt = currencyFmt;
+    ws.getCell('B19').numFmt = currencyFmt; ws.getCell('E19').numFmt = currencyFmt;
+    ws.getCell('B20').numFmt = currencyFmt; ws.getCell('E20').numFmt = currencyFmt;
+    ws.getCell('B21').numFmt = currencyFmt; ws.getCell('E21').numFmt = currencyFmt;
+    ws.getCell('B22').numFmt = currencyFmt; ws.getCell('E22').numFmt = pctFmt;
+    ws.getCell('B24').numFmt = pctFmt;     ws.getCell('E24').numFmt = pctFmt;
+    ws.getCell('B25').numFmt = currencyFmt;
 
     // --- CRONOGRAMA DE PAGOS ---
-    const startRow = 24;
+    const startRow = 29;
     addSectionTitle('Amortization Schedule', startRow);
 
     const headers = ['#', 'Date', 'Opening Bal.', 'Interest', 'Amort.', 'Insurance', 'Postage', 'Commission', 'Payment', 'Closing Bal.'];
