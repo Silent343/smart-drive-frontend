@@ -1,6 +1,6 @@
 export const environment = {
   production: false,
-  platformProviderApiBaseUrl: 'http://localhost:8080',
+  platformProviderApiBaseUrl: 'https://smart-drive-backend.onrender.com',
   platformProviderSignInEndpointPath:        '/authentication/sign-in',
   platformProviderSignUpEndpointPath:        '/authentication/sign-up',
   platformProviderVehiclesEndpointPath:      '/vehicles',
