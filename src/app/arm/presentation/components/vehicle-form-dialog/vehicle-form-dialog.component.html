@@ -19,8 +19,9 @@
         <label class="vfd-label">{{ 'vehicles.form.code' | translate }}</label>
         <input formControlName="code"
                type="text"
-               class="vfd-input"
-               placeholder="Ej: VH-001" />
+               class="vfd-input vfd-input--readonly"
+               readonly
+               [placeholder]="'vehicles.form.codeAuto' | translate" />
       </div>
       <div class="vfd-field">
         <label class="vfd-label">{{ 'vehicles.form.year' | translate }}</label>
@@ -73,11 +74,17 @@
       </div>
       <div class="vfd-field">
         <label class="vfd-label">{{ 'vehicles.form.status' | translate }}</label>
-        <select formControlName="status" class="vfd-input vfd-select">
-          <option value="Disponible">Disponible</option>
-          <option value="Vendido">Vendido</option>
-          <option value="Reservado">Reservado</option>
-        </select>
+        @if (isEditMode) {
+          <select formControlName="status" class="vfd-input vfd-select">
+            <option value="available">{{ 'vehicles.status.available' | translate }}</option>
+            <option value="sold">{{ 'vehicles.status.sold' | translate }}</option>
+            <option value="reserved">{{ 'vehicles.status.reserved' | translate }}</option>
+          </select>
+        } @else {
+          <div class="vfd-input vfd-input--readonly vfd-status-fixed">
+            <span class="vfd-status-badge">{{ 'vehicles.status.available' | translate }}</span>
+          </div>
+        }
       </div>
     </div>
 

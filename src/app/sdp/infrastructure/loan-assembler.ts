@@ -12,6 +12,7 @@ export class LoanAssembler
       clientId: resource.client_id,
       configId: resource.config_id != null ? String(resource.config_id) : '',
       sellerId: resource.seller_id != null ? String(resource.seller_id) : '',
+      sellerName: resource.seller_name ?? '',
       status: resource.status ?? 'SIMULATED',
       initialFee: resource.initial_fee,
       vehiclePrice: resource.vehicle_price,

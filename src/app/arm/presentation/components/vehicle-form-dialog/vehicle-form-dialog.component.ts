@@ -33,8 +33,11 @@ export class VehicleFormDialogComponent implements OnInit {
       commercialId: [this.data?.commercial?.id || null],
       userId: [this.data?.commercial?.userId || null],
 
-      code: [this.data?.code || '', [Validators.required]],
-      status: [this.data?.status || '', [Validators.required]],
+      // Code is an auto-generated serial (read-only). On create we mint a fresh one;
+      // on edit we keep the existing code untouched.
+      code: [{ value: this.data?.code || this.generateSerialCode(), disabled: true }, [Validators.required]],
+      // A newly registered vehicle is always "available"; the status changes later on sale.
+      status: [this.data?.status || 'available', [Validators.required]],
       imageUrl: [this.data?.imageUrl || null],
 
       brand: [this.data?.specification?.brand || '', [Validators.required]],
@@ -47,9 +50,21 @@ export class VehicleFormDialogComponent implements OnInit {
     });
   }
 
+  /**
+   * Builds an auto-incrementing-looking serial code for a new vehicle, e.g. "VH-7F3A2K".
+   * Uses a timestamp-derived, uppercased base-36 suffix so codes are unique and readable
+   * without needing a server round-trip. Read-only in the form.
+   */
+  private generateSerialCode(): string {
+    const stamp = Date.now().toString(36).toUpperCase().slice(-4);
+    const rand = Math.floor(Math.random() * 46656).toString(36).toUpperCase().padStart(3, '0');
+    return `VH-${stamp}${rand}`;
+  }
+
   onSubmit(): void {
     if (this.vehicleForm.valid) {
-      this.dialogRef.close(this.vehicleForm.value);
+      // getRawValue includes disabled controls (code), so the generated serial is preserved.
+      this.dialogRef.close(this.vehicleForm.getRawValue());
     }
   }
 

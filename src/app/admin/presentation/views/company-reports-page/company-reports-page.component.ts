@@ -40,7 +40,9 @@ export class CompanyReportsPageComponent implements OnInit {
     return this.loans().filter(loan => {
       if (sellerId) {
         const seller = this.sellers().find(s => s.id === sellerId);
-        const matches = !!seller && (loan.sellerId === seller.id
+        const matches = !!seller && (
+          loan.sellerName === seller.fullName
+          || loan.sellerId === seller.id
           || loan.sellerId === seller.code
           || loan.sellerId === seller.username);
         if (!matches) return false;
@@ -103,8 +105,10 @@ export class CompanyReportsPageComponent implements OnInit {
   }
 
   sellerLabel(loan: Loan): string {
+    // The backend now resolves the seller's display name for confirmed loans.
+    if (loan.sellerName) return loan.sellerName;
     const seller = this.sellers().find(s => s.id === loan.sellerId || s.code === loan.sellerId || s.username === loan.sellerId);
-    return seller ? `${seller.fullName} (${seller.username})` : (loan.sellerId ? `Seller ID ${loan.sellerId}` : 'Administrator');
+    return seller ? seller.fullName : (loan.sellerId ? this.translate.instant('admin.reports.administrator') : this.translate.instant('admin.reports.administrator'));
   }
 
   clientLabel(loan: Loan): string {

@@ -236,11 +236,19 @@
       "taxId": "RUC de la empresa",
       "imageUrl": "URL de la imagen",
       "save": "Guardar",
-      "cancel": "Cancelar"
+      "cancel": "Cancelar",
+      "codeAuto": "Se generará automáticamente",
+      "codeHint": "El código se genera automáticamente como número de serie.",
+      "statusHint": "Un vehículo nuevo entra como disponible; el estado cambia con la venta."
     },
     "dialog": {
       "deleteTitle": "Eliminar Vehículo",
       "deleteConfirm": "¿Estás seguro de que deseas eliminar el vehículo {{ model }}?"
+    },
+    "status": {
+      "available": "Disponible",
+      "sold": "Vendido",
+      "reserved": "Reservado"
     }
   },
   "sdp": {
@@ -513,7 +521,8 @@
       "loading": "Cargando créditos confirmados…",
       "emptyNone": "Aún no hay créditos confirmados.",
       "emptyFilter": "Ningún crédito coincide con los filtros.",
-      "error": "No se pudieron cargar los créditos confirmados."
+      "error": "No se pudieron cargar los créditos confirmados.",
+      "administrator": "Administrador"
     }
   }
 }

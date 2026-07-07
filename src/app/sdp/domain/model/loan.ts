@@ -6,6 +6,7 @@ export class Loan implements BaseEntity {
   private _clientId!: string;              // FK → client-entity  (bounded ARM)
   private _configId!: string;              // FK → CreditConfig
   private _sellerId!: string;
+  private _sellerName!: string;
   private _status!: string;
   private _initialFee!: number;            // cuota inicial (down payment)
   private _vehiclePrice!: number;          // precio del vehículo
@@ -33,7 +34,7 @@ export class Loan implements BaseEntity {
 
   constructor(props:{
     id: string, carId: string, clientId: string, configId: string,
-    sellerId?: string, status?: string,
+    sellerId?: string, sellerName?: string, status?: string,
     initialFee: number, vehiclePrice: number, loanAmount: number,
     installmentsQty: number, startDate: Date, fixedInstallment: number,
     npvDebtor: number, irrDebtor: number, tcea: number, totalInterest: number,
@@ -46,6 +47,7 @@ export class Loan implements BaseEntity {
     this._clientId = props.clientId;
     this._configId = props.configId;
     this._sellerId = props.sellerId ?? '';
+    this._sellerName = props.sellerName ?? '';
     this._status = props.status ?? 'SIMULATED';
     this._initialFee = props.initialFee;
     this._vehiclePrice = props.vehiclePrice;
@@ -103,6 +105,10 @@ export class Loan implements BaseEntity {
 
   get sellerId(): string {
     return this._sellerId;
+  }
+
+  get sellerName(): string {
+    return this._sellerName;
   }
 
   set sellerId(value: string) {

@@ -251,11 +251,19 @@
       "taxId": "Tax ID",
       "imageUrl": "Image URL",
       "save": "Save",
-      "cancel": "Cancel"
+      "cancel": "Cancel",
+      "codeAuto": "Will be generated automatically",
+      "codeHint": "The code is auto-generated as a serial number.",
+      "statusHint": "A new vehicle starts as available; the status changes on sale."
     },
     "dialog": {
       "deleteTitle": "Delete Vehicle",
       "deleteConfirm": "Are you sure you want to delete the vehicle {{ model }}?"
+    },
+    "status": {
+      "available": "Available",
+      "sold": "Sold",
+      "reserved": "Reserved"
     }
   },
   "sdp": {
@@ -513,7 +521,8 @@
       "loading": "Loading confirmed credits…",
       "emptyNone": "No confirmed credits yet.",
       "emptyFilter": "No credits match your filters.",
-      "error": "Could not load confirmed credits."
+      "error": "Could not load confirmed credits.",
+      "administrator": "Administrator"
     }
   }
 }

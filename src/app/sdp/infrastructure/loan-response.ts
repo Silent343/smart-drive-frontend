@@ -7,6 +7,7 @@ export interface LoanResource extends BaseResource{
   client_id: string;
   config_id: string;
   seller_id?: string;
+  seller_name?: string;
   status?: string;
   initial_fee: number;
   vehicle_price: number;

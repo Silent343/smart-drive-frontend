@@ -231,3 +231,11 @@
   background-color: #d1d5db;
   border-radius: 4px;
 }
+
+.vfd-input--readonly { background:#f3f5f7; color:#5a6a72; cursor:not-allowed; }
+.vfd-hint { display:block; margin-top:4px; font-size:.72rem; color:#6b7a82; font-style:italic; }
+.vfd-status-fixed { display:flex; align-items:center; }
+.vfd-status-badge {
+  display:inline-block; font-size:.75rem; font-weight:700; color:#1f6f5c;
+  background:#eaf3f1; border:1px solid #bfd3ce; border-radius:999px; padding:3px 12px;
+}

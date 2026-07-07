@@ -54,7 +54,8 @@ export class ConfigurationPageComponent implements OnInit {
   riskInsuranceRatePct                = this.savedConfig?.riskInsuranceRatePct ?? 0.30;
   gpsFeeAmount                       = this.savedConfig?.gpsFeeAmount ?? 20;
   finalInstallmentPct                 = this.savedConfig?.finalInstallmentPct ?? 1;
-  igvPct                             = this.savedConfig?.igvItfPct ?? 18;
+  // IGV/ITF is fixed by SUNAT at 18%; never inherit a stale saved value (which may be 0).
+  igvPct                             = 18;
   notaryCostAmount                   = this.savedConfig?.notaryCostAmount ?? 100;
   registryCostAmount                 = this.savedConfig?.registryCostAmount ?? 75;
   appraisalCostAmount                = this.savedConfig?.appraisalCostAmount ?? 0;
@@ -102,7 +103,7 @@ export class ConfigurationPageComponent implements OnInit {
     this.riskInsuranceRatePct = config.riskInsuranceRatePct;
     this.gpsFeeAmount = config.gpsFeeAmount;
     this.finalInstallmentPct = config.finalInstallmentPct;
-    this.igvPct = config.igvItfPct;
+    this.igvPct = 18; // fixed by SUNAT; ignore any stale saved value
     this.notaryCostAmount = config.notaryCostAmount;
     this.registryCostAmount = config.registryCostAmount;
     this.appraisalCostAmount = config.appraisalCostAmount;
