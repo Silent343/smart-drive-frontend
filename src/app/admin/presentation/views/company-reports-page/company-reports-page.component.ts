@@ -117,10 +117,23 @@ export class CompanyReportsPageComponent implements OnInit {
   }
 
   vehicleLabel(loan: Loan): string {
-    const vehicle = this.armStore.vehicles().find(v => v.id === loan.carId);
-    const spec = this.armStore.vehicleSpecifications().find(s => s.vehicleId === loan.carId);
-    if (spec?.brand || spec?.model) return `${spec.brand} ${spec.model}`.trim();
-    return vehicle?.code ?? loan.carId;
+    return this.vehicleIdsFromLoan(loan)
+      .map(vehicleId => this.vehicleLabelById(vehicleId))
+      .join(', ');
+  }
+
+  private vehicleIdsFromLoan(loan: Loan): string[] {
+    if (loan.vehicles?.length) {
+      return loan.vehicles.map(vehicle => vehicle.carId).filter(Boolean);
+    }
+    return loan.carId ? [loan.carId] : [];
+  }
+
+  private vehicleLabelById(vehicleId: string): string {
+    const vehicle = this.armStore.vehicles().find(v => v.id === vehicleId);
+    const spec = this.armStore.vehicleSpecifications().find(s => s.vehicleId === vehicleId);
+    if (spec?.brand || spec?.model) return `${spec.brand ?? ''} ${spec.model ?? ''}`.trim();
+    return vehicle?.code ?? vehicleId;
   }
 
   money(value: number, currency = 'PEN'): string {

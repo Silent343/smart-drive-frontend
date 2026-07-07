@@ -29,6 +29,7 @@ export interface LoanResource extends BaseResource{
   initial_costs?: number;
   residual_value?: number;
   ctc: number;
+  vehicles?: { car_id: string; price: number }[];
 }
 
 export interface LoanResponse extends BaseResponse {

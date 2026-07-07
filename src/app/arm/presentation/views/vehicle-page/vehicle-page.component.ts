@@ -44,18 +44,10 @@ export class VehiclePageComponent implements OnInit {
     const baseVehicles = this.store.vehicles();
     const specs = this.store.vehicleSpecifications();
     const commercials = this.store.vehicleCommercials();
-    const clients = this.store.clients();
 
     return baseVehicles.map(v => {
       v.specification = specs.find(s => s.vehicleId === v.id);
       v.commercial = commercials.find(c => c.vehicleId === v.id);
-
-      const isSold = clients.some(client => client.vehicleId === v.id);
-
-      if (isSold) {
-        v.status = 'vendido';
-      }
-
       return v;
     }).filter(v => this.iam.belongsToCompany(v.commercial?.userId));
   });
@@ -77,7 +69,6 @@ export class VehiclePageComponent implements OnInit {
     this.store.loadVehicles();
     this.store.loadVehicleSpecifications();
     this.store.loadVehicleCommercials();
-    this.store.loadClients();
   }
 
   onFilterChange(event: any): void {

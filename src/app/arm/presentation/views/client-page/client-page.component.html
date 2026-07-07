@@ -14,6 +14,7 @@
   <app-client-table
     [clients]="clients()"
     [vehicles]="vehicles()"
+    [loans]="confirmedLoans()"
     [readonly]="!canManage()"
     (edit)="openEditForm($event)"
     (delete)="openDeleteConfirmation($event)"

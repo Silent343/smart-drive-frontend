@@ -7,7 +7,6 @@ import { SdpStore } from '../../../application/sdp.store';
 import { ArmStore } from '../../../../arm/application/arm.store';
 import { FlowHeaderComponent } from '../../components/flow-header/flow-header.component';
 import { ScheduleTableComponent } from '../../components/schedule-table/schedule-table.component';
-import { Client } from '../../../../arm/domain/model/client.entity';
 import { jsPDF } from 'jspdf';
 import * as ExcelJS from 'exceljs';
 import { saveAs } from 'file-saver';
@@ -47,6 +46,23 @@ export class ReportPageComponent implements OnInit {
   readonly carName    = this.store.flowCarName;
   readonly currentUser = this.iamStore.currentUser;
 
+  get vehicleIdsText(): string {
+    const ids = this.vehicleIds();
+    return ids.length ? ids.join(', ') : '—';
+  }
+
+  get vehicleNamesText(): string {
+    const selectedVehicles = this.store.flowVehicles();
+    if (selectedVehicles.length) {
+      return selectedVehicles.map(vehicle => vehicle.label).join(', ');
+    }
+
+    const labels = this.vehicleIds().map(vehicleId => this.vehicleLabelById(vehicleId));
+    if (labels.length) return labels.join(', ');
+
+    return this.carName() || '—';
+  }
+
   fmt(n: number | undefined): string {
     if (n == null) return '—';
     return `${this.symbol} ${n.toLocaleString('es-PE', {
@@ -74,6 +90,29 @@ export class ReportPageComponent implements OnInit {
 
     // Cargar clientes frescos para tener el objeto completo disponible
     this.armStore.loadClients();
+    this.armStore.loadVehicles();
+    this.armStore.loadVehicleSpecifications();
+  }
+
+  private vehicleIds(): string[] {
+    const loan = this.loan;
+    if (loan?.vehicles?.length) {
+      return loan.vehicles.map(vehicle => vehicle.carId).filter(Boolean);
+    }
+
+    const selectedVehicles = this.store.flowVehicles();
+    if (selectedVehicles.length) {
+      return selectedVehicles.map(vehicle => vehicle.id).filter(Boolean);
+    }
+
+    return loan?.carId ? [loan.carId] : [];
+  }
+
+  private vehicleLabelById(vehicleId: string): string {
+    const vehicle = this.armStore.vehicles().find(v => v.id === vehicleId);
+    const spec = this.armStore.vehicleSpecifications().find(s => s.vehicleId === vehicleId);
+    if (spec?.brand || spec?.model) return `${spec.brand ?? ''} ${spec.model ?? ''}`.trim();
+    return vehicle?.code ?? vehicleId;
   }
 
   // ── Confirmar: persiste el crédito confirmado para reportes admin ──
@@ -101,18 +140,7 @@ export class ReportPageComponent implements OnInit {
 
     this.store.confirmCurrentLoan().subscribe({
       next: () => {
-        const updatedClient = new Client({
-          id:         client.id,
-          userId:     client.userId,
-          name:       client.name,
-          dni:        client.dni,
-          income:     client.income,
-          occupation: client.occupation,
-          phone:      client.phone,
-          vehicleId:  carId,
-        });
-
-        this.armStore.updateClient(updatedClient);
+        this.armStore.loadVehicles();
         this.isConfirming   = false;
         this.confirmSuccess = true;
       },
@@ -264,14 +292,14 @@ export class ReportPageComponent implements OnInit {
     pdf.setFontSize(8);
     pdf.setTextColor(180, 180, 190);
     pdf.text(`Generated: ${new Date().toLocaleString('en-US')}`, margin + 4, 42);
-    pdf.text(`Client ID: ${loan.clientId}   |   Vehicle ID: ${loan.carId}`, W - margin, 42, { align: 'right' });
+    pdf.text(`Client ID: ${loan.clientId}   |   Vehicle ID: ${this.vehicleIdsText}`, W - margin, 42, { align: 'right' });
 
     y = 62;
 
     // ── CLIENTE & VEHÍCULO ───────────────────────────────────────
     drawSectionTitle('Client & Vehicle Information');
-    drawRowPair('Client ID',    loan.clientId  || '—', 'Vehicle ID',    loan.carId     || '—', false);
-    drawRowPair('Client Name',  this.clientName()    , 'Vehicle Name',  this.carName()       , true);
+    drawRowPair('Client ID',    loan.clientId  || '—', 'Vehicle ID',    this.vehicleIdsText, false);
+    drawRowPair('Client Name',  this.clientName()    , 'Vehicle Name',  this.vehicleNamesText, true);
     drawRowPair('Vehicle Price', fmt(loan.vehiclePrice), 'Initial Fee', fmt(loan.initialFee) , false);
 
     y += 4;
@@ -537,8 +565,8 @@ export class ReportPageComponent implements OnInit {
 
     // --- BLOQUE 1: CLIENTE Y VEHÍCULO ---
     addSectionTitle('Client & Vehicle Information', 4);
-    ws.getRow(5).values = ['Client ID', loan.clientId || '—', '', 'Vehicle ID', loan.carId || '—'];
-    ws.getRow(6).values = ['Client Name', this.clientName(), '', 'Vehicle Name', this.carName()];
+    ws.getRow(5).values = ['Client ID', loan.clientId || '—', '', 'Vehicle ID', this.vehicleIdsText];
+    ws.getRow(6).values = ['Client Name', this.clientName(), '', 'Vehicle Name', this.vehicleNamesText];
     ws.getRow(7).values = ['Vehicle Price', loan.vehiclePrice, '', 'Initial Fee', loan.initialFee];
 
     // --- BLOQUE 2: PARÁMETROS ---

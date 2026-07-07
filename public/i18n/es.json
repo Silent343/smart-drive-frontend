@@ -325,7 +325,14 @@
       "activationCommission": "Comisión de activación",
       "discountRate": "Tasa de descuento (COK)",
       "fixedBySunat": "Fijado por SUNAT",
-      "igvFixedHint": "El IGV/ITF está fijado por la SUNAT y no puede modificarse."
+      "igvFixedHint": "El IGV/ITF está fijado por la SUNAT y no puede modificarse.",
+      "addVehicle": "Agregar vehículo",
+      "vehiclesList": "Vehículos del crédito",
+      "vehiclesEmpty": "Agrega uno o más vehículos al crédito buscándolos arriba.",
+      "vehiclesTotal": "Total de vehículos",
+      "removeVehicle": "Quitar vehículo",
+      "vehicleAlreadyAdded": "Ese vehículo ya está en el crédito.",
+      "vehicleNotAvailable": "Ese vehículo no está disponible."
     },
     "components": {
       "scheduleTable": {

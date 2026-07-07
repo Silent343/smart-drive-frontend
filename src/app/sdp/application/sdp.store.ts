@@ -1,4 +1,4 @@
-import { Injectable, signal } from '@angular/core';
+import { Injectable, computed, signal } from '@angular/core';
 
 import { CreditConfig } from '../domain/model/credit-config';
 import { Loan } from '../domain/model/loan';
@@ -147,6 +147,7 @@ function calculateFrench(loan: Loan, config: CreditConfig): {
     residualValue,
     trea,
     ctc,
+    vehicles: loan.vehicles,
   });
 
   return { updatedLoan, schedule };
@@ -193,6 +194,13 @@ export class SdpStore {
   private readonly flowCarIdSignal      = signal<string>('');
   private readonly flowClientNameSignal = signal<string>('');
   private readonly flowCarNameSignal    = signal<string>('');
+  /**
+   * Multi-vehicle: all vehicles picked for the current credit. Each entry keeps the vehicle id,
+   * a display label and its price so the config can show subtotals and a running total, and the
+   * confirmation can send the full list. The legacy flowCarId/Name mirror the first vehicle for
+   * the parts of the flow that still assume a single car.
+   */
+  private readonly flowVehiclesSignal   = signal<{ id: string; label: string; price: number }[]>([]);
 
   // Public signals
   readonly creditConfigs      = this.creditConfigsSignal.asReadonly();
@@ -208,6 +216,10 @@ export class SdpStore {
   readonly flowCarId      = this.flowCarIdSignal.asReadonly();
   readonly flowClientName = this.flowClientNameSignal.asReadonly();
   readonly flowCarName    = this.flowCarNameSignal.asReadonly();
+  readonly flowVehicles   = this.flowVehiclesSignal.asReadonly();
+  /** Sum of the prices of all vehicles picked for the credit. */
+  readonly flowVehiclesTotal = computed(() =>
+    this.flowVehiclesSignal().reduce((sum, v) => sum + v.price, 0));
 
   constructor(private sdpApi: SdpApi) {}
 
@@ -267,6 +279,36 @@ export class SdpStore {
     this.flowCarNameSignal.set(name);
   }
 
+  /**
+   * Adds a vehicle to the current credit. Ignores duplicates (the same vehicle can't be financed
+   * twice in one credit) and keeps the legacy single-car signals pointed at the first vehicle.
+   * Returns false when the vehicle was already in the list.
+   */
+  addFlowVehicle(vehicle: { id: string; label: string; price: number }): boolean {
+    const current = this.flowVehiclesSignal();
+    if (current.some(v => v.id === vehicle.id)) return false;
+    const updated = [...current, vehicle];
+    this.flowVehiclesSignal.set(updated);
+    this.flowCarIdSignal.set(updated[0].id);
+    this.flowCarNameSignal.set(updated[0].label);
+    return true;
+  }
+
+  /** Removes a vehicle from the current credit and refreshes the single-car mirror. */
+  removeFlowVehicle(id: string): void {
+    const updated = this.flowVehiclesSignal().filter(v => v.id !== id);
+    this.flowVehiclesSignal.set(updated);
+    this.flowCarIdSignal.set(updated.length ? updated[0].id : '');
+    this.flowCarNameSignal.set(updated.length ? updated[0].label : '');
+  }
+
+  /** Clears all vehicles picked for the current credit. */
+  clearFlowVehicles(): void {
+    this.flowVehiclesSignal.set([]);
+    this.flowCarIdSignal.set('');
+    this.flowCarNameSignal.set('');
+  }
+
   // ── LOCAL SIMULATION → persist as Loan ─────────────────────────────────────
 
   /**
@@ -315,6 +357,7 @@ export class SdpStore {
       residualValue:    0,
       trea:             0,
       ctc:              0,
+      vehicles: this.flowVehiclesSignal().map(v => ({ carId: v.id, price: v.price })),
     });
 
     // 2. Calculate locally (immediate, without waiting for backend)
@@ -358,6 +401,10 @@ export class SdpStore {
       initialCosts: loan.initialCosts,
       residualValue: loan.residualValue,
       ctc: loan.ctc,
+      // Multi-vehicle: send the full list picked in the config (falls back to the single car).
+      vehicles: this.flowVehiclesSignal().length
+        ? this.flowVehiclesSignal().map(v => ({ carId: v.id, price: v.price }))
+        : (loan.carId ? [{ carId: loan.carId, price: loan.vehiclePrice }] : []),
     });
 
     return this.sdpApi.createLoan(confirmedLoan).pipe(
@@ -433,5 +480,6 @@ export class SdpStore {
     this.flowCarIdSignal.set('');
     this.flowClientNameSignal.set('');
     this.flowCarNameSignal.set('');
+    this.clearFlowVehicles();
   }
 }

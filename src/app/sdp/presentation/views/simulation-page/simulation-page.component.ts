@@ -52,10 +52,15 @@ export class SimulationPageComponent implements OnInit {
   get vehiclePrice(): number {
     if (this.existingLoan) return this.existingLoan.vehiclePrice;
 
-    const carId = this.store.flowCarId();
-    const commercialInfo = this.armStore.vehicleCommercials().find(c => c.vehicleId === carId);
-
-    const basePriceSoles = commercialInfo?.price ?? 0;
+    // Multi-vehicle: the financed base is the sum of all vehicles picked in the config.
+    // Falls back to the single vehicle's price when the list is empty.
+    const total = this.store.flowVehiclesTotal();
+    let basePriceSoles = total;
+    if (basePriceSoles === 0) {
+      const carId = this.store.flowCarId();
+      const commercialInfo = this.armStore.vehicleCommercials().find(c => c.vehicleId === carId);
+      basePriceSoles = commercialInfo?.price ?? 0;
+    }
 
     // Si la moneda es USD, dividimos el precio base en soles entre el tipo de cambio actual
     if (this.activeConfig()?.currency === 'USD') {

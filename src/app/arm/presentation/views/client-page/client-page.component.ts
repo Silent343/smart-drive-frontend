@@ -1,4 +1,4 @@
-import { Component, computed, inject, OnInit } from '@angular/core';
+import { Component, computed, inject, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
@@ -9,8 +9,9 @@ import { Client } from '../../../domain/model/client.entity';
 import { ClientsTableComponent } from '../../components/client-table/client-table.component';
 import { ClientFormDialogComponent } from '../../components/client-form-dialog/client-form-dialog.component';
 import { ClientDeleteDialogComponent } from '../../components/client-delete-dialog/client-delete-dialog.component';
-import { Vehicle } from '../../../domain/model/vehicle.entity';
 import { IamStore } from '../../../../iam/application/iam.store';
+import { Loan } from '../../../../sdp/domain/model/loan';
+import { SdpApi } from '../../../../sdp/infrastructure/sdp-api';
 
 @Component({
   selector: 'app-client-page',
@@ -23,9 +24,11 @@ export class ClientPageComponent implements OnInit {
   private store = inject(ArmStore);
   private dialog = inject(MatDialog);
   private iam = inject(IamStore);
+  private sdpApi = inject(SdpApi);
 
   /** Only sellers register/edit clients; the admin has a read-only view. */
   readonly canManage = this.iam.isSeller;
+  readonly confirmedLoans = signal<Loan[]>([]);
 
   clients = computed(() =>
     this.store.clients().filter(c => this.iam.belongsToCompany(c.userId))
@@ -48,6 +51,14 @@ export class ClientPageComponent implements OnInit {
     this.store.loadVehicles();
     this.store.loadVehicleSpecifications();
     this.store.loadVehicleCommercials();
+    this.loadConfirmedLoans();
+  }
+
+  private loadConfirmedLoans(): void {
+    this.sdpApi.getConfirmedLoans().subscribe({
+      next: loans => this.confirmedLoans.set(loans),
+      error: () => this.confirmedLoans.set([]),
+    });
   }
 
   openRegisterForm(): void {
@@ -68,10 +79,6 @@ export class ClientPageComponent implements OnInit {
         };
 
         this.store.createClient(newClientWithUser);
-
-        if (result.vehicleId) {
-          this.updateVehicleStatus(result.vehicleId, 'Vendido');
-        }
       }
     });
   }
@@ -88,18 +95,6 @@ export class ClientPageComponent implements OnInit {
       if (result) {
         this.store.updateClient(result);
       }
-
-      const oldVehicleId = client.vehicleId;
-      const newVehicleId = result?.vehicleId;
-
-      if (oldVehicleId !== newVehicleId) {
-        if (oldVehicleId) {
-          this.updateVehicleStatus(oldVehicleId, 'Disponible');
-        }
-        if (newVehicleId) {
-          this.updateVehicleStatus(newVehicleId, 'Vendido');
-        }
-      }
     });
   }
 
@@ -112,25 +107,8 @@ export class ClientPageComponent implements OnInit {
     dialogRef.afterClosed().subscribe((confirmed: boolean) => {
       if (confirmed) {
         this.store.deleteClient(client.id);
-
-        if (client.vehicleId) {
-          this.updateVehicleStatus(client.vehicleId, 'Disponible');
-        }
       }
     });
-  }
-
-  private updateVehicleStatus(vehicleId: string, newStatus: string): void {
-    const vehicle = this.vehicles().find(v => v.id === vehicleId);
-
-    if (vehicle && vehicle.status !== newStatus) {
-      this.store.updateVehicle(new Vehicle({
-        id: vehicle.id,
-        code: vehicle.code,
-        status: newStatus,
-        imageUrl: vehicle.imageUrl
-      }));
-    }
   }
 
   onUnlinkVehicle(client: Client): void {

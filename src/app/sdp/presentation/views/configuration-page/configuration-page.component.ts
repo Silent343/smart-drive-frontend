@@ -2,7 +2,7 @@ import { Component, effect, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 
 import { SdpStore } from '../../../application/sdp.store';
 import { CreditConfig, Capitalization, GracePeriodType, InterestRateType, Currency } from '../../../domain/model/credit-config';
@@ -23,6 +23,7 @@ export class ConfigurationPageComponent implements OnInit {
   private readonly armStore = inject(ArmStore);
   private readonly iamStore = inject(IamStore);
   private readonly router   = inject(Router);
+  private readonly translate = inject(TranslateService);
   private readonly syncActiveConfig = effect(() => {
     const config = this.store.activeCreditConfig();
     if (config) this.applyConfig(config);
@@ -153,6 +154,7 @@ export class ConfigurationPageComponent implements OnInit {
       .filter(v => this.iamStore.belongsToCompany(commercials.find(c => c.vehicleId === v.id)?.userId))
       .map(v => {
         const spec = specs.find(s => s.vehicleId === v.id);
+        const commercial = commercials.find(c => c.vehicleId === v.id);
         const brand = spec?.brand ?? '';
         const model = spec?.model ?? '';
         return {
@@ -161,6 +163,8 @@ export class ConfigurationPageComponent implements OnInit {
           imageUrl: v.imageUrl,
           brand,
           model,
+          price: commercial?.price ?? 0,
+          status: v.status ?? 'available',
           label: brand && model ? `${brand} ${model}` : v.code,
         };
       });
@@ -181,7 +185,7 @@ export class ConfigurationPageComponent implements OnInit {
   }
 
   get showCarNotFound(): boolean {
-    return !!this.codigoAuto.trim() && !this.vehicleId && this.filteredVehicles.length === 0;
+    return !!this.codigoAuto.trim() && this.filteredVehicles.length === 0;
   }
 
   openVehicleList(): void {
@@ -204,17 +208,48 @@ export class ConfigurationPageComponent implements OnInit {
     this.showVehicleList = true;
   }
 
-  selectVehicle(option: { id: string; code: string; label: string }): void {
-    this.vehicleId = option.id;
-    this.vehicleName = option.label;
-    this.codigoAuto = option.code;
+  /** Adds the picked vehicle to the credit's vehicle list, with validations. */
+  selectVehicle(option: { id: string; code: string; label: string; price: number; status: string }): void {
     this.carError = '';
+
+    // A vehicle must be available to be financed.
+    if (!this.isVehicleAvailable(option.status)) {
+      this.carError = this.translate.instant('sdp.configuration.vehicleNotAvailable');
+      this.showVehicleList = false;
+      return;
+    }
+
+    // No duplicates within the same credit.
+    const added = this.store.addFlowVehicle({ id: option.id, label: option.label, price: option.price });
+    if (!added) {
+      this.carError = this.translate.instant('sdp.configuration.vehicleAlreadyAdded');
+    }
+
+    this.codigoAuto = '';
     this.showVehicleList = false;
-    this.store.setFlowCar(option.id, option.label);
+  }
+
+  /** Vehicles currently added to the credit (from the store). */
+  get selectedVehicles() {
+    return this.store.flowVehicles();
+  }
+
+  /** Sum of the prices of all added vehicles. */
+  get vehiclesTotal(): number {
+    return this.store.flowVehiclesTotal();
+  }
+
+  removeVehicle(id: string): void {
+    this.store.removeFlowVehicle(id);
+  }
+
+  private isVehicleAvailable(status?: string): boolean {
+    const normalized = (status ?? 'available').trim().toLowerCase();
+    return normalized === 'available' || normalized === 'disponible';
   }
 
   get canContinue(): boolean {
-    return !!this.clientId && !!this.vehicleId;
+    return !!this.clientId && this.selectedVehicles.length > 0;
   }
 
   onContinue(): void {

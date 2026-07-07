@@ -24,17 +24,16 @@
           <td>{{ client.phone }}</td>
 
           <td>
-            @if (getVehicleCode(client.vehicleId)) {
-              <div class="vehicle-badge-wrapper">
-                @if (!readonly()) {
-                  <button class="unlink-btn" (click)="unlinkVehicle.emit(client)" title="Desvincular vehículo">
-                    &#10006;
-                  </button>
-                }
-                <span class="vehicle-code-badge">{{ getVehicleCode(client.vehicleId) }}</span>
-              </div>
-            } @else {
-              <span class="unassigned-badge">{{ 'clients.table.unassigned' | translate }}</span>
+            @if (getVehicleLabels(client); as vehicleLabels) {
+              @if (vehicleLabels.length > 0) {
+                <div class="vehicle-badge-wrapper">
+                  @for (vehicleLabel of vehicleLabels; track vehicleLabel) {
+                    <span class="vehicle-code-badge">{{ vehicleLabel }}</span>
+                  }
+                </div>
+              } @else {
+                <span class="unassigned-badge">{{ 'clients.table.unassigned' | translate }}</span>
+              }
             }
           </td>
 

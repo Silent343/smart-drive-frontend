@@ -25,7 +25,7 @@
 
           <!-- Código vehículo — autocomplete con imágenes -->
           <div class="sdp-field sdp-field--autocomplete">
-            <label class="sdp-label">{{ 'sdp.configuration.vehicleCode' | translate }}</label>
+            <label class="sdp-label">{{ 'sdp.configuration.addVehicle' | translate }}</label>
             <input
               class="sdp-input"
               [class.sdp-input--error]="showCarNotFound"
@@ -53,6 +53,7 @@
                       <span class="sdp-ac-code">{{ v.code }}</span>
                       <span class="sdp-ac-name">{{ v.label }}</span>
                     </div>
+                    <span class="sdp-ac-add">+</span>
                   </li>
                 } @empty {
                   <li class="sdp-ac-empty">{{ 'sdp.configuration.vehicleNotFound' | translate }}</li>
@@ -66,7 +67,7 @@
           </div>
         </div>
 
-        <!-- Resultados de búsqueda (readonly) -->
+        <!-- Cliente encontrado (readonly) -->
         <div class="sdp-g2">
           <div class="sdp-field">
             <label class="sdp-label">{{ 'sdp.configuration.client' | translate }}</label>
@@ -77,15 +78,38 @@
               readonly
             />
           </div>
-          <div class="sdp-field">
-            <label class="sdp-label">{{ 'sdp.configuration.vehicle' | translate }}</label>
-            <input
-              class="sdp-input sdp-input--readonly"
-              [class.sdp-input--found]="vehicleName"
-              [value]="vehicleName || '—'"
-              readonly
-            />
+        </div>
+
+        <!-- Lista de vehículos del crédito -->
+        <div class="sdp-vehicles">
+          <div class="sdp-vehicles__head">
+            <span class="sdp-label">{{ 'sdp.configuration.vehiclesList' | translate }}</span>
+            <span class="sdp-vehicles__count">{{ selectedVehicles.length }}</span>
           </div>
+
+          @if (selectedVehicles.length === 0) {
+            <p class="sdp-vehicles__empty">{{ 'sdp.configuration.vehiclesEmpty' | translate }}</p>
+          } @else {
+            <ul class="sdp-vehicles__rows">
+              @for (v of selectedVehicles; track v.id) {
+                <li class="sdp-vehicle-row">
+                  <span class="sdp-vehicle-row__name">{{ v.label }}</span>
+                  <span class="sdp-vehicle-row__price">
+                    {{ currency === 'PEN' ? 'S/' : '$' }} {{ v.price | number:'1.2-2' }}
+                  </span>
+                  <button type="button" class="sdp-vehicle-row__remove"
+                          (click)="removeVehicle(v.id)"
+                          [attr.aria-label]="'sdp.configuration.removeVehicle' | translate">
+                    ✕
+                  </button>
+                </li>
+              }
+            </ul>
+            <div class="sdp-vehicles__total">
+              <span>{{ 'sdp.configuration.vehiclesTotal' | translate }}</span>
+              <strong>{{ currency === 'PEN' ? 'S/' : '$' }} {{ vehiclesTotal | number:'1.2-2' }}</strong>
+            </div>
+          }
         </div>
       </div>
 

@@ -43,24 +43,10 @@ export class Home implements OnInit {
     const baseVehicles = this.store.vehicles();
     const specs = this.store.vehicleSpecifications();
     const commercials = this.store.vehicleCommercials();
-    const clients = this.store.clients();
 
     return baseVehicles.map(v => {
-      // 1. Ensamblamos el vehículo con sus partes
       v.specification = specs.find(s => s.vehicleId === v.id);
       v.commercial = commercials.find(c => c.vehicleId === v.id);
-
-      // 2. Evaluamos dinámicamente si está vendido
-      const isSold = clients.some(client => client.vehicleId === v.id);
-
-      // 3. Sobrescribimos el estado para que los contadores funcionen
-      if (isSold) {
-        v.status = 'Vendido';
-      } else {
-        // Asegúrate de que este string coincida con la validación de tu contador
-        v.status = 'Disponible';
-      }
-
       return v;
     }).filter(v => this.iamStore.belongsToCompany(v.commercial?.userId));
   });
@@ -70,11 +56,11 @@ export class Home implements OnInit {
   });
 
   availableVehicles = computed(() => {
-    return this.vehicles().filter(v => v.status === 'Disponible').length;
+    return this.vehicles().filter(v => this.isAvailable(v.status)).length;
   });
 
   soldVehicles = computed(() => {
-    return this.vehicles().filter(v => v.status === 'Vendido').length;
+    return this.vehicles().filter(v => this.isSold(v.status)).length;
   });
 
   // =========================================
@@ -82,7 +68,7 @@ export class Home implements OnInit {
   // =========================================
 
   financialChartData = computed<ChartConfiguration['data']>(() => {
-    const sold = this.vehicles().filter(v => v.status === 'Vendido');
+    const sold = this.vehicles().filter(v => this.isSold(v.status));
 
     const grouped = sold.reduce((acc, v) => {
       // Extraemos el año de specification y el precio de commercial
@@ -122,6 +108,16 @@ export class Home implements OnInit {
       ]
     };
   });
+
+  private isAvailable(status?: string): boolean {
+    const normalized = (status ?? '').trim().toLowerCase();
+    return normalized === 'available' || normalized === 'disponible';
+  }
+
+  private isSold(status?: string): boolean {
+    const normalized = (status ?? '').trim().toLowerCase();
+    return normalized === 'sold' || normalized === 'vendido';
+  }
 
   chartOptions: ChartConfiguration['options'] = {
     responsive: true,

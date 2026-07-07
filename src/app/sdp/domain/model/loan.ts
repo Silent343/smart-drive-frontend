@@ -30,6 +30,8 @@ export class Loan implements BaseEntity {
   private _initialCosts!: number;
   private _residualValue!: number;
   private _ctc!: number;                   // Costo total del crédito
+  /** Multi-vehicle: all vehicles financed by this credit (id + price). */
+  private _vehicles!: { carId: string; price: number }[];
 
 
   constructor(props:{
@@ -40,7 +42,8 @@ export class Loan implements BaseEntity {
     npvDebtor: number, irrDebtor: number, tcea: number, totalInterest: number,
     totalInsurance: number, totalPostage: number, totalCommission: number,
     ctc: number, trea?: number, totalRiskInsurance?: number, totalGps?: number,
-    totalTax?: number, initialCosts?: number, residualValue?: number
+    totalTax?: number, initialCosts?: number, residualValue?: number,
+    vehicles?: { carId: string; price: number }[]
   }) {
     this._id = props.id;
     this._carId = props.carId;
@@ -69,6 +72,7 @@ export class Loan implements BaseEntity {
     this._initialCosts = props.initialCosts ?? 0;
     this._residualValue = props.residualValue ?? 0;
     this._ctc = props.ctc;
+    this._vehicles = props.vehicles ?? [];
   }
 
   get id(): string {
@@ -277,6 +281,14 @@ export class Loan implements BaseEntity {
 
   get ctc(): number {
     return this._ctc;
+  }
+
+  get vehicles(): { carId: string; price: number }[] {
+    return this._vehicles;
+  }
+
+  set vehicles(value: { carId: string; price: number }[]) {
+    this._vehicles = value;
   }
 
   set ctc(value: number) {

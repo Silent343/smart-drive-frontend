@@ -25,7 +25,7 @@
       <p class="rp-section__title">{{ 'sdp.report.vehicleData' | translate }}</p>
       <div class="rp-section__row">
         <span class="rp-section__k">{{ 'sdp.report.vehicleId' | translate }}</span>
-        <span class="rp-section__v">{{ loan?.carId || '—' }}</span>
+        <span class="rp-section__v">{{ vehicleIdsText }}</span>
       </div>
       <div class="rp-section__row">
         <span class="rp-section__k">{{ 'sdp.report.price' | translate }}</span>
@@ -33,7 +33,7 @@
       </div>
       <div class="rp-section__row">
         <span class="rp-section__k">Vehicle name</span>
-        <span class="rp-section__v">{{ carName() || '—' }}</span>
+        <span class="rp-section__v">{{ vehicleNamesText }}</span>
       </div>
     </div>
   </div>

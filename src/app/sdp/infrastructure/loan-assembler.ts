@@ -34,6 +34,7 @@ export class LoanAssembler
       initialCosts: resource.initial_costs ?? 0,
       residualValue: resource.residual_value ?? 0,
       ctc: resource.ctc,
+      vehicles: (resource.vehicles ?? []).map(v => ({ carId: v.car_id, price: v.price })),
     });
   }
 
@@ -65,6 +66,7 @@ export class LoanAssembler
       initial_costs: entity.initialCosts,
       residual_value: entity.residualValue,
       ctc: entity.ctc,
+      vehicles: (entity.vehicles ?? []).map(v => ({ car_id: v.carId, price: v.price })),
     };
   }
 
