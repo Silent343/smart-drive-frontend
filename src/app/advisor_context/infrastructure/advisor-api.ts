@@ -6,6 +6,7 @@ import { BaseApi } from '../../shared/infrastructure/base-api';
 import { AdvisorAnswer } from '../domain/model/advisor-answer';
 import { ChatMessage } from '../domain/model/chat-message';
 import { AdvisorApiEndpoint } from './advisor-api-endpoint';
+import { AdvisorFiguresResource } from './advisor-response';
 
 /**
  * Coarse-grained infrastructure facade for the advisor bounded context.
@@ -28,16 +29,18 @@ export class AdvisorApi extends BaseApi {
   /**
    * Asks the advisor a question about a loan.
    *
-   * @param loanId - The id of the loan.
+   * @param loanId - The id of the confirmed loan, or `null` in simulation.
    * @param question - The user's question.
    * @param history - Prior conversation turns.
+   * @param figures - Inline figures of the simulated loan, when there is no id.
    * @returns An observable of the grounded {@link AdvisorAnswer}.
    */
   ask(
-    loanId: string,
+    loanId: string | null,
     question: string,
     history: ChatMessage[],
+    figures?: AdvisorFiguresResource,
   ): Observable<AdvisorAnswer> {
-    return this.advisorEndpoint.ask(loanId, question, history);
+    return this.advisorEndpoint.ask(loanId, question, history, figures);
   }
 }

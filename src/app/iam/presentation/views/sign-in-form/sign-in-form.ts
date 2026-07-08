@@ -32,6 +32,7 @@ export class SignInForm {
   private readonly router = inject(Router);
 
   showPassword = false;
+  signInError = '';
   /** Spinner state shared with the store, so the button reflects the in-flight request. */
   readonly loading = this.store.authLoading;
 
@@ -46,6 +47,7 @@ export class SignInForm {
   }
 
   performSignIn(): void {
+    this.signInError = '';
     if (this.signInForm.valid) {
       const identifier = this.signInForm.value.identifier.trim().toLowerCase();
       if (this.signInForm.value.rememberIdentifier) {
@@ -57,7 +59,11 @@ export class SignInForm {
         identifier,
         password: this.signInForm.value.password
       });
-      this.store.signIn(command, this.router);
+      this.store.signIn(command, this.router, () => {
+        this.signInError = 'No existe una cuenta con ese identificador o la contrasena es incorrecta.';
+        this.signInForm.controls['identifier'].setErrors({ invalidCredentials: true });
+        this.signInForm.controls['password'].setErrors({ invalidCredentials: true });
+      });
     } else {
       this.signInForm.markAllAsTouched();
     }

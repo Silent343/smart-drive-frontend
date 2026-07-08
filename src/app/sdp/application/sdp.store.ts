@@ -6,6 +6,8 @@ import { ScheduleRow } from '../domain/model/schedule-row';
 import { LoanReport } from '../domain/model/loan-report';
 import { SdpApi } from '../infrastructure/sdp-api';
 import {Observable, tap} from 'rxjs';
+import { IamStore } from '../../iam/application/iam.store';
+import { amountFromPen } from './currency-conversion';
 
 // ─── French Amortization Utilities ───────────────────────────────────────────
 
@@ -84,9 +86,9 @@ function calculateFrench(loan: Loan, config: CreditConfig): {
       installment = baseInstallment;
     }
 
-    const taxableBase = installment + insurance + riskInsurance + postage + commission + gps;
+    const taxableBase = interest + insurance + riskInsurance + postage + commission + gps;
     const tax = taxableBase * taxPct;
-    const totalInstallment = taxableBase + tax;
+    const totalInstallment = installment + insurance + riskInsurance + postage + commission + gps + tax;
     balance -= amortization;
     if (balance < 0.001) balance = 0;
 
@@ -116,7 +118,7 @@ function calculateFrench(loan: Loan, config: CreditConfig): {
     }));
   }
 
-  const ctc  = totalInterest + totalInsurance + totalRiskInsurance + totalGps + totalPostage + totalCommission + totalTax + initialCosts + residualValue;
+  const ctc  = totalInterest + totalInsurance + totalRiskInsurance + totalGps + totalPostage + totalCommission + totalTax + initialCosts;
   const tcea = Math.pow(1 + tem, 12) - 1;
   const trea = config.discountAnnualRatePct > 0 ? config.discountAnnualRatePct / 100 : tcea;
   const npv  = cashFlows.reduce((acc, f, t) => acc + f / Math.pow(1 + tem, t), 0);
@@ -221,7 +223,7 @@ export class SdpStore {
   readonly flowVehiclesTotal = computed(() =>
     this.flowVehiclesSignal().reduce((sum, v) => sum + v.price, 0));
 
-  constructor(private sdpApi: SdpApi) {}
+  constructor(private sdpApi: SdpApi, private iamStore: IamStore) {}
 
   // ── CREDIT CONFIG ───────────────────────────────────────────────────────────
 
@@ -330,6 +332,8 @@ export class SdpStore {
 
     const loanAmount = vehiclePrice - initialFee;
     if (loanAmount <= 0) return;
+    const vehiclesInLoanCurrency = this.flowVehiclesSignal()
+      .map(v => ({ carId: v.id, price: amountFromPen(v.price, config.currency) }));
 
     // 1. Build base loan with input data
     const baseLoan = new Loan({
@@ -337,6 +341,8 @@ export class SdpStore {
       carId:            this.flowCarIdSignal(),
       clientId:         this.flowClientIdSignal(),
       configId:         config.id,
+      sellerId:         this.iamStore.currentUserId() ?? '',
+      sellerName:       this.iamStore.currentFullName() ?? '',
       initialFee,
       vehiclePrice,
       loanAmount,
@@ -357,7 +363,7 @@ export class SdpStore {
       residualValue:    0,
       trea:             0,
       ctc:              0,
-      vehicles: this.flowVehiclesSignal().map(v => ({ carId: v.id, price: v.price })),
+      vehicles: vehiclesInLoanCurrency,
     });
 
     // 2. Calculate locally (immediate, without waiting for backend)
@@ -379,7 +385,8 @@ export class SdpStore {
       carId: loan.carId,
       clientId: loan.clientId,
       configId: loan.configId,
-      sellerId: loan.sellerId,
+      sellerId: loan.sellerId || this.iamStore.currentUserId() || '',
+      sellerName: loan.sellerName || this.iamStore.currentFullName() || '',
       status: 'CONFIRMED',
       initialFee: loan.initialFee,
       vehiclePrice: loan.vehiclePrice,
@@ -403,7 +410,7 @@ export class SdpStore {
       ctc: loan.ctc,
       // Multi-vehicle: send the full list picked in the config (falls back to the single car).
       vehicles: this.flowVehiclesSignal().length
-        ? this.flowVehiclesSignal().map(v => ({ carId: v.id, price: v.price }))
+        ? this.flowVehiclesSignal().map(v => ({ carId: v.id, price: amountFromPen(v.price, this.activeCreditConfigSignal()?.currency ?? 'PEN') }))
         : (loan.carId ? [{ carId: loan.carId, price: loan.vehiclePrice }] : []),
     });
 

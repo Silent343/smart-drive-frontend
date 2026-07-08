@@ -25,9 +25,13 @@
             type="text"
             class="custom-input"
             autocomplete="username"
+            (input)="signInError = ''"
           />
         </div>
         <p class="field-hint">{{ 'iam.login.identifierHint' | translate }}</p>
+        @if (signInError) {
+          <p class="field-error">{{ signInError }}</p>
+        }
       </div>
 
       <div class="form-group">
@@ -43,6 +47,7 @@
             placeholder="{{ 'iam.login.passwordPlaceholder' | translate }}"
             class="custom-input"
             autocomplete="current-password"
+            (input)="signInError = ''"
           />
           <span class="input-icon-right" (click)="togglePassword()">
             <mat-icon>{{ showPassword ? 'visibility_off' : 'visibility' }}</mat-icon>

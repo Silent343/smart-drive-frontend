@@ -5,6 +5,7 @@ import { Router } from '@angular/router';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 
 import { SdpStore } from '../../../application/sdp.store';
+import { amountFromPen, moneySymbol } from '../../../application/currency-conversion';
 import { CreditConfig, Capitalization, GracePeriodType, InterestRateType, Currency } from '../../../domain/model/credit-config';
 import { FlowHeaderComponent } from '../../components/flow-header/flow-header.component';
 import { GracePeriodInfoComponent } from '../../components/grace-period-info/grace-period-info.component';
@@ -80,6 +81,7 @@ export class ConfigurationPageComponent implements OnInit {
   get currencyOptions()       { return [{ value: 'PEN', label: 'Soles (PEN)' }, { value: 'USD', label: 'Dólares (USD)' }]; }
   get capitalizationOptions() { return [{ value: 12, label: 'Mensual (m=12)' }, { value: 4, label: 'Trimestral (m=4)' }, { value: 2, label: 'Semestral (m=2)' }, { value: 365, label: 'Diaria (m=365)' }]; }
   get gracePeriodOptions()    { return [{ value: 'none', label: 'Ninguno' }, { value: 'partial', label: 'Parcial (sólo interés)' }, { value: 'total', label: 'Total (capital + interés)' }]; }
+  get symbol(): string        { return moneySymbol(this.currency); }
 
   ngOnInit(): void {
     this.store.loadCreditConfigs();
@@ -236,7 +238,11 @@ export class ConfigurationPageComponent implements OnInit {
 
   /** Sum of the prices of all added vehicles. */
   get vehiclesTotal(): number {
-    return this.store.flowVehiclesTotal();
+    return amountFromPen(this.store.flowVehiclesTotal(), this.currency);
+  }
+
+  displayVehiclePrice(priceInPen: number): number {
+    return amountFromPen(priceInPen, this.currency);
   }
 
   removeVehicle(id: string): void {

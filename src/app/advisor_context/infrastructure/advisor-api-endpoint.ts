@@ -8,6 +8,7 @@ import { AdvisorAssembler } from './advisor-assembler';
 import {
   AdvisorAnswerResource,
   AdvisorAskResource,
+  AdvisorFiguresResource,
   AdvisorHistoryItem,
 } from './advisor-response';
 
@@ -28,15 +29,21 @@ export class AdvisorApiEndpoint {
   /**
    * Sends a question about a loan and returns the grounded answer.
    *
-   * @param loanId - The id of the loan in question.
+   * <p>Pass a `loanId` for a confirmed loan, or `figures` for a simulated loan
+   * that has not been saved yet. Sending both lets the backend prefer the
+   * persisted loan and fall back to the figures if the id resolves to nothing.</p>
+   *
+   * @param loanId - The id of the confirmed loan, or `null` in simulation.
    * @param question - The user's question.
    * @param history - Prior conversation turns for context.
+   * @param figures - Inline figures of the simulated loan, when there is no id.
    * @returns An observable of the {@link AdvisorAnswer}.
    */
   ask(
-    loanId: string,
+    loanId: string | null,
     question: string,
     history: ChatMessage[],
+    figures?: AdvisorFiguresResource,
   ): Observable<AdvisorAnswer> {
     const url = `${environment.platformProviderApiBaseUrl}${environment.platformProviderAdvisorAskEndpointPath}`;
 
@@ -50,6 +57,9 @@ export class AdvisorApiEndpoint {
         }),
       ),
     };
+    if (figures) {
+      body.figures = figures;
+    }
 
     return this.http.post<AdvisorAnswerResource>(url, body).pipe(
       map((resource) => this.assembler.toEntityFromResource(resource)),

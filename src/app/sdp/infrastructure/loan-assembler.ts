@@ -39,12 +39,15 @@ export class LoanAssembler
   }
 
   toResourceFromEntity(entity: Loan): LoanResource {
+    const sellerId = Number(entity.sellerId);
     return {
       id: (entity.id ? entity.id : null) as any,
       car_id: entity.carId,
       client_id: entity.clientId,
       config_id: entity.configId,
-      seller_id: (entity.sellerId ? entity.sellerId : null) as any,
+      // The backend stamps the real seller from the authenticated token. Do not send
+      // the frontend public UUID here because the API field is a numeric internal id.
+      seller_id: Number.isFinite(sellerId) ? sellerId as any : null as any,
       status: entity.status,
       initial_fee: entity.initialFee,
       vehicle_price: entity.vehiclePrice,

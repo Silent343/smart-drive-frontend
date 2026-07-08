@@ -1,5 +1,6 @@
 import { computed, inject, Injectable, signal } from '@angular/core';
 import { PreferencesStore } from './preferences.store';
+import { IamStore } from '../../iam/application/iam.store';
 
 export type NotificationType = 'success' | 'info' | 'warning' | 'error';
 
@@ -14,6 +15,7 @@ export interface AppNotification {
   type: NotificationType;
   createdAt: number;
   read: boolean;
+  recipientUserId?: string;
 }
 
 /**
@@ -25,6 +27,7 @@ export interface ToastMessage {
   message: string;
   icon: string;
   type: NotificationType;
+  recipientUserId?: string;
 }
 
 const NOTIFICATIONS_STORAGE_KEY = 'SmartdriveFinance.notifications';
@@ -39,24 +42,26 @@ const TOAST_DURATION_MS = 6000;
 @Injectable({ providedIn: 'root' })
 export class NotificationStore {
   private readonly preferences = inject(PreferencesStore);
+  private readonly iamStore = inject(IamStore);
 
   private readonly listSignal = signal<AppNotification[]>(this.load());
   private readonly toastsSignal = signal<ToastMessage[]>([]);
 
-  readonly notifications = this.listSignal.asReadonly();
-  readonly toasts = this.toastsSignal.asReadonly();
-  readonly unreadCount = computed(() => this.listSignal().filter((n) => !n.read).length);
+  readonly notifications = computed(() => this.listSignal().filter((n) => this.isForCurrentUser(n)));
+  readonly toasts = computed(() => this.toastsSignal().filter((n) => this.isForCurrentUser(n)));
+  readonly unreadCount = computed(() => this.notifications().filter((n) => !n.read).length);
 
   /**
    * Raises a notification (history entry + toast). No-op when the user disabled
    * notifications from the profile preferences.
    */
-  notify(input: { title: string; message: string; icon?: string; type?: NotificationType }): void {
+  notify(input: { title: string; message: string; icon?: string; type?: NotificationType; recipientUserId?: string }): void {
     if (!this.preferences.notificationsEnabled()) return;
 
     const id = this.uuid();
     const icon = input.icon ?? 'notifications';
     const type = input.type ?? 'info';
+    const recipientUserId = input.recipientUserId ?? this.iamStore.currentUserId() ?? undefined;
 
     const note: AppNotification = {
       id,
@@ -66,11 +71,12 @@ export class NotificationStore {
       type,
       createdAt: Date.now(),
       read: false,
+      recipientUserId,
     };
     this.listSignal.update((list) => [note, ...list].slice(0, MAX_HISTORY));
     this.persist();
 
-    const toast: ToastMessage = { id, title: input.title, message: input.message, icon, type };
+    const toast: ToastMessage = { id, title: input.title, message: input.message, icon, type, recipientUserId };
     this.toastsSignal.update((toasts) => [...toasts, toast]);
     setTimeout(() => this.dismissToast(id), TOAST_DURATION_MS);
   }
@@ -81,7 +87,9 @@ export class NotificationStore {
 
   markAllRead(): void {
     if (this.unreadCount() === 0) return;
-    this.listSignal.update((list) => list.map((n) => ({ ...n, read: true })));
+    this.listSignal.update((list) => list.map((n) =>
+      this.isForCurrentUser(n) ? { ...n, read: true } : n,
+    ));
     this.persist();
   }
 
@@ -91,8 +99,14 @@ export class NotificationStore {
   }
 
   clearAll(): void {
-    this.listSignal.set([]);
+    this.listSignal.update((list) => list.filter((n) => !this.isForCurrentUser(n)));
     this.persist();
+  }
+
+  private isForCurrentUser(notification: { recipientUserId?: string }): boolean {
+    const currentUserId = this.iamStore.currentUserId();
+    if (!currentUserId) return true;
+    return notification.recipientUserId === currentUserId;
   }
 
   private uuid(): string {

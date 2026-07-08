@@ -1,7 +1,11 @@
 import { Injectable, computed, inject, signal } from '@angular/core';
 
 import { AdvisorApi } from '../infrastructure/advisor-api';
+import { AdvisorFiguresResource } from '../infrastructure/advisor-response';
 import { ChatMessage } from '../domain/model/chat-message';
+import { Loan } from '../../sdp/domain/model/loan';
+import { SdpStore } from '../../sdp/application/sdp.store';
+import { moneySymbol } from '../../sdp/application/currency-conversion';
 
 /**
  * Application store for the loan advisor conversation.
@@ -12,6 +16,7 @@ import { ChatMessage } from '../domain/model/chat-message';
 @Injectable({ providedIn: 'root' })
 export class AdvisorStore {
   private readonly api = inject(AdvisorApi);
+  private readonly sdpStore = inject(SdpStore);
 
   private readonly _messages = signal<ChatMessage[]>([]);
   private readonly _loanId = signal<string | null>(null);
@@ -24,8 +29,13 @@ export class AdvisorStore {
   readonly busy = this._busy.asReadonly();
   /** The last error message, or `null`. */
   readonly error = this._error.asReadonly();
-  /** Whether a loan is set and questions can be asked. */
-  readonly ready = computed(() => this._loanId() !== null);
+  /**
+   * Whether questions can be asked: either a confirmed loan is bound, or a
+   * simulation has been calculated (so we have inline figures to ground on).
+   */
+  readonly ready = computed(
+    () => this._loanId() !== null || this.sdpStore.currentLoan() !== null,
+  );
 
   /**
    * Binds the conversation to a specific loan.
@@ -54,7 +64,7 @@ export class AdvisorStore {
   ask(question: string): void {
     const trimmed = question.trim();
     const loanId = this._loanId();
-    if (!trimmed || !loanId || this._busy()) {
+    if (!trimmed || this._busy()) {
       return;
     }
 
@@ -75,7 +85,22 @@ export class AdvisorStore {
     this._busy.set(true);
     this._error.set(null);
 
-    this.api.ask(loanId, trimmed, history).subscribe({
+    // Ground the answer on real figures: the confirmed loan's id when we have
+    // one, otherwise the current simulation's figures sent inline. Sending the
+    // figures too lets the backend answer even before the loan is saved.
+    const figures = this.buildFigures();
+
+    // Nothing to answer about yet (no confirmed loan and no simulation).
+    if (!loanId && !figures) {
+      this.patchMessage(pendingMessage.id, {
+        content: this.localAnswer(trimmed),
+        pending: false,
+      });
+      this._busy.set(false);
+      return;
+    }
+
+    this.api.ask(loanId, trimmed, history, figures).subscribe({
       next: (answer) => {
         this.patchMessage(pendingMessage.id, {
           content: answer.answer,
@@ -83,12 +108,13 @@ export class AdvisorStore {
         });
         this._busy.set(false);
       },
-      error: (err: Error) => {
+      error: () => {
+        // Gemini/backend failed: answer locally with the real simulated figures.
         this.patchMessage(pendingMessage.id, {
-          content: 'No pude responder esa pregunta. Inténtalo de nuevo.',
+          content: this.localAnswer(trimmed),
           pending: false,
         });
-        this._error.set(err.message);
+        this._error.set(null);
         this._busy.set(false);
       },
     });
@@ -114,5 +140,69 @@ export class AdvisorStore {
         message.id === id ? { ...message, ...patch } : message,
       ),
     );
+  }
+
+  /**
+   * Maps the current simulation into the inline figures sent to the backend,
+   * so the AI can ground its answer on real numbers before the loan is saved.
+   *
+   * Rates are converted from fractions to percentages here, which is the
+   * convention the backend expects.
+   *
+   * @returns The figures, or `undefined` when no simulation exists yet.
+   */
+  private buildFigures(): AdvisorFiguresResource | undefined {
+    const loan: Loan | null = this.sdpStore.currentLoan();
+    if (!loan) {
+      return undefined;
+    }
+    const config = this.sdpStore.activeCreditConfig();
+    return {
+      currency_symbol: moneySymbol(config?.currency),
+      vehicle_price: loan.vehiclePrice,
+      initial_fee: loan.initialFee,
+      loan_amount: loan.loanAmount,
+      installments_qty: loan.installmentsQty,
+      fixed_installment: loan.fixedInstallment,
+      tcea_pct: loan.tcea * 100,
+      total_interest: loan.totalInterest,
+      total_insurance: loan.totalInsurance,
+      total_postage: loan.totalPostage,
+      total_commission: loan.totalCommission,
+      ctc: loan.ctc,
+      npv_debtor: loan.npvDebtor,
+      irr_debtor_pct: loan.irrDebtor * 100,
+    };
+  }
+
+  private localAnswer(question: string): string {
+    const loan = this.sdpStore.currentLoan();
+    const config = this.sdpStore.activeCreditConfig();
+    if (!loan) {
+      return 'Primero calcula la simulacion para poder responder con cifras del credito.';
+    }
+
+    const symbol = moneySymbol(config?.currency);
+    const money = (value: number) => `${symbol} ${Number(value || 0).toLocaleString('es-PE', {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    })}`;
+    const lower = question.toLowerCase();
+    const totalPaid = loan.loanAmount + loan.ctc;
+
+    if (lower.includes('total') || lower.includes('cost')) {
+      return `El costo adicional total del credito (CTC) es ${money(loan.ctc)}. Si sumas capital financiado + CTC, el desembolso financiero de referencia es ${money(totalPaid)}.`;
+    }
+    if (lower.includes('tcea')) {
+      return `La TCEA del credito es ${(loan.tcea * 100).toFixed(2)}%. Resume el costo efectivo anual del financiamiento, incluyendo intereses y costos del credito.`;
+    }
+    if (lower.includes('monthly') || lower.includes('cuota') || lower.includes('payment')) {
+      return `La cuota base es ${money(loan.fixedInstallment)}. El pago mensual incluye amortizacion/interes y cargos como seguros, portes, comisiones, GPS e IGV/ITF segun el cronograma.`;
+    }
+    if (lower.includes('down') || lower.includes('initial') || lower.includes('inicial')) {
+      return `La cuota inicial actual es ${money(loan.initialFee)} y el capital financiado queda en ${money(loan.loanAmount)}. Si aumentas la inicial, baja el capital financiado y normalmente bajan intereses, seguros ligados al saldo y el CTC.`;
+    }
+
+    return `Resumen del credito: capital financiado ${money(loan.loanAmount)}, cuota base ${money(loan.fixedInstallment)}, intereses ${money(loan.totalInterest)}, CTC ${money(loan.ctc)} y TCEA ${(loan.tcea * 100).toFixed(2)}%.`;
   }
 }

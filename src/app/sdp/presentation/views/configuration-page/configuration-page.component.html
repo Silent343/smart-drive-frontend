@@ -95,7 +95,7 @@
                 <li class="sdp-vehicle-row">
                   <span class="sdp-vehicle-row__name">{{ v.label }}</span>
                   <span class="sdp-vehicle-row__price">
-                    {{ currency === 'PEN' ? 'S/' : '$' }} {{ v.price | number:'1.2-2' }}
+                    {{ symbol }} {{ displayVehiclePrice(v.price) | number:'1.2-2' }}
                   </span>
                   <button type="button" class="sdp-vehicle-row__remove"
                           (click)="removeVehicle(v.id)"
@@ -107,7 +107,7 @@
             </ul>
             <div class="sdp-vehicles__total">
               <span>{{ 'sdp.configuration.vehiclesTotal' | translate }}</span>
-              <strong>{{ currency === 'PEN' ? 'S/' : '$' }} {{ vehiclesTotal | number:'1.2-2' }}</strong>
+              <strong>{{ symbol }} {{ vehiclesTotal | number:'1.2-2' }}</strong>
             </div>
           }
         </div>

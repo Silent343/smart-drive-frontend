@@ -5,6 +5,7 @@ import { TranslateModule } from '@ngx-translate/core';
 
 import { SdpStore } from '../../../application/sdp.store';
 import { NotificationStore } from '../../../../shared/application/notification.store';
+import { IamStore } from '../../../../iam/application/iam.store';
 import { FlowHeaderComponent } from '../../components/flow-header/flow-header.component';
 import { ScheduleTableComponent } from '../../components/schedule-table/schedule-table.component';
 
@@ -19,6 +20,7 @@ export class SchedulePageComponent implements OnInit {
   private readonly store  = inject(SdpStore);
   private readonly router = inject(Router);
   private readonly notifications = inject(NotificationStore);
+  private readonly iamStore = inject(IamStore);
 
   // Signals directos del store — persisten entre navegaciones
   readonly schedule     = this.store.currentSchedule;
@@ -60,7 +62,7 @@ export class SchedulePageComponent implements OnInit {
     const fecha = now.toLocaleDateString('es-PE', { day: '2-digit', month: 'long', year: 'numeric' });
     const hora = now.toLocaleTimeString('es-PE', { hour: '2-digit', minute: '2-digit' });
     const cliente = this.store.flowClientName() || 'Cliente';
-    const vehiculo = this.store.flowCarName() || 'Vehículo';
+    const vehiculo = this.store.flowVehicles().map(v => v.label).join(', ') || this.store.flowCarName() || 'Vehículo';
     const symbol = this.currency === 'USD' ? '$' : 'S/';
     const cuota = `${symbol} ${Number(loan.fixedInstallment || 0).toLocaleString('es-PE', {
       minimumFractionDigits: 2,
@@ -77,6 +79,7 @@ export class SchedulePageComponent implements OnInit {
         `${fecha} · ${hora}`,
       icon: 'event_available',
       type: 'success',
+      recipientUserId: this.iamStore.currentUserId() ?? undefined,
     });
   }
 
