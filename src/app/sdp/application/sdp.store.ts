@@ -8,6 +8,15 @@ import { SdpApi } from '../infrastructure/sdp-api';
 import {Observable, tap} from 'rxjs';
 import { IamStore } from '../../iam/application/iam.store';
 import { amountFromPen } from './currency-conversion';
+import {
+  CreditConfigSnapshot,
+  LoanSnapshot,
+  ScheduleRowSnapshot,
+  SimulationSnapshot,
+  SimulationStatus,
+} from '../domain/model/simulation-snapshot';
+
+const SIMULATION_HISTORY_STORAGE_KEY = 'SmartdriveFinance.simulationHistory.v1';
 
 // ─── French Amortization Utilities ───────────────────────────────────────────
 
@@ -188,6 +197,8 @@ export class SdpStore {
   private readonly currentLoanSignal    = signal<Loan | null>(null);
   private readonly currentScheduleSignal = signal<ScheduleRow[]>([]);
   private readonly currentReportSignal  = signal<LoanReport | null>(null);
+  private readonly simulationHistorySignal = signal<SimulationSnapshot[]>([]);
+  private readonly currentSimulationIdSignal = signal<string | null>(null);
   private readonly errorSignal          = signal<string | null>(null);
   private readonly isLoadingSignal      = signal<boolean>(false);
 
@@ -210,6 +221,16 @@ export class SdpStore {
   readonly currentLoan        = this.currentLoanSignal.asReadonly();
   readonly currentSchedule    = this.currentScheduleSignal.asReadonly();
   readonly currentReport      = this.currentReportSignal.asReadonly();
+  readonly simulationHistory  = computed(() => {
+    const ownerIdentifier = this.historyOwnerIdentifier();
+    const companyDomain = this.historyCompanyDomain();
+
+    return this.simulationHistorySignal()
+      .filter(item =>
+        item.ownerIdentifier === ownerIdentifier &&
+        item.companyDomain === companyDomain)
+      .sort((a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime());
+  });
   readonly error              = this.errorSignal.asReadonly();
   readonly isLoading          = this.isLoadingSignal.asReadonly();
 
@@ -223,7 +244,9 @@ export class SdpStore {
   readonly flowVehiclesTotal = computed(() =>
     this.flowVehiclesSignal().reduce((sum, v) => sum + v.price, 0));
 
-  constructor(private sdpApi: SdpApi, private iamStore: IamStore) {}
+  constructor(private sdpApi: SdpApi, private iamStore: IamStore) {
+    this.simulationHistorySignal.set(this.loadPersistedSimulationHistory());
+  }
 
   // ── CREDIT CONFIG ───────────────────────────────────────────────────────────
 
@@ -370,6 +393,7 @@ export class SdpStore {
     const { updatedLoan, schedule } = calculateFrench(baseLoan, config);
     this.currentLoanSignal.set(updatedLoan);
     this.currentScheduleSignal.set(schedule);
+    this.saveCurrentSimulation('DRAFT');
 
     // The confirmed loan is persisted only from the report page.
   }
@@ -417,8 +441,100 @@ export class SdpStore {
     return this.sdpApi.createLoan(confirmedLoan).pipe(
       tap((savedLoan) => {
         this.currentLoanSignal.set(savedLoan);
+        this.saveCurrentSimulation('CONFIRMED', savedLoan);
       }),
     );
+  }
+
+  // ── LOCAL SIMULATION HISTORY ───────────────────────────────────────────────
+
+  saveCurrentSimulation(status: SimulationStatus, loanOverride?: Loan): SimulationSnapshot | null {
+    const loan = loanOverride ?? this.currentLoanSignal();
+    const config = this.activeCreditConfigSignal();
+    const schedule = this.currentScheduleSignal();
+
+    if (!loan || !config || schedule.length === 0) return null;
+
+    const now = new Date().toISOString();
+    const currentId = this.currentSimulationIdSignal();
+    const existing = currentId
+      ? this.simulationHistorySignal().find(item => item.id === currentId)
+      : undefined;
+    const id = existing && !(existing.status === 'CONFIRMED' && status !== 'CONFIRMED')
+      ? existing.id
+      : this.createSimulationId();
+
+    const snapshot: SimulationSnapshot = {
+      id,
+      ownerIdentifier: this.historyOwnerIdentifier(),
+      ownerUserId: this.iamStore.currentUserId() ?? '',
+      companyDomain: this.historyCompanyDomain(),
+      sellerId: loan.sellerId || this.iamStore.currentUserId() || '',
+      sellerName: loan.sellerName || this.iamStore.currentFullName() || '',
+      status,
+      createdAt: existing?.createdAt ?? now,
+      updatedAt: now,
+      clientId: this.flowClientIdSignal() || loan.clientId,
+      clientName: this.flowClientNameSignal(),
+      carId: this.flowCarIdSignal() || loan.carId,
+      carName: this.flowCarNameSignal(),
+      vehicles: this.flowVehiclesSignal(),
+      config: this.serializeCreditConfig(config),
+      loan: this.serializeLoan(loan, status),
+      schedule: schedule.map(row => this.serializeScheduleRow(row)),
+    };
+
+    const next = [
+      snapshot,
+      ...this.simulationHistorySignal().filter(item => item.id !== snapshot.id),
+    ];
+
+    this.persistSimulationHistory(next);
+    this.currentSimulationIdSignal.set(snapshot.id);
+    return snapshot;
+  }
+
+  loadSimulation(snapshot: SimulationSnapshot): void {
+    const config = this.deserializeCreditConfig(snapshot.config);
+    const loan = this.deserializeLoan(snapshot.loan);
+    const schedule = snapshot.schedule.map(row => this.deserializeScheduleRow(row));
+
+    this.currentSimulationIdSignal.set(snapshot.id);
+    this.activeCreditConfigSignal.set(config);
+    this.currentLoanSignal.set(loan);
+    this.currentScheduleSignal.set(schedule);
+    this.currentReportSignal.set(null);
+    this.flowClientIdSignal.set(snapshot.clientId);
+    this.flowClientNameSignal.set(snapshot.clientName);
+    this.flowCarIdSignal.set(snapshot.carId);
+    this.flowCarNameSignal.set(snapshot.carName);
+    this.flowVehiclesSignal.set(snapshot.vehicles);
+  }
+
+  markSimulationStatus(id: string, status: SimulationStatus): void {
+    const now = new Date().toISOString();
+    const next = this.simulationHistorySignal().map(item =>
+      item.id === id
+        ? {
+          ...item,
+          status,
+          updatedAt: now,
+          loan: {
+            ...item.loan,
+            status,
+          },
+        }
+        : item);
+
+    this.persistSimulationHistory(next);
+  }
+
+  removeSimulation(id: string): void {
+    const next = this.simulationHistorySignal().filter(item => item.id !== id);
+    this.persistSimulationHistory(next);
+    if (this.currentSimulationIdSignal() === id) {
+      this.currentSimulationIdSignal.set(null);
+    }
   }
 
   // ── SCHEDULE ────────────────────────────────────────────────────────────────
@@ -477,6 +593,7 @@ export class SdpStore {
     this.currentLoanSignal.set(null);
     this.currentScheduleSignal.set([]);
     this.currentReportSignal.set(null);
+    this.currentSimulationIdSignal.set(null);
     this.errorSignal.set(null);
   }
 
@@ -488,5 +605,131 @@ export class SdpStore {
     this.flowClientNameSignal.set('');
     this.flowCarNameSignal.set('');
     this.clearFlowVehicles();
+  }
+
+  private historyOwnerIdentifier(): string {
+    return this.iamStore.currentIdentifier() || this.iamStore.currentUserId() || 'anonymous';
+  }
+
+  private historyCompanyDomain(): string {
+    return this.iamStore.currentCompanyDomain() || this.iamStore.companyScope() || 'default';
+  }
+
+  private createSimulationId(): string {
+    const random = Math.random().toString(36).slice(2, 8);
+    return `sim-${Date.now()}-${random}`;
+  }
+
+  private loadPersistedSimulationHistory(): SimulationSnapshot[] {
+    try {
+      const raw = localStorage.getItem(SIMULATION_HISTORY_STORAGE_KEY);
+      if (!raw) return [];
+      const parsed = JSON.parse(raw);
+      return Array.isArray(parsed) ? parsed as SimulationSnapshot[] : [];
+    } catch {
+      return [];
+    }
+  }
+
+  private persistSimulationHistory(history: SimulationSnapshot[]): void {
+    this.simulationHistorySignal.set(history);
+    localStorage.setItem(SIMULATION_HISTORY_STORAGE_KEY, JSON.stringify(history));
+  }
+
+  private serializeCreditConfig(config: CreditConfig): CreditConfigSnapshot {
+    return {
+      id: config.id,
+      currency: config.currency,
+      interestRateType: config.interestRateType,
+      annualRate: config.annualRate,
+      capitalization: config.capitalization,
+      gracePeriodType: config.gracePeriodType,
+      gracePeriodMonths: config.gracePeriodMonths,
+      insuranceRatePct: config.insuranceRatePct,
+      postageFeeAmount: config.postageFeeAmount,
+      administrationFeePct: config.administrationFeePct,
+      riskInsuranceRatePct: config.riskInsuranceRatePct,
+      gpsFeeAmount: config.gpsFeeAmount,
+      finalInstallmentPct: config.finalInstallmentPct,
+      igvItfPct: config.igvItfPct,
+      notaryCostAmount: config.notaryCostAmount,
+      registryCostAmount: config.registryCostAmount,
+      appraisalCostAmount: config.appraisalCostAmount,
+      studyCommissionAmount: config.studyCommissionAmount,
+      activationCommissionAmount: config.activationCommissionAmount,
+      discountAnnualRatePct: config.discountAnnualRatePct,
+    };
+  }
+
+  private deserializeCreditConfig(snapshot: CreditConfigSnapshot): CreditConfig {
+    return new CreditConfig({
+      ...snapshot,
+      capitalization: snapshot.capitalization,
+    });
+  }
+
+  private serializeLoan(loan: Loan, status: SimulationStatus): LoanSnapshot {
+    return {
+      id: loan.id,
+      carId: loan.carId,
+      clientId: loan.clientId,
+      configId: loan.configId,
+      sellerId: loan.sellerId,
+      sellerName: loan.sellerName,
+      status,
+      initialFee: loan.initialFee,
+      vehiclePrice: loan.vehiclePrice,
+      loanAmount: loan.loanAmount,
+      installmentsQty: loan.installmentsQty,
+      startDate: new Date(loan.startDate).toISOString(),
+      fixedInstallment: loan.fixedInstallment,
+      npvDebtor: loan.npvDebtor,
+      irrDebtor: loan.irrDebtor,
+      tcea: loan.tcea,
+      trea: loan.trea,
+      totalInterest: loan.totalInterest,
+      totalInsurance: loan.totalInsurance,
+      totalRiskInsurance: loan.totalRiskInsurance,
+      totalGps: loan.totalGps,
+      totalPostage: loan.totalPostage,
+      totalCommission: loan.totalCommission,
+      totalTax: loan.totalTax,
+      initialCosts: loan.initialCosts,
+      residualValue: loan.residualValue,
+      ctc: loan.ctc,
+      vehicles: loan.vehicles,
+    };
+  }
+
+  private deserializeLoan(snapshot: LoanSnapshot): Loan {
+    return new Loan({
+      ...snapshot,
+      startDate: new Date(snapshot.startDate),
+    });
+  }
+
+  private serializeScheduleRow(row: ScheduleRow): ScheduleRowSnapshot {
+    return {
+      id: row.id,
+      loanId: row.loanId,
+      installmentNo: row.installmentNo,
+      paymentDate: new Date(row.paymentDate).toISOString(),
+      openingBalance: row.openingBalance,
+      interest: row.interest,
+      amortization: row.amortization,
+      insurance: row.insurance,
+      postage: row.postage,
+      commission: row.commission,
+      monthlyPayment: row.monthlyPayment,
+      endingBalance: row.endingBalance,
+      gracePeriodType: row.gracePeriodType,
+    };
+  }
+
+  private deserializeScheduleRow(snapshot: ScheduleRowSnapshot): ScheduleRow {
+    return new ScheduleRow({
+      ...snapshot,
+      paymentDate: new Date(snapshot.paymentDate),
+    });
   }
 }

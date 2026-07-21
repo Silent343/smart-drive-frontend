@@ -1,9 +1,11 @@
 {
   "option": {
     "home": "Home",
+    "dashboard": "Executive dashboard",
     "client": "Client",
     "vehicle": "Vehicles",
     "simulation": "Simulation",
+    "simulations": "Simulations",
     "workers": "Workers",
     "reports": "Reports",
     "out": "out",
@@ -292,6 +294,58 @@
     "schedule": {
       "viewReport": "View report"
     },
+    "history": {
+      "eyebrow": "Scenario history",
+      "title": "Saved simulations",
+      "subtitle": "Review draft, reviewed and confirmed credit scenarios before the client makes a final decision.",
+      "emptyValue": "Not available",
+      "kpi": {
+        "total": "Total",
+        "drafts": "Drafts",
+        "reviewed": "Reviewed",
+        "confirmed": "Confirmed"
+      },
+      "status": {
+        "draft": "Draft",
+        "reviewed": "Reviewed",
+        "confirmed": "Confirmed"
+      },
+      "table": {
+        "title": "Simulation log",
+        "records": "records",
+        "compareHint": "Select up to three scenarios to compare.",
+        "compare": "Compare",
+        "client": "Client",
+        "vehicles": "Vehicles",
+        "amount": "Amount",
+        "initialFee": "Initial:",
+        "term": "Term",
+        "tcea": "TCEA",
+        "status": "Status",
+        "updated": "Updated",
+        "actions": "Actions"
+      },
+      "actions": {
+        "newSimulation": "New simulation",
+        "viewHistory": "View history",
+        "open": "Open",
+        "schedule": "Schedule",
+        "reviewed": "Mark reviewed",
+        "delete": "Delete"
+      },
+      "empty": {
+        "title": "No simulations saved yet",
+        "body": "Run a simulation from the French method flow and it will appear here automatically."
+      },
+      "compare": {
+        "title": "Scenario comparison",
+        "price": "Vehicle amount",
+        "initialFee": "Initial fee",
+        "installment": "Fixed installment",
+        "tcea": "TCEA",
+        "ctc": "TCC"
+      }
+    },
     "report": {
       "clientData": "Client data",
       "clientId": "Client ID",
@@ -446,6 +500,50 @@
     }
   },
   "admin": {
+    "dashboard": {
+      "eyebrow": "Executive control",
+      "title": "Company dashboard",
+      "subtitle": "Summary of confirmed credits, capital and commercial performance.",
+      "openReports": "View reports",
+      "refresh": "Refresh",
+      "loading": "Loading metrics…",
+      "error": "Could not load the company metrics.",
+      "kpi": {
+        "confirmed": "Confirmed credits",
+        "vehicles": "financed vehicles",
+        "financed": "Financed capital",
+        "capital": "Capital placed",
+        "vehicleAmount": "Commercial value",
+        "commercialValue": "Total vehicle value",
+        "avgTcea": "Average TCEA",
+        "avgInstallment": "Average installment"
+      },
+      "trend": {
+        "title": "Monthly placements",
+        "subtitle": "Confirmed credits from the last six months",
+        "credits": "Confirmed credits",
+        "totalCost": "in total cost"
+      },
+      "ranking": {
+        "title": "Seller performance",
+        "subtitle": "Sorted by commercial value placed",
+        "credits": "credits",
+        "top": "Top seller:",
+        "empty": "There are no confirmed sales yet."
+      },
+      "recent": {
+        "title": "Latest confirmed credits",
+        "subtitle": "Follow-up on the most recent operations",
+        "viewAll": "Open full report",
+        "credit": "Credit",
+        "client": "Client",
+        "vehicle": "Vehicle",
+        "seller": "Seller",
+        "date": "Date",
+        "amount": "Amount",
+        "empty": "No confirmed credits yet."
+      }
+    },
     "workers": {
       "title": "Worker management",
       "subtitle": "Register sellers for the company domain",
@@ -503,6 +601,10 @@
       "title": "Company reports",
       "subtitle": "Confirmed vehicle credits for",
       "refresh": "Refresh",
+      "export": "Export CSV",
+      "from": "From",
+      "to": "To",
+      "clearFilters": "Clear filters",
       "kpi": {
         "confirmed": "Confirmed credits",
         "vehicleAmount": "Vehicle amount",
@@ -518,9 +620,17 @@
         "seller": "Seller",
         "client": "Client",
         "vehicle": "Vehicle",
+        "date": "Date",
         "price": "Price",
+        "financed": "Financed capital",
+        "initialFee": "Initial fee",
         "term": "Term",
         "tcea": "TCEA",
+        "trea": "TREA",
+        "interest": "Interest",
+        "riskInsurance": "Risk insurance",
+        "gps": "GPS",
+        "taxes": "Taxes",
         "tcc": "TCC",
         "status": "Status",
         "months": "months"

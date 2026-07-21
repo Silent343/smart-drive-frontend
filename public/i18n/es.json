@@ -1,9 +1,11 @@
 {
   "option": {
     "home": "Inicio",
+    "dashboard": "Dashboard ejecutivo",
     "client": "Cliente",
     "vehicle": "Vehiculos",
     "simulation": "Simulacion",
+    "simulations": "Simulaciones",
     "workers": "Trabajadores",
     "reports": "Reportes",
     "out": "Salir",
@@ -277,6 +279,58 @@
     "schedule": {
       "viewReport": "Ver reporte"
     },
+    "history": {
+      "eyebrow": "Historial de escenarios",
+      "title": "Simulaciones guardadas",
+      "subtitle": "Revisa escenarios en borrador, revisados y confirmados antes de que el cliente tome la decision final.",
+      "emptyValue": "No disponible",
+      "kpi": {
+        "total": "Total",
+        "drafts": "Borradores",
+        "reviewed": "Revisadas",
+        "confirmed": "Confirmadas"
+      },
+      "status": {
+        "draft": "Borrador",
+        "reviewed": "Revisada",
+        "confirmed": "Confirmada"
+      },
+      "table": {
+        "title": "Registro de simulaciones",
+        "records": "registros",
+        "compareHint": "Selecciona hasta tres escenarios para comparar.",
+        "compare": "Comparar",
+        "client": "Cliente",
+        "vehicles": "Vehiculos",
+        "amount": "Monto",
+        "initialFee": "Inicial:",
+        "term": "Plazo",
+        "tcea": "TCEA",
+        "status": "Estado",
+        "updated": "Actualizado",
+        "actions": "Acciones"
+      },
+      "actions": {
+        "newSimulation": "Nueva simulacion",
+        "viewHistory": "Ver historial",
+        "open": "Abrir",
+        "schedule": "Cronograma",
+        "reviewed": "Marcar revisada",
+        "delete": "Eliminar"
+      },
+      "empty": {
+        "title": "Aun no hay simulaciones guardadas",
+        "body": "Ejecuta una simulacion desde el flujo del metodo frances y aparecera aqui automaticamente."
+      },
+      "compare": {
+        "title": "Comparacion de escenarios",
+        "price": "Monto vehicular",
+        "initialFee": "Cuota inicial",
+        "installment": "Cuota fija",
+        "tcea": "TCEA",
+        "ctc": "CTC"
+      }
+    },
     "report": {
       "clientData": "Datos del cliente",
       "clientId": "ID Cliente",
@@ -446,6 +500,50 @@
     }
   },
   "admin": {
+    "dashboard": {
+      "eyebrow": "Control ejecutivo",
+      "title": "Dashboard de la empresa",
+      "subtitle": "Resumen de créditos confirmados, capital y desempeño comercial.",
+      "openReports": "Ver reportes",
+      "refresh": "Actualizar",
+      "loading": "Cargando indicadores…",
+      "error": "No se pudieron cargar los indicadores de la empresa.",
+      "kpi": {
+        "confirmed": "Créditos confirmados",
+        "vehicles": "vehículos financiados",
+        "financed": "Capital financiado",
+        "capital": "Capital colocado",
+        "vehicleAmount": "Valor comercial",
+        "commercialValue": "Valor total de vehículos",
+        "avgTcea": "TCEA promedio",
+        "avgInstallment": "Cuota promedio"
+      },
+      "trend": {
+        "title": "Colocaciones mensuales",
+        "subtitle": "Créditos confirmados de los últimos seis meses",
+        "credits": "Créditos confirmados",
+        "totalCost": "de costo total"
+      },
+      "ranking": {
+        "title": "Desempeño de vendedores",
+        "subtitle": "Ordenado por valor comercial colocado",
+        "credits": "créditos",
+        "top": "Vendedor líder:",
+        "empty": "Todavía no hay ventas confirmadas."
+      },
+      "recent": {
+        "title": "Últimos créditos confirmados",
+        "subtitle": "Seguimiento de las operaciones más recientes",
+        "viewAll": "Abrir reporte completo",
+        "credit": "Crédito",
+        "client": "Cliente",
+        "vehicle": "Vehículo",
+        "seller": "Vendedor",
+        "date": "Fecha",
+        "amount": "Monto",
+        "empty": "Aún no hay créditos confirmados."
+      }
+    },
     "workers": {
       "title": "Gestión de trabajadores",
       "subtitle": "Registra vendedores para el dominio de la empresa",
@@ -503,6 +601,10 @@
       "title": "Reportes de la empresa",
       "subtitle": "Créditos vehiculares confirmados de",
       "refresh": "Actualizar",
+      "export": "Exportar CSV",
+      "from": "Desde",
+      "to": "Hasta",
+      "clearFilters": "Limpiar filtros",
       "kpi": {
         "confirmed": "Créditos confirmados",
         "vehicleAmount": "Monto de vehículos",
@@ -518,9 +620,17 @@
         "seller": "Vendedor",
         "client": "Cliente",
         "vehicle": "Vehículo",
+        "date": "Fecha",
         "price": "Precio",
+        "financed": "Capital financiado",
+        "initialFee": "Cuota inicial",
         "term": "Plazo",
         "tcea": "TCEA",
+        "trea": "TREA",
+        "interest": "Interés",
+        "riskInsurance": "Seguro riesgo",
+        "gps": "GPS",
+        "taxes": "Impuestos",
         "tcc": "CTC",
         "status": "Estado",
         "months": "meses"

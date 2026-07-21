@@ -63,6 +63,9 @@
 
   <div class="sdp-btn-row">
     <button class="sdp-btn-outline" (click)="onBack()">← {{ 'sdp.common.back' | translate }}</button>
+    <button class="sdp-btn-outline" (click)="onHistory()">
+      {{ 'sdp.history.actions.viewHistory' | translate }}
+    </button>
     <button class="sdp-btn-primary" [disabled]="!currentLoan()" (click)="onContinue()">
       {{ 'sdp.simulation.viewSchedule' | translate }} →
     </button>

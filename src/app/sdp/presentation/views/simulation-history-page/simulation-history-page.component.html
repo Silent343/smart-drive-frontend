@@ -1,0 +1,147 @@
+<div class="history-page">
+  <header class="history-page__header">
+    <div>
+      <p class="history-page__eyebrow">{{ 'sdp.history.eyebrow' | translate }}</p>
+      <h1>{{ 'sdp.history.title' | translate }}</h1>
+      <p>{{ 'sdp.history.subtitle' | translate }}</p>
+    </div>
+
+    <button class="sdp-btn-primary" type="button" (click)="createNewSimulation()">
+      {{ 'sdp.history.actions.newSimulation' | translate }}
+    </button>
+  </header>
+
+  <section class="history-kpis" aria-label="Simulation summary">
+    <article class="history-kpi">
+      <span>{{ 'sdp.history.kpi.total' | translate }}</span>
+      <strong>{{ totalSimulations() }}</strong>
+    </article>
+    <article class="history-kpi">
+      <span>{{ 'sdp.history.kpi.drafts' | translate }}</span>
+      <strong>{{ draftSimulations() }}</strong>
+    </article>
+    <article class="history-kpi">
+      <span>{{ 'sdp.history.kpi.reviewed' | translate }}</span>
+      <strong>{{ reviewedSimulations() }}</strong>
+    </article>
+    <article class="history-kpi">
+      <span>{{ 'sdp.history.kpi.confirmed' | translate }}</span>
+      <strong>{{ confirmedSimulations() }}</strong>
+    </article>
+  </section>
+
+  <section class="history-panel">
+    <div class="history-panel__head">
+      <div>
+        <h2>{{ 'sdp.history.table.title' | translate }}</h2>
+        <span>{{ simulations().length }} {{ 'sdp.history.table.records' | translate }}</span>
+      </div>
+      <span class="history-panel__hint">{{ 'sdp.history.table.compareHint' | translate }}</span>
+    </div>
+
+    <div class="history-empty" *ngIf="simulations().length === 0">
+      <strong>{{ 'sdp.history.empty.title' | translate }}</strong>
+      <span>{{ 'sdp.history.empty.body' | translate }}</span>
+    </div>
+
+    <div class="history-table-wrap" *ngIf="simulations().length > 0">
+      <table class="history-table">
+        <thead>
+        <tr>
+          <th>{{ 'sdp.history.table.compare' | translate }}</th>
+          <th>{{ 'sdp.history.table.client' | translate }}</th>
+          <th>{{ 'sdp.history.table.vehicles' | translate }}</th>
+          <th>{{ 'sdp.history.table.amount' | translate }}</th>
+          <th>{{ 'sdp.history.table.term' | translate }}</th>
+          <th>{{ 'sdp.history.table.tcea' | translate }}</th>
+          <th>{{ 'sdp.history.table.status' | translate }}</th>
+          <th>{{ 'sdp.history.table.updated' | translate }}</th>
+          <th>{{ 'sdp.history.table.actions' | translate }}</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr *ngFor="let item of simulations(); trackBy: trackBySimulationId">
+          <td>
+            <input
+              type="checkbox"
+              [checked]="isSelected(item)"
+              [disabled]="isComparisonDisabled(item)"
+              (change)="toggleComparison(item, $any($event.target).checked)" />
+          </td>
+          <td>
+            <strong>{{ item.clientName || item.clientId || ('sdp.history.emptyValue' | translate) }}</strong>
+            <span>{{ item.clientId || ('sdp.history.emptyValue' | translate) }}</span>
+          </td>
+          <td class="history-table__wide">{{ vehicleText(item) }}</td>
+          <td>
+            <strong>{{ formatMoney(item, item.loan.vehiclePrice) }}</strong>
+            <span>{{ 'sdp.history.table.initialFee' | translate }} {{ formatMoney(item, item.loan.initialFee) }}</span>
+          </td>
+          <td>{{ item.loan.installmentsQty }} {{ 'sdp.report.termMonths' | translate }}</td>
+          <td>{{ formatPercent(item.loan.tcea, 4) }}</td>
+          <td>
+            <span [class]="statusClass(item.status)">{{ statusLabel(item.status) }}</span>
+          </td>
+          <td>{{ item.updatedAt | date:'short' }}</td>
+          <td>
+            <div class="history-actions">
+              <button type="button" (click)="openSimulation(item, 'simulation')">
+                {{ 'sdp.history.actions.open' | translate }}
+              </button>
+              <button type="button" (click)="openSimulation(item, 'schedule')">
+                {{ 'sdp.history.actions.schedule' | translate }}
+              </button>
+              <button type="button" (click)="markReviewed(item)" [disabled]="item.status === 'CONFIRMED'">
+                {{ 'sdp.history.actions.reviewed' | translate }}
+              </button>
+              <button type="button" class="history-actions__danger" (click)="removeSimulation(item)">
+                {{ 'sdp.history.actions.delete' | translate }}
+              </button>
+            </div>
+          </td>
+        </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section class="history-panel history-panel--comparison" *ngIf="selectedSimulations().length > 0">
+    <div class="history-panel__head">
+      <div>
+        <h2>{{ 'sdp.history.compare.title' | translate }}</h2>
+        <span>{{ selectedSimulations().length }} / 3</span>
+      </div>
+    </div>
+
+    <div class="history-compare">
+      <article class="history-compare-card" *ngFor="let item of selectedSimulations(); trackBy: trackBySimulationId">
+        <div>
+          <span class="history-compare-card__label">{{ item.clientName || item.clientId }}</span>
+          <h3>{{ vehicleText(item) }}</h3>
+        </div>
+        <dl>
+          <div>
+            <dt>{{ 'sdp.history.compare.price' | translate }}</dt>
+            <dd>{{ formatMoney(item, item.loan.vehiclePrice) }}</dd>
+          </div>
+          <div>
+            <dt>{{ 'sdp.history.compare.initialFee' | translate }}</dt>
+            <dd>{{ formatMoney(item, item.loan.initialFee) }}</dd>
+          </div>
+          <div>
+            <dt>{{ 'sdp.history.compare.installment' | translate }}</dt>
+            <dd>{{ formatMoney(item, item.loan.fixedInstallment) }}</dd>
+          </div>
+          <div>
+            <dt>{{ 'sdp.history.compare.tcea' | translate }}</dt>
+            <dd>{{ formatPercent(item.loan.tcea, 4) }}</dd>
+          </div>
+          <div>
+            <dt>{{ 'sdp.history.compare.ctc' | translate }}</dt>
+            <dd>{{ formatMoney(item, item.loan.ctc) }}</dd>
+          </div>
+        </dl>
+      </article>
+    </div>
+  </section>
+</div>

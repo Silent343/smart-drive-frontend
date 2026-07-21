@@ -1,0 +1,152 @@
+<div class="dashboard-page">
+  <header class="dashboard-header">
+    <div>
+      <p class="eyebrow">{{ 'admin.dashboard.eyebrow' | translate }}</p>
+      <h1>{{ 'admin.dashboard.title' | translate }}</h1>
+      <p class="subtitle">{{ 'admin.dashboard.subtitle' | translate }}</p>
+    </div>
+    <div class="header-actions">
+      <a class="sdp-btn-outline" routerLink="/admin-reports">
+        <mat-icon>table_view</mat-icon>
+        {{ 'admin.dashboard.openReports' | translate }}
+      </a>
+      <button class="sdp-btn-outline" type="button" (click)="refresh()" [disabled]="isLoading()">
+        <mat-icon>refresh</mat-icon>
+        {{ 'admin.dashboard.refresh' | translate }}
+      </button>
+    </div>
+  </header>
+
+  @if (error()) {
+    <p class="error"><mat-icon>error_outline</mat-icon>{{ error() }}</p>
+  }
+
+  <section class="kpi-grid" aria-label="Executive metrics">
+    <div class="kpi kpi--navy">
+      <div class="kpi__icon"><mat-icon>verified</mat-icon></div>
+      <span>{{ 'admin.dashboard.kpi.confirmed' | translate }}</span>
+      <strong>{{ totalConfirmed() }}</strong>
+      <small>{{ totalVehicles() }} {{ 'admin.dashboard.kpi.vehicles' | translate }}</small>
+    </div>
+    <div class="kpi kpi--teal">
+      <div class="kpi__icon"><mat-icon>account_balance</mat-icon></div>
+      <span>{{ 'admin.dashboard.kpi.financed' | translate }}</span>
+      <strong>{{ money(totalFinanced()) }}</strong>
+      <small>{{ 'admin.dashboard.kpi.capital' | translate }}</small>
+    </div>
+    <div class="kpi kpi--gold">
+      <div class="kpi__icon"><mat-icon>directions_car</mat-icon></div>
+      <span>{{ 'admin.dashboard.kpi.vehicleAmount' | translate }}</span>
+      <strong>{{ money(totalVehicleAmount()) }}</strong>
+      <small>{{ 'admin.dashboard.kpi.commercialValue' | translate }}</small>
+    </div>
+    <div class="kpi kpi--green">
+      <div class="kpi__icon"><mat-icon>trending_up</mat-icon></div>
+      <span>{{ 'admin.dashboard.kpi.avgTcea' | translate }}</span>
+      <strong>{{ pct(averageTcea()) }}</strong>
+      <small>{{ 'admin.dashboard.kpi.avgInstallment' | translate }}: {{ money(averageInstallment()) }}</small>
+    </div>
+  </section>
+
+  <div class="main-grid">
+    <section class="panel trend-panel">
+      <div class="panel-heading">
+        <div>
+          <h2>{{ 'admin.dashboard.trend.title' | translate }}</h2>
+          <p>{{ 'admin.dashboard.trend.subtitle' | translate }}</p>
+        </div>
+        <mat-icon>show_chart</mat-icon>
+      </div>
+      <div class="trend-chart">
+        @for (month of monthlyTrend(); track month.key) {
+          <div class="month-column">
+            <div class="bar-value">{{ month.credits }}</div>
+            <div class="bar-track">
+              <div class="bar" [style.height.%]="month.heightPct" [title]="money(month.amount)"></div>
+            </div>
+            <span>{{ month.label }}</span>
+          </div>
+        }
+      </div>
+      <div class="chart-legend">
+        <span><i class="legend-dot"></i>{{ 'admin.dashboard.trend.credits' | translate }}</span>
+        <span>{{ money(totalCreditCost()) }} {{ 'admin.dashboard.trend.totalCost' | translate }}</span>
+      </div>
+    </section>
+
+    <section class="panel ranking-panel">
+      <div class="panel-heading">
+        <div>
+          <h2>{{ 'admin.dashboard.ranking.title' | translate }}</h2>
+          <p>{{ 'admin.dashboard.ranking.subtitle' | translate }}</p>
+        </div>
+        <mat-icon>leaderboard</mat-icon>
+      </div>
+      @if (sellerPerformance().length === 0 && !isLoading()) {
+        <div class="empty-state"><mat-icon>groups</mat-icon>{{ 'admin.dashboard.ranking.empty' | translate }}</div>
+      } @else {
+        <div class="ranking-list">
+          @for (seller of sellerPerformance().slice(0, 5); track seller.id; let position = $index) {
+            <div class="ranking-row">
+              <span class="rank">{{ position + 1 }}</span>
+              <div class="ranking-name">
+                <strong>{{ seller.name }}</strong>
+                <span>{{ seller.credits }} {{ 'admin.dashboard.ranking.credits' | translate }}</span>
+              </div>
+              <div class="ranking-amount">
+                <strong>{{ money(seller.amount) }}</strong>
+                <div class="share-track"><i [style.width.%]="seller.share * 100"></i></div>
+              </div>
+            </div>
+          }
+        </div>
+      }
+      @if (topSeller(); as seller) {
+        <div class="top-seller"><mat-icon>workspace_premium</mat-icon><span>{{ 'admin.dashboard.ranking.top' | translate }} <strong>{{ seller.name }}</strong></span></div>
+      }
+    </section>
+  </div>
+
+  <section class="panel recent-panel">
+    <div class="panel-heading">
+      <div>
+        <h2>{{ 'admin.dashboard.recent.title' | translate }}</h2>
+        <p>{{ 'admin.dashboard.recent.subtitle' | translate }}</p>
+      </div>
+      <a routerLink="/admin-reports" class="text-link">{{ 'admin.dashboard.recent.viewAll' | translate }} <mat-icon>arrow_forward</mat-icon></a>
+    </div>
+
+    <div class="recent-table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>{{ 'admin.dashboard.recent.credit' | translate }}</th>
+            <th>{{ 'admin.dashboard.recent.client' | translate }}</th>
+            <th>{{ 'admin.dashboard.recent.vehicle' | translate }}</th>
+            <th>{{ 'admin.dashboard.recent.seller' | translate }}</th>
+            <th>{{ 'admin.dashboard.recent.date' | translate }}</th>
+            <th class="num">{{ 'admin.dashboard.recent.amount' | translate }}</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (loan of recentLoans(); track loan.id) {
+            <tr>
+              <td><span class="credit-id">#{{ loan.id || '—' }}</span></td>
+              <td class="strong-cell">{{ clientLabel(loan) }}</td>
+              <td>{{ vehicleLabel(loan) }}</td>
+              <td>{{ sellerLabel(loan) }}</td>
+              <td>{{ date(loan.startDate) }}</td>
+              <td class="num strong-cell">{{ money(loan.vehiclePrice) }}</td>
+            </tr>
+          }
+          @if (!isLoading() && recentLoans().length === 0) {
+            <tr><td colspan="6" class="empty-state">{{ 'admin.dashboard.recent.empty' | translate }}</td></tr>
+          }
+          @if (isLoading()) {
+            <tr><td colspan="6" class="empty-state">{{ 'admin.dashboard.loading' | translate }}</td></tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  </section>
+</div>

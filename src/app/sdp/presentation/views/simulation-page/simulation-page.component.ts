@@ -131,6 +131,10 @@ export class SimulationPageComponent implements OnInit {
     this.router.navigate(['/schedule']);
   }
 
+  onHistory(): void {
+    this.router.navigate(['/simulations']);
+  }
+
   onBack(): void {
     this.router.navigate(['/configuration']);
   }

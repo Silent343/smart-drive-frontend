@@ -26,6 +26,12 @@
   color: #64748b;
 }
 
+.header-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
 .domain-chip {
   display: inline-flex;
   align-items: center;
@@ -133,6 +139,63 @@
   margin-bottom: 14px;
 }
 
+.date-filter {
+  display: grid;
+  gap: 3px;
+  color: #64748b;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.date-filter input {
+  height: 42px;
+  padding: 0 10px;
+  border: 1.5px solid #dbe1ea;
+  border-radius: 10px;
+  background: #f8fafc;
+  color: #0f172a;
+  font: inherit;
+  outline: none;
+}
+
+.date-filter input:focus {
+  border-color: #b8962d;
+}
+
+.clear-filter {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  height: 42px;
+  padding: 0 10px;
+  border: 1px solid transparent;
+  border-radius: 10px;
+  background: transparent;
+  color: #64748b;
+  font: inherit;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.clear-filter:hover:not(:disabled) {
+  background: #f1f5f9;
+  color: #0b1b3d;
+}
+
+.clear-filter:disabled {
+  cursor: default;
+  opacity: 0.45;
+}
+
+.clear-filter mat-icon {
+  width: 18px;
+  height: 18px;
+  font-size: 18px;
+}
+
 .search-shell {
   display: flex;
   align-items: center;
@@ -204,7 +267,7 @@
 table {
   width: 100%;
   border-collapse: collapse;
-  min-width: 920px;
+  min-width: 1720px;
 }
 
 th,

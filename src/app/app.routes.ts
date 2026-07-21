@@ -20,12 +20,16 @@ const schedule = () =>
     import('./sdp/presentation/views/schedule-page/schedule-page.component').then(m => m.SchedulePageComponent)
 const report = () =>
     import('./sdp/presentation/views/report-page/report-page.component').then(m => m.ReportPageComponent)
+const simulations = () =>
+    import('./sdp/presentation/views/simulation-history-page/simulation-history-page.component').then(m => m.SimulationHistoryPageComponent)
 const profile = () =>
     import('./shared/presentation/views/profile/profile').then(m => m.Profile)
 const workers = () =>
     import('./admin/presentation/views/workers-page/workers-page.component').then(m => m.WorkersPageComponent)
 const adminReports = () =>
     import('./admin/presentation/views/company-reports-page/company-reports-page.component').then(m => m.CompanyReportsPageComponent)
+const adminDashboard = () =>
+    import('./admin/presentation/views/admin-dashboard-page/admin-dashboard-page.component').then(m => m.AdminDashboardPageComponent)
 
 //register context
 const iamRoutes = () => import('./iam/presentation/iam.routes').then((m) => m.iamRoutes);
@@ -41,8 +45,10 @@ export const routes: Routes = [
   { path: 'simulation', loadComponent: simulation, title: `${baseTitle} / Simulation`, canActivate: [iamGuard, roleGuard(['SELLER'])] },
   { path: 'schedule', loadComponent: schedule, title: `${baseTitle} / Schedule`, canActivate: [iamGuard, roleGuard(['SELLER'])] },
   { path: 'report', loadComponent: report, title: `${baseTitle} / Report`, canActivate: [iamGuard, roleGuard(['SELLER'])] },
+  { path: 'simulations', loadComponent: simulations, title: `${baseTitle} / Simulations`, canActivate: [iamGuard, roleGuard(['SELLER'])] },
   { path: 'profile', loadComponent: profile, title: `${baseTitle} / Profile`, canActivate: [iamGuard] },
   { path: 'workers', loadComponent: workers, title: `${baseTitle} / Workers`, canActivate: [iamGuard, roleGuard(['ADMIN'])] },
+  { path: 'admin-dashboard', loadComponent: adminDashboard, title: `${baseTitle} / Admin Dashboard`, canActivate: [iamGuard, roleGuard(['ADMIN'])] },
   { path: 'admin-reports', loadComponent: adminReports, title: `${baseTitle} / Company Reports`, canActivate: [iamGuard, roleGuard(['ADMIN'])] },
   { path: 'iam', loadChildren: iamRoutes },
   { path: 'totp-setup',  loadComponent: totpSetup, title: `${baseTitle} / TOTP setup`  },

@@ -61,6 +61,8 @@ export class Layout implements OnInit, AfterViewInit {
     { icon: 'supervised_user_circle', path: '/client', title: 'option.client' },
     { icon: 'directions_car', path: '/vehicle', title: 'option.vehicle' },
     { icon: 'bar_chart', path: '/configuration', title: 'option.simulation', roles: ['SELLER'] },
+    { icon: 'history', path: '/simulations', title: 'option.simulations', roles: ['SELLER'] },
+    { icon: 'insights', path: '/admin-dashboard', title: 'option.dashboard', roles: ['ADMIN'] },
     { icon: 'groups', path: '/workers', title: 'option.workers', roles: ['ADMIN'] },
     { icon: 'folder_copy', path: '/admin-reports', title: 'option.reports', roles: ['ADMIN'] },
   ];

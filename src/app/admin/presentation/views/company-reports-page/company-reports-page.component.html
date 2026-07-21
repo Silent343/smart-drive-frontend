@@ -10,10 +10,16 @@
         </span>
       </p>
     </div>
-    <button class="sdp-btn-outline" type="button" (click)="refresh()">
-      <mat-icon>refresh</mat-icon>
-      {{ 'admin.reports.refresh' | translate }}
-    </button>
+    <div class="header-actions">
+      <button class="sdp-btn-outline" type="button" (click)="exportCsv()" [disabled]="filteredLoans().length === 0">
+        <mat-icon>download</mat-icon>
+        {{ 'admin.reports.export' | translate }}
+      </button>
+      <button class="sdp-btn-outline" type="button" (click)="refresh()">
+        <mat-icon>refresh</mat-icon>
+        {{ 'admin.reports.refresh' | translate }}
+      </button>
+    </div>
   </header>
 
   <section class="kpi-grid">
@@ -72,6 +78,21 @@
         }
       </select>
 
+      <label class="date-filter">
+        <span>{{ 'admin.reports.from' | translate }}</span>
+        <input type="date" [value]="fromDate()" (change)="onFromDate($event)" />
+      </label>
+
+      <label class="date-filter">
+        <span>{{ 'admin.reports.to' | translate }}</span>
+        <input type="date" [value]="toDate()" (change)="onToDate($event)" />
+      </label>
+
+      <button class="clear-filter" type="button" (click)="clearFilters()" [disabled]="!searchTerm() && !sellerFilter() && !fromDate() && !toDate()">
+        <mat-icon>filter_alt_off</mat-icon>
+        {{ 'admin.reports.clearFilters' | translate }}
+      </button>
+
       <span class="results-pill">
         {{ filteredLoans().length }} {{ 'admin.reports.results' | translate }} {{ loans().length }} {{ 'admin.reports.creditsWord' | translate }}
       </span>
@@ -85,9 +106,17 @@
             <th>{{ 'admin.reports.table.seller' | translate }}</th>
             <th>{{ 'admin.reports.table.client' | translate }}</th>
             <th>{{ 'admin.reports.table.vehicle' | translate }}</th>
+            <th>{{ 'admin.reports.table.date' | translate }}</th>
             <th class="num">{{ 'admin.reports.table.price' | translate }}</th>
+            <th class="num">{{ 'admin.reports.table.financed' | translate }}</th>
+            <th class="num">{{ 'admin.reports.table.initialFee' | translate }}</th>
             <th class="num">{{ 'admin.reports.table.term' | translate }}</th>
             <th class="num">{{ 'admin.reports.table.tcea' | translate }}</th>
+            <th class="num">{{ 'admin.reports.table.trea' | translate }}</th>
+            <th class="num">{{ 'admin.reports.table.interest' | translate }}</th>
+            <th class="num">{{ 'admin.reports.table.riskInsurance' | translate }}</th>
+            <th class="num">{{ 'admin.reports.table.gps' | translate }}</th>
+            <th class="num">{{ 'admin.reports.table.taxes' | translate }}</th>
             <th class="num">{{ 'admin.reports.table.tcc' | translate }}</th>
             <th>{{ 'admin.reports.table.status' | translate }}</th>
           </tr>
@@ -99,21 +128,29 @@
               <td>{{ sellerLabel(loan) }}</td>
               <td class="strong-cell">{{ clientLabel(loan) }}</td>
               <td>{{ vehicleLabel(loan) }}</td>
+              <td>{{ date(loan.startDate) }}</td>
               <td class="num">{{ money(loan.vehiclePrice) }}</td>
+              <td class="num">{{ money(loan.loanAmount) }}</td>
+              <td class="num">{{ money(loan.initialFee) }}</td>
               <td class="num">{{ loan.installmentsQty }} {{ 'admin.reports.table.months' | translate }}</td>
               <td class="num">{{ pct(loan.tcea) }}</td>
+              <td class="num">{{ pct(loan.trea) }}</td>
+              <td class="num">{{ money(loan.totalInterest) }}</td>
+              <td class="num">{{ money(loan.totalRiskInsurance) }}</td>
+              <td class="num">{{ money(loan.totalGps) }}</td>
+              <td class="num">{{ money(loan.totalTax) }}</td>
               <td class="num strong-cell">{{ money(loan.ctc) }}</td>
               <td><span class="status">{{ loan.status || 'CONFIRMED' }}</span></td>
             </tr>
           }
           @if (isLoading()) {
             <tr>
-              <td colspan="9" class="empty">{{ 'admin.reports.loading' | translate }}</td>
+              <td colspan="17" class="empty">{{ 'admin.reports.loading' | translate }}</td>
             </tr>
           }
           @if (!isLoading() && filteredLoans().length === 0) {
             <tr>
-              <td colspan="9" class="empty">
+              <td colspan="17" class="empty">
                 <mat-icon>folder_off</mat-icon>
                 <span>{{ (loans().length === 0 ? 'admin.reports.emptyNone' : 'admin.reports.emptyFilter') | translate }}</span>
               </td>
